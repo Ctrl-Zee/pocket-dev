@@ -1,6 +1,4 @@
-# Architecture Reference
-
----
+# Coding Standards
 
 ## Stack
 
@@ -202,12 +200,12 @@ export function useClientSummaryQuery() {
 
 **Mutation Hooks** — cache strategy depends on mutation type:
 
-| Mutation | Strategy |
-| -------- | -------- |
-| Create | Invalidate lists — order and counts change unpredictably |
-| Update | Write response to detail cache, invalidate lists |
-| Delete | Invalidate — list must reflect removal |
-| High-frequency UI (toggle, reorder) | Optimistic update |
+| Mutation                            | Strategy                                                 |
+| ----------------------------------- | -------------------------------------------------------- |
+| Create                              | Invalidate lists — order and counts change unpredictably |
+| Update                              | Write response to detail cache, invalidate lists         |
+| Delete                              | Invalidate — list must reflect removal                   |
+| High-frequency UI (toggle, reorder) | Optimistic update                                        |
 
 Create — invalidate the list, toast on success:
 

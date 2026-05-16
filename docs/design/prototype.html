@@ -1,0 +1,1195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Andrew Smith — Pocket Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  :root{
+    --shell-1:#c5a7e6;       /* light violet highlight */
+    --shell-2:#9b7fc4;       /* mid violet */
+    --shell-3:#6a4f95;       /* deep violet shadow */
+    --shell-glass:rgba(170,140,210,.55);
+    --shell-deep:#3a2a5a;
+    --lcd-bg:#bcd6a6;        /* soft green-gray */
+    --lcd-bg-dark:#7a9568;
+    --lcd-ink:#1f2d18;
+    --lcd-mid:#4d6a3a;
+    --lcd-hi:#e6efd8;
+    --bg-1:#f3ecff;
+    --bg-2:#e3d4f5;
+    --bg-3:#cfb8e8;
+  }
+  html,body{margin:0;padding:0;min-height:100dvh;font-family:'Inter',sans-serif;color:#2a1f3d;-webkit-font-smoothing:antialiased;overflow-x:hidden;background:#e3d4f5;}
+
+  /* Background variants — applied via [data-bg] on <body> */
+  body[data-bg="violet"]{
+    background:
+      radial-gradient(circle at 25% 10%, rgba(255,255,255,.6) 0%, transparent 40%),
+      radial-gradient(circle at 75% 80%, rgba(170,140,210,.35) 0%, transparent 50%),
+      radial-gradient(140% 100% at 50% 0%, #f3ecff 0%, #e3d4f5 45%, #cfb8e8 100%);
+  }
+  body[data-bg="violet"]::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:radial-gradient(circle, rgba(106,79,149,.12) 1px, transparent 1.4px);
+    background-size:22px 22px;mix-blend-mode:multiply;opacity:.45;
+  }
+
+  body[data-bg="sunset"]{
+    background:
+      radial-gradient(circle at 80% 20%, #ffd6a5 0%, transparent 55%),
+      radial-gradient(circle at 20% 90%, #ff8db4 0%, transparent 50%),
+      linear-gradient(180deg, #ffe5b4 0%, #ffb6d9 50%, #b69cff 100%);
+  }
+
+  body[data-bg="grid"]{
+    background:#1a1a2e;
+  }
+  body[data-bg="grid"]::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      linear-gradient(rgba(255,80,200,.18) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, rgba(255,80,200,.18) 1px, transparent 1px) 0 0/40px 40px,
+      radial-gradient(ellipse at 50% 100%, rgba(255,80,200,.4) 0%, transparent 60%),
+      linear-gradient(180deg, #1a0a3a 0%, #2a0a4a 50%, #4a1268 100%);
+  }
+
+  body[data-bg="checker"]{
+    background:
+      conic-gradient(#e3d4f5 25%, #cfb8e8 0 50%, #e3d4f5 0 75%, #cfb8e8 0) 0 0/40px 40px,
+      #e3d4f5;
+  }
+
+  body[data-bg="paper"]{
+    background:#f1ece2;
+  }
+  body[data-bg="paper"]::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(120,90,60,.06) 0 2px, transparent 2px 6px),
+      radial-gradient(circle at 30% 20%, rgba(180,140,90,.15) 0%, transparent 50%);
+  }
+
+  body[data-bg="cosmic"]{
+    background:
+      radial-gradient(2px 2px at 10% 20%, #fff, transparent),
+      radial-gradient(1px 1px at 30% 70%, #fff, transparent),
+      radial-gradient(1px 1px at 70% 40%, #fff, transparent),
+      radial-gradient(2px 2px at 80% 80%, #fff, transparent),
+      radial-gradient(1px 1px at 50% 10%, #fff, transparent),
+      radial-gradient(1px 1px at 90% 30%, #fff, transparent),
+      radial-gradient(1px 1px at 15% 85%, #fff, transparent),
+      radial-gradient(circle at 30% 60%, #6a3dc4 0%, transparent 50%),
+      radial-gradient(circle at 70% 30%, #c43d96 0%, transparent 50%),
+      linear-gradient(180deg, #0a0628 0%, #1a0a3e 100%);
+    background-size:200px 200px,150px 150px,180px 180px,220px 220px,170px 170px,190px 190px,160px 160px,auto,auto,auto;
+  }
+
+  body[data-bg="desk"]{
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(255,255,255,.15) 0%, transparent 70%),
+      repeating-linear-gradient(92deg, #8a6a4a 0 3px, #7a5a3e 3px 7px, #8a6a4a 7px 12px),
+      #6a4a32;
+  }
+
+  .pixel{font-family:'Press Start 2P', monospace; image-rendering:pixelated;}
+  .vt{font-family:'VT323', monospace;}
+
+  /* ---- chassis ---- */
+  .chassis{
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 30%),
+      linear-gradient(180deg, #b89cdf 0%, #9778c2 35%, #7e5fae 65%, #5e4188 100%);
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.7),
+      inset 0 -3px 0 rgba(40,20,70,.35),
+      inset 6px 0 14px rgba(255,255,255,.18),
+      inset -6px 0 14px rgba(40,20,70,.25),
+      0 30px 60px -20px rgba(60,30,100,.55),
+      0 8px 20px -5px rgba(60,30,100,.35);
+    position:relative;
+    overflow:hidden;
+  }
+  /* translucent see-through hint: faint internal components */
+  .chassis::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:
+      /* battery compartment, lower right */
+      radial-gradient(60px 90px at 88% 86%, rgba(60,40,90,.35) 0%, rgba(60,40,90,0) 70%),
+      /* circuit board grid, faint */
+      repeating-linear-gradient(90deg, rgba(40,20,70,.06) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(0deg,  rgba(40,20,70,.06) 0 1px, transparent 1px 14px),
+      /* IC chip silhouette near top right */
+      radial-gradient(40px 18px at 78% 18%, rgba(40,20,70,.18) 0%, rgba(40,20,70,0) 72%),
+      /* speaker driver circle, lower right above grill */
+      radial-gradient(50px 50px at 78% 78%, rgba(40,20,70,.18) 0%, rgba(40,20,70,0) 70%);
+    mix-blend-mode:multiply;
+    opacity:.55;
+  }
+  /* glossy top sheen */
+  .chassis::after{
+    content:"";position:absolute;left:0;right:0;top:0;height:42%;pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 100%);
+  }
+
+  /* screen bezel */
+  .bezel{
+    background:linear-gradient(180deg,#3a2a5a 0%, #2a1c40 50%, #1a1230 100%);
+    box-shadow:
+      inset 0 4px 8px rgba(0,0,0,.6),
+      inset 0 -2px 0 rgba(255,255,255,.06),
+      0 1px 0 rgba(255,255,255,.4);
+  }
+  .lcd{
+    background:linear-gradient(180deg,#bcd6a6 0%, #a8c590 100%);
+    box-shadow:
+      inset 0 6px 10px rgba(40,60,30,.45),
+      inset 0 -2px 6px rgba(40,60,30,.25),
+      inset 4px 0 8px rgba(40,60,30,.2),
+      inset -4px 0 8px rgba(40,60,30,.2);
+    position:relative;overflow:hidden;
+    image-rendering:pixelated;
+  }
+  .lcd::before{
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px);
+    z-index:5;
+  }
+  /* drifting scanline */
+  .lcd::after{
+    content:"";position:absolute;left:0;right:0;height:14px;pointer-events:none;
+    background:linear-gradient(180deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.18) 50%, rgba(255,255,255,0) 100%);
+    animation:drift 7s linear infinite;
+    z-index:6;
+  }
+  @keyframes drift{
+    0%{top:-20px;opacity:0;}
+    10%{opacity:.7;}
+    90%{opacity:.7;}
+    100%{top:110%;opacity:0;}
+  }
+
+  /* power LED */
+  .led{
+    width:10px;height:10px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #ffb0a8 0%, #ff3322 50%, #8a0000 100%);
+    box-shadow:0 0 8px rgba(255,60,40,.85), inset 0 -1px 1px rgba(0,0,0,.4);
+    animation:pulse 2.6s ease-in-out infinite;
+  }
+  @keyframes pulse{0%,100%{box-shadow:0 0 6px rgba(255,60,40,.7), inset 0 -1px 1px rgba(0,0,0,.4);} 50%{box-shadow:0 0 14px rgba(255,80,50,1), inset 0 -1px 1px rgba(0,0,0,.4);}}
+
+  /* d-pad */
+  .dpad-base{
+    background:linear-gradient(180deg,#1a1224 0%, #2a1c40 100%);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.14), inset 0 -2px 4px rgba(0,0,0,.4), 0 2px 4px rgba(0,0,0,.3);
+  }
+  .dpad-arm{
+    background:linear-gradient(180deg,#2a1c40 0%, #1a1224 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 -2px 3px rgba(0,0,0,.5);
+  }
+  .dpad-arm.pressed{transform:translateZ(0) scale(.96);filter:brightness(.78);}
+
+  /* AB buttons */
+  .ab-btn{
+    background:radial-gradient(circle at 30% 25%, #ff8aa8 0%, #d12d62 45%, #7a0e35 100%);
+    box-shadow:
+      inset 0 -3px 5px rgba(80,0,30,.6),
+      inset 0 2px 0 rgba(255,255,255,.4),
+      0 4px 0 rgba(60,20,40,.6),
+      0 5px 6px rgba(40,10,30,.4);
+    transition:transform .05s ease, box-shadow .05s ease, filter .05s ease;
+  }
+  .ab-btn.pressed{transform:translateY(3px);box-shadow:inset 0 -2px 4px rgba(80,0,30,.7), inset 0 1px 0 rgba(255,255,255,.3), 0 1px 0 rgba(60,20,40,.6), 0 2px 3px rgba(40,10,30,.4);filter:brightness(.92);}
+
+  /* start/select pills */
+  .pill{
+    background:linear-gradient(180deg, #6e6072 0%, #4a3f52 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.25), inset 0 -2px 3px rgba(0,0,0,.5), 0 2px 0 rgba(20,10,30,.5);
+    transition:transform .05s ease, box-shadow .05s ease, filter .05s ease;
+  }
+  .pill.pressed{transform:translateY(2px);filter:brightness(.85);box-shadow:inset 0 1px 0 rgba(255,255,255,.18), inset 0 -1px 2px rgba(0,0,0,.5), 0 1px 0 rgba(20,10,30,.5);}
+
+  /* speaker grill (diagonal slits) */
+  .grill{
+    background:repeating-linear-gradient(135deg, rgba(20,10,40,.7) 0 3px, rgba(20,10,40,0) 3px 9px);
+    border-radius:6px;
+  }
+
+  /* volume wheel ridge */
+  .wheel-ridge{
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.18) 0 2px, rgba(0,0,0,.35) 2px 4px);
+  }
+
+  /* selection chevron blink */
+  @keyframes blink{0%,55%{opacity:1;}60%,100%{opacity:0;}}
+  .blink{animation:blink 1s steps(1,end) infinite;}
+
+  /* button label engraved look */
+  .engraved{color:rgba(40,20,60,.7); text-shadow:0 1px 0 rgba(255,255,255,.35);}
+
+  /* confetti */
+  .confetti{position:absolute;width:4px;height:4px;}
+
+  /* prevent text selection on chassis */
+  .noselect, .noselect *{user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;}
+
+  /* hide scrollbar inside lcd panes */
+  .lcd-scroll::-webkit-scrollbar{display:none;}
+  .lcd-scroll{scrollbar-width:none;}
+</style>
+</head>
+<body data-bg="grid">
+<div id="root"></div>
+
+<script type="text/babel" data-presets="env,react">
+const { useState, useEffect, useRef, useCallback, useMemo } = React;
+
+// --------- Audio ---------
+function useAudio(){
+  const ctxRef = useRef(null);
+  const mutedRef = useRef(false);
+  const [muted, setMuted] = useState(false);
+  useEffect(()=>{ mutedRef.current = muted; }, [muted]);
+
+  const ensure = useCallback(()=>{
+    if(!ctxRef.current){
+      try{ ctxRef.current = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){}
+    }
+    if(ctxRef.current && ctxRef.current.state === 'suspended') ctxRef.current.resume();
+    return ctxRef.current;
+  },[]);
+
+  const tone = useCallback((freq, dur=0.06, type='square', vol=0.07, slide=0)=>{
+    if(mutedRef.current) return;
+    const ctx = ensure(); if(!ctx) return;
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(freq, ctx.currentTime);
+    if(slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, freq+slide), ctx.currentTime+dur);
+    g.gain.setValueAtTime(0.0001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(vol, ctx.currentTime+0.005);
+    g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+dur);
+    o.connect(g).connect(ctx.destination);
+    o.start();
+    o.stop(ctx.currentTime+dur+0.02);
+  },[ensure]);
+
+  const sfx = useMemo(()=>({
+    blip: ()=>tone(880, 0.04, 'square', 0.05),
+    confirm: ()=>{ tone(660, 0.05, 'square', 0.06); setTimeout(()=>tone(990, 0.07, 'square', 0.06), 55); },
+    back: ()=>{ tone(440, 0.05, 'square', 0.05); setTimeout(()=>tone(330, 0.07, 'square', 0.05), 50); },
+    chime: ()=>{
+      [523, 659, 784, 1046].forEach((f,i)=>setTimeout(()=>tone(f, 0.08, 'square', 0.05), i*55));
+    },
+    error: ()=>tone(180, 0.18, 'sawtooth', 0.06, -60),
+    konami: ()=>{
+      [523, 659, 784, 1046, 1318].forEach((f,i)=>setTimeout(()=>tone(f, 0.09, 'square', 0.06), i*70));
+    },
+  }),[tone]);
+
+  return { sfx, muted, setMuted, ensure };
+}
+
+// --------- Pixel sprite primitives ---------
+// 16x16 avatar drawn as a colored grid (each char = pixel)
+const AVATAR = [
+  '................',
+  '......333333....',
+  '....33444444333.',
+  '...3444444444433',
+  '..344552255443.3',
+  '..344522225443..',
+  '..3445522554433.',
+  '..344455555443..',
+  '...3444666443...',
+  '....33444333....',
+  '...77777777.....',
+  '..7775555577....',
+  '..7755555557....',
+  '..7755555557....',
+  '...7777777......',
+  '....88..88......',
+];
+const AVATAR_PAL = {
+  '.':'transparent',
+  '3':'#3a2a1a', // hair shadow
+  '4':'#7a5a3a', // hair / skin shadow
+  '5':'#f0d2a8', // skin
+  '2':'#1a1a2a', // eyes
+  '6':'#a04030', // mouth
+  '7':'#3a78c2', // shirt
+  '8':'#1a3a5a', // pants
+};
+
+function PixelSprite({ data, palette, scale=4, className='' }){
+  const w = data[0].length, h = data.length;
+  return (
+    <svg className={className} width={w*scale} height={h*scale} viewBox={`0 0 ${w} ${h}`} shapeRendering="crispEdges" style={{imageRendering:'pixelated'}}>
+      {data.flatMap((row,y)=>row.split('').map((c,x)=>{
+        const fill = palette[c]; if(!fill || fill==='transparent') return null;
+        return <rect key={`${x}-${y}`} x={x} y={y} width="1" height="1" fill={fill} />;
+      }))}
+    </svg>
+  );
+}
+
+// hand/arrow cursor sprite
+const CURSOR = [
+  '.11.....',
+  '.121....',
+  '.1221...',
+  '.12221..',
+  '.122221.',
+  '.1222221',
+  '.122221.',
+  '.12221..',
+  '.1221...',
+  '.121....',
+  '.11.....',
+];
+const CURSOR_PAL = { '.':'transparent', '1':'#1f2d18', '2':'#4d6a3a' };
+
+// little github & linkedin pixel icons (8x8)
+const ICON_GH = [
+  '..1111..',
+  '.111111.',
+  '11.11.11',
+  '1.1111.1',
+  '11.11.11',
+  '11.11.11',
+  '.1.11.1.',
+  '.1....1.',
+];
+const ICON_LI = [
+  '11111111',
+  '1......1',
+  '1.11...1',
+  '1.11.111',
+  '1....111',
+  '1.111111',
+  '1......1',
+  '11111111',
+];
+const ICON_PAL = { '.':'transparent', '1':'#1f2d18' };
+
+// envelope (email)
+const ICON_MAIL = [
+  '11111111',
+  '1......1',
+  '11....11',
+  '1.1..1.1',
+  '1..11..1',
+  '1......1',
+  '1......1',
+  '11111111',
+];
+
+// folder for projects
+const ICON_FOLDER = [
+  '..111...',
+  '.11.11..',
+  '1111111.',
+  '1.....1.',
+  '1.1.1.1.',
+  '1.....1.',
+  '1.....1.',
+  '1111111.',
+];
+// person for about
+const ICON_PERSON = [
+  '...11...',
+  '..1111..',
+  '..1111..',
+  '...11...',
+  '.111111.',
+  '1111111.',
+  '11.11.1.',
+  '1..1..1.',
+];
+// document for resume
+const ICON_DOC = [
+  '111111..',
+  '1....1..',
+  '1.11.1..',
+  '1....1..',
+  '1.111.1.',
+  '1....1.1',
+  '1.11.1.1',
+  '11111111',
+];
+
+// --------- LCD layout helpers ---------
+const LCD_W = 320; // virtual pixel width
+const LCD_H = 288;
+
+function LCDFrame({ children, palette }){
+  return (
+    <div className="absolute inset-0 lcd-scroll" style={{
+      color: palette.ink,
+      backgroundColor: palette.bg,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+// --------- Pages ---------
+const MENU = [
+  { id:'about', label:'ABOUT',    icon: ICON_PERSON },
+  { id:'projects', label:'PROJECTS', icon: ICON_FOLDER },
+  { id:'resume', label:'RESUME',  icon: ICON_DOC },
+  { id:'contact', label:'CONTACT', icon: ICON_GH },
+];
+
+function HomeScreen({ cursor, palette, name }){
+  return (
+    <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
+      <div className="pixel text-center" style={{fontSize:8, color:palette.mid, letterSpacing:1, marginTop:2}}>
+        ★ POCKET DEV ★
+      </div>
+      <div className="pixel text-center" style={{fontSize:14, color:palette.ink, marginTop:6, lineHeight:1.4}}>
+        ANDREW.S
+      </div>
+      <div className="pixel text-center" style={{fontSize:6, color:palette.mid, marginTop:2, letterSpacing:1}}>
+        ── PORTFOLIO v1.0 ──
+      </div>
+
+      <div className="flex-1 flex flex-col justify-center" style={{gap:8, marginTop:4}}>
+        {MENU.map((m, i)=>(
+          <div key={m.id} className="flex items-center" style={{gap:8, paddingLeft:18, position:'relative', minHeight:18}}>
+            {cursor===i && (
+              <div style={{position:'absolute', left:2, top:'50%', transform:'translateY(-50%)'}} className="blink">
+                <PixelSprite data={CURSOR} palette={{'.':'transparent','1':palette.ink,'2':palette.mid}} scale={2}/>
+              </div>
+            )}
+            <div style={{opacity: cursor===i ? 1 : .65}}>
+              <PixelSprite data={m.icon} palette={{'.':'transparent','1':palette.ink}} scale={2}/>
+            </div>
+            <div className="pixel" style={{
+              fontSize:10,
+              color: cursor===i ? palette.ink : palette.mid,
+              background: cursor===i ? palette.hi : 'transparent',
+              padding: cursor===i ? '2px 6px' : '2px 0',
+              letterSpacing:1,
+            }}>
+              {m.label}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="pixel text-center" style={{fontSize:6, color:palette.mid, letterSpacing:1, marginBottom:2}}>
+        ▲▼ MOVE   Ⓐ SELECT
+      </div>
+    </div>
+  );
+}
+
+function AboutScreen({ palette, scrollY }){
+  return (
+    <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
+      <div className="pixel" style={{fontSize:10, color:palette.ink, marginBottom:6, letterSpacing:1}}>
+        &gt; ABOUT
+      </div>
+      <div className="flex" style={{gap:10}}>
+        <div style={{flexShrink:0, padding:3, border:`2px solid ${palette.ink}`, background:palette.hi}}>
+          <PixelSprite data={AVATAR} palette={AVATAR_PAL} scale={3}/>
+        </div>
+        <div className="pixel" style={{fontSize:7, color:palette.ink, lineHeight:1.6, letterSpacing:.5}}>
+          ANDREW SMITH<br/>
+          <span style={{color:palette.mid}}>SR CONSULTANT</span><br/>
+          <span style={{color:palette.mid}}>INDIANAPOLIS, IN</span>
+        </div>
+      </div>
+
+      <div className="pixel lcd-scroll" style={{
+        fontSize:7, color:palette.ink, lineHeight:1.7, letterSpacing:.4,
+        marginTop:10, flex:1, overflowY:'auto', paddingRight:2,
+      }} ref={el=>{ if(el) el.scrollTop = scrollY; }}>
+        HI, I'M ANDREW.<br/>
+        NICE TO MEET YOU.<br/><br/>
+        SINCE STARTING MY DEV CAREER NEARLY 10 YEARS AGO I'VE
+        ENJOYED CREATING THINGS THAT LIVE ON THE INTERNET.<br/><br/>
+        I'VE WORKED IN BOTH PUBLIC AND PRIVATE SECTORS,
+        CONSULTED FOR LARGE ENTERPRISES, AND COLLABORATED
+        WITH TALENTED PEOPLE TO SHIP QUALITY APPS.<br/><br/>
+        <span style={{color:palette.mid}}>STACK:</span> REACT · ANGULAR ·<br/>
+        TYPESCRIPT · .NET · AZURE<br/><br/>
+        <span style={{color:palette.mid}}>OFF-HOURS:</span> BOARD GAMES,<br/>
+        BIKING, READING.<br/>
+      </div>
+
+      <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:1, marginTop:4, textAlign:'center'}}>
+        ▲▼ SCROLL   Ⓑ BACK
+      </div>
+    </div>
+  );
+}
+
+function ProjectsScreen({ cursor, palette, scrollY }){
+  const items = [
+    { name:'BENESYS PORTAL', stack:'REACT · ZUSTAND · TANSTACK', blurb:'BENEFITS PORTAL FOR TRADE WORKERS. LED FRONT-END.' },
+    { name:'PEBT WEBSITE', stack:'ANGULAR 15 · NGRX', blurb:'SUMMER PEBT FOR FAMILIES. RESPONSIVE.  20K USERS.' },
+    { name:'KEY MANAGER', stack:'ANGULAR · .NET · AZURE B2C', blurb:'PRODUCT KEY MGMT + ADMIN PORTAL.' },
+    { name:'LOGISTICS APP', stack:'ANGULAR · SIGNALR', blurb:'TRUCKING LOGISTICS WITH LIVE TRACKING.' },
+  ];
+  return (
+    <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
+      <div className="pixel" style={{fontSize:10, color:palette.ink, marginBottom:6, letterSpacing:1}}>
+        &gt; PROJECTS
+      </div>
+      <div className="lcd-scroll" style={{flex:1, overflowY:'auto', paddingRight:2}} ref={el=>{ if(el) el.scrollTop = scrollY; }}>
+        {items.map((p,i)=>(
+          <div key={p.name} style={{
+            border:`2px solid ${cursor===i ? palette.ink : palette.mid}`,
+            background: cursor===i ? palette.hi : 'transparent',
+            padding:'4px 6px', marginBottom:6, position:'relative',
+          }}>
+            {cursor===i && (
+              <div style={{position:'absolute', left:-12, top:6}} className="blink">
+                <PixelSprite data={CURSOR} palette={{'.':'transparent','1':palette.ink,'2':palette.mid}} scale={1.2}/>
+              </div>
+            )}
+            <div className="pixel" style={{fontSize:8, color:palette.ink, letterSpacing:1}}>{p.name}</div>
+            <div className="pixel" style={{fontSize:6, color:palette.mid, marginTop:3, letterSpacing:.5}}>{p.stack}</div>
+            <div className="pixel" style={{fontSize:6, color:palette.ink, marginTop:4, lineHeight:1.6, letterSpacing:.4}}>{p.blurb}</div>
+          </div>
+        ))}
+      </div>
+      <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:1, marginTop:4, textAlign:'center'}}>
+        ▲▼ MOVE   Ⓑ BACK
+      </div>
+    </div>
+  );
+}
+
+function ResumeScreen({ palette, scrollY, downloadBlink }){
+  // Pixel-rendered low-res "scan" of the resume
+  const sections = [
+    {head:'ANDREW SMITH', body:['SR CONSULTANT', 'INDIANAPOLIS, IN', '10+ YRS EXPERIENCE']},
+    {head:'HIGHLIGHTS', body:[
+      '· ENTERPRISE SAAS REACT',
+      '  APP, 100+ CLIENTS',
+      '· PEBT NGRX SITE,',
+      '  20K FAMILIES',
+      '· MENTORED 4 INTERNS',
+      '· LIC. MGMT + AZURE B2C',
+    ]},
+    {head:'STACK', body:[
+      '· REACT · ANGULAR · TS',
+      '· .NET · AZURE · SQL',
+      '· TAILWIND · NGRX',
+    ]},
+    {head:'EXPERIENCE', body:[
+      '2015-NOW  MOSER CONSULT.',
+      '  SR CONSULTANT',
+      '2012-2015 DLGF',
+      '  APP SOLUTIONS DEV',
+    ]},
+    {head:'EDUCATION', body:[
+      '2007-2012 IUPUI',
+      '  BS COMPUTER SCIENCE',
+    ]},
+  ];
+  return (
+    <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
+      <div className="pixel" style={{fontSize:10, color:palette.ink, marginBottom:6, letterSpacing:1}}>
+        &gt; RESUME
+      </div>
+      <div className="lcd-scroll" style={{
+        flex:1, overflowY:'auto', paddingRight:2,
+        border:`2px solid ${palette.ink}`, background:palette.hi, padding:6,
+      }} ref={el=>{ if(el) el.scrollTop = scrollY; }}>
+        {sections.map((s,i)=>(
+          <div key={s.head} style={{marginBottom:8}}>
+            <div className="pixel" style={{fontSize:8, color:palette.ink, letterSpacing:1, borderBottom:`1px solid ${palette.ink}`, paddingBottom:2, marginBottom:4}}>
+              {s.head}
+            </div>
+            {s.body.map((line,j)=>(
+              <div key={j} className="pixel" style={{fontSize:6, color:palette.ink, lineHeight:1.7, letterSpacing:.4}}>{line}</div>
+            ))}
+          </div>
+        ))}
+        <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:.5, textAlign:'center', marginTop:6}}>── PRESS Ⓐ TO DOWNLOAD ──</div>
+      </div>
+      <div className="flex items-center justify-between" style={{marginTop:6}}>
+        <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:1}}>▲▼ SCROLL</div>
+        <a
+          href="assets/Andrew_Smith_Resume.pdf"
+          download="Andrew_Smith_Resume.pdf"
+          id="resume-download"
+          className="pixel"
+          style={{
+            fontSize:7, letterSpacing:1,
+            background: downloadBlink ? palette.ink : palette.hi,
+            color: downloadBlink ? palette.hi : palette.ink,
+            border:`2px solid ${palette.ink}`,
+            padding:'3px 6px', textDecoration:'none',
+          }}
+        >
+          ⬇ DOWNLOAD.PDF
+        </a>
+        <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:1}}>Ⓑ BACK</div>
+      </div>
+    </div>
+  );
+}
+
+function ContactScreen({ cursor, palette }){
+  const items = [
+    { id:'github',   label:'GITHUB',   sub:'@CTRL-ZEE',      icon:ICON_GH,   href:'https://github.com/Ctrl-Zee' },
+    { id:'linkedin', label:'LINKEDIN', sub:'/IN/ANDREW-S',   icon:ICON_LI,   href:'https://www.linkedin.com/in/andrew-smith-indy/' },
+    { id:'email',    label:'EMAIL',    sub:'ANDREW.SMITH.INDY@GMAIL', icon:ICON_MAIL, href:'mailto:andrew.smith.indy@gmail.com' },
+  ];
+  return (
+    <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
+      <div className="pixel" style={{fontSize:10, color:palette.ink, marginBottom:8, letterSpacing:1}}>
+        &gt; CONTACT
+      </div>
+      <div style={{flex:1, display:'flex', flexDirection:'column', gap:8}}>
+        {items.map((it,i)=>(
+          <div key={it.id} style={{
+            display:'flex', alignItems:'center', gap:8,
+            padding:'6px 8px',
+            border:`2px solid ${cursor===i ? palette.ink : palette.mid}`,
+            background: cursor===i ? palette.hi : 'transparent',
+            position:'relative',
+          }}>
+            {cursor===i && (
+              <div style={{position:'absolute', left:-12, top:'50%', transform:'translateY(-50%)'}} className="blink">
+                <PixelSprite data={CURSOR} palette={{'.':'transparent','1':palette.ink,'2':palette.mid}} scale={1.4}/>
+              </div>
+            )}
+            <PixelSprite data={it.icon} palette={{'.':'transparent','1':palette.ink}} scale={2}/>
+            <div>
+              <div className="pixel" style={{fontSize:8, color:palette.ink, letterSpacing:1}}>{it.label}</div>
+              <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:.5, marginTop:2}}>{it.sub}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="pixel" style={{fontSize:6, color:palette.mid, letterSpacing:1, marginTop:4, textAlign:'center'}}>
+        Ⓐ OPEN ↗   Ⓑ BACK
+      </div>
+    </div>
+  );
+}
+
+function RotateScreen({ palette }){
+  return (
+    <div className="absolute inset-0 flex flex-col items-center justify-center" style={{padding:'14px 16px', textAlign:'center'}}>
+      <div className="pixel" style={{fontSize:10, color:palette.ink, letterSpacing:1, marginBottom:10}}>! ALERT !</div>
+      <div className="pixel" style={{fontSize:8, color:palette.ink, letterSpacing:1, lineHeight:1.6}}>
+        PLEASE ROTATE<br/>YOUR DEVICE BACK<br/>TO PORTRAIT
+      </div>
+      <div style={{marginTop:14, fontSize:24}}>↻</div>
+    </div>
+  );
+}
+
+// ------- Confetti easter egg -------
+function Confetti({ palette }){
+  const COLORS = ['#ff3da6','#ffd83d','#3df0ff','#3dff7a','#ff7d3d','#a23dff'];
+  const pieces = useMemo(()=>Array.from({length:60}, (_,i)=>({
+    left: Math.random()*100,
+    delay: Math.random()*1.2,
+    dur: 1.4 + Math.random()*1.4,
+    color: COLORS[i % COLORS.length],
+    size: 3 + Math.floor(Math.random()*3),
+    drift: (Math.random()-.5)*40,
+  })),[]);
+  return (
+    <div className="absolute inset-0 pointer-events-none" style={{zIndex:7, overflow:'hidden'}}>
+      {pieces.map((p,i)=>(
+        <span key={i} className="confetti" style={{
+          left:`${p.left}%`, top:'-10px',
+          width:p.size, height:p.size,
+          background:p.color,
+          animation:`fall ${p.dur}s linear ${p.delay}s forwards`,
+          ['--drift']:`${p.drift}px`,
+        }}/>
+      ))}
+      <style>{`
+        @keyframes fall { to { transform: translate(var(--drift), 320px) rotate(360deg); opacity:.2; } }
+      `}</style>
+    </div>
+  );
+}
+
+// --------- Main App ---------
+function BgPicker({ bg, setBg }){
+  const opts = [
+    {id:'violet',  label:'Violet',  swatch:'linear-gradient(135deg,#f3ecff 0%,#cfb8e8 100%)'},
+    {id:'sunset',  label:'Sunset',  swatch:'linear-gradient(135deg,#ffe5b4 0%,#ffb6d9 50%,#b69cff 100%)'},
+    {id:'grid',    label:'Synth',   swatch:'linear-gradient(180deg,#1a0a3a 0%,#4a1268 100%)'},
+    {id:'checker', label:'Checker', swatch:'conic-gradient(#e3d4f5 25%,#cfb8e8 0 50%,#e3d4f5 0 75%,#cfb8e8 0)'},
+    {id:'paper',   label:'Paper',   swatch:'#f1ece2'},
+    {id:'cosmic',  label:'Cosmic',  swatch:'radial-gradient(circle at 30% 60%,#6a3dc4 0%,transparent 60%),radial-gradient(circle at 70% 30%,#c43d96 0%,transparent 60%),#0a0628'},
+    {id:'desk',    label:'Desk',    swatch:'repeating-linear-gradient(92deg,#8a6a4a 0 3px,#7a5a3e 3px 7px)'},
+  ];
+  return (
+    <div style={{
+      position:'fixed', top:14, right:14, zIndex:50,
+      background:'rgba(255,255,255,.85)', backdropFilter:'blur(8px)',
+      borderRadius:10, padding:'8px 10px',
+      boxShadow:'0 4px 14px rgba(60,30,100,.18), 0 0 0 1px rgba(60,30,100,.08)',
+      display:'flex', flexDirection:'column', gap:6,
+    }}>
+      <div className="pixel" style={{fontSize:7, letterSpacing:1.5, color:'#5a3d8a', padding:'2px 0'}}>BACKGROUND</div>
+      <div style={{display:'flex', gap:6, flexWrap:'wrap', maxWidth:172}}>
+        {opts.map(o=>(
+          <button key={o.id} onClick={()=>setBg(o.id)} title={o.label} style={{
+            width:22, height:22, borderRadius:6, cursor:'pointer',
+            background:o.swatch, backgroundSize:'cover',
+            border: bg===o.id ? '2px solid #4a2a8a' : '2px solid rgba(60,30,100,.15)',
+            outline: bg===o.id ? '2px solid rgba(74,42,138,.25)' : 'none',
+            outlineOffset:1, padding:0,
+          }}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const { sfx, muted, setMuted, ensure } = useAudio();
+  const [screen, setScreen] = useState('home');         // home | about | projects | resume | contact
+  const [stack, setStack] = useState([]);                // back-stack
+  const [cursor, setCursor] = useState(0);
+  const [scrollMap, setScrollMap] = useState({about:0, projects:0, resume:0});
+  const [pressed, setPressed] = useState({});            // visual press state
+  const [konamiOn, setKonamiOn] = useState(false);
+  const [confetti, setConfetti] = useState(false);
+  const [secret, setSecret] = useState(false);
+  const [orientation, setOrientation] = useState('portrait');
+  const [downloadBlink, setDownloadBlink] = useState(false);
+  const [bootTick, setBootTick] = useState(0); // for ambient subtle anim
+
+  const konamiBuf = useRef([]);
+  const KONAMI = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+
+  // palette
+  const PAL_NORMAL = {bg:'#bcd6a6', hi:'#dbe8c8', mid:'#4d6a3a', ink:'#1f2d18'};
+  const PAL_KONAMI = {bg:'#0a0a1a', hi:'#ff3da6', mid:'#3df0ff', ink:'#fff7d6'};
+  const palette = konamiOn ? PAL_KONAMI : PAL_NORMAL;
+
+  // orientation watcher (mobile)
+  useEffect(()=>{
+    const check = ()=>{
+      const w = window.innerWidth, h = window.innerHeight;
+      const isMobile = w < 700;
+      if(isMobile && w > h) setOrientation('landscape');
+      else setOrientation('portrait');
+    };
+    check();
+    window.addEventListener('resize', check);
+    window.addEventListener('orientationchange', check);
+    return ()=>{ window.removeEventListener('resize', check); window.removeEventListener('orientationchange', check); };
+  },[]);
+
+  // cursor count per screen
+  const cursorMax = useCallback((s)=>{
+    if(s==='home') return MENU.length;
+    if(s==='projects') return 4;
+    if(s==='contact') return 3;
+    return 1;
+  },[]);
+
+  // navigation helpers
+  const goTo = useCallback((target)=>{
+    setStack(s=>[...s, screen]);
+    setScreen(target);
+    setCursor(0);
+    sfx.chime();
+  },[screen, sfx]);
+
+  const goBack = useCallback(()=>{
+    setStack(s=>{
+      if(s.length===0){ sfx.error(); return s; }
+      const prev = s[s.length-1];
+      setScreen(prev);
+      setCursor(0);
+      sfx.back();
+      return s.slice(0,-1);
+    });
+  },[sfx]);
+
+  const moveCursor = useCallback((delta)=>{
+    if(screen==='about' || screen==='resume'){
+      // scroll instead
+      setScrollMap(m=>({...m, [screen]: Math.max(0, (m[screen]||0) + delta*16)}));
+      sfx.blip();
+      return;
+    }
+    setCursor(c=>{
+      const max = cursorMax(screen);
+      const n = (c + delta + max) % max;
+      sfx.blip();
+      return n;
+    });
+  },[screen, cursorMax, sfx]);
+
+  const pressA = useCallback(()=>{
+    if(screen==='home'){
+      const target = MENU[cursor].id;
+      goTo(target);
+    } else if(screen==='resume'){
+      // trigger download
+      const a = document.getElementById('resume-download');
+      if(a){
+        sfx.confirm();
+        setDownloadBlink(true);
+        setTimeout(()=>setDownloadBlink(false), 220);
+        a.click();
+      }
+    } else if(screen==='contact'){
+      const items = [
+        'https://github.com/Ctrl-Zee',
+        'https://www.linkedin.com/in/andrew-smith-indy/',
+        'mailto:andrew.smith.indy@gmail.com',
+      ];
+      sfx.confirm();
+      window.open(items[cursor], '_blank', 'noopener,noreferrer');
+    } else if(screen==='secret'){
+      setSecret(false);
+      setScreen('home');
+      sfx.back();
+    } else {
+      sfx.confirm();
+    }
+  },[screen, cursor, goTo, sfx]);
+
+  const pressB = useCallback(()=>{
+    if(screen==='home'){ sfx.error(); return; }
+    if(screen==='secret'){ setSecret(false); setScreen('home'); setStack([]); sfx.back(); return; }
+    goBack();
+  },[screen, goBack, sfx]);
+
+  // konami detection
+  const checkKonami = useCallback((key)=>{
+    const buf = konamiBuf.current;
+    buf.push(key);
+    if(buf.length > KONAMI.length) buf.shift();
+    if(buf.length === KONAMI.length && buf.every((k,i)=>k.toLowerCase()===KONAMI[i].toLowerCase())){
+      konamiBuf.current = [];
+      setKonamiOn(true);
+      setConfetti(true);
+      setSecret(true);
+      sfx.konami();
+      setTimeout(()=>setConfetti(false), 3200);
+    }
+  },[sfx]);
+
+  // visual press feedback
+  const flash = useCallback((id)=>{
+    setPressed(p=>({...p, [id]:true}));
+    setTimeout(()=>setPressed(p=>({...p, [id]:false})), 110);
+  },[]);
+
+  // synthetic button handlers (used by both keyboard + on-screen taps)
+  const handle = useCallback((btn)=>{
+    ensure();
+    flash(btn);
+    if(btn==='up')    { moveCursor(-1); checkKonami('ArrowUp'); }
+    else if(btn==='down') { moveCursor( 1); checkKonami('ArrowDown'); }
+    else if(btn==='left') { checkKonami('ArrowLeft');  if(screen==='projects'||screen==='contact'){ moveCursor(-1);} else { sfx.blip(); } }
+    else if(btn==='right'){ checkKonami('ArrowRight'); if(screen==='projects'||screen==='contact'){ moveCursor( 1);} else { sfx.blip(); } }
+    else if(btn==='a')    { checkKonami('a'); pressA(); }
+    else if(btn==='b')    { checkKonami('b'); pressB(); }
+    else if(btn==='start'){ sfx.confirm(); if(screen!=='home'){ setScreen('home'); setStack([]); setCursor(0);} }
+    else if(btn==='select'){ sfx.blip(); setMuted(m=>!m); }
+  },[moveCursor, pressA, pressB, sfx, ensure, flash, checkKonami, screen, setMuted]);
+
+  // keyboard listeners
+  useEffect(()=>{
+    const onKey = (e)=>{
+      const k = e.key;
+      const map = {
+        'ArrowUp':'up','ArrowDown':'down','ArrowLeft':'left','ArrowRight':'right',
+        'z':'a','Z':'a','Enter':'a',
+        'x':'b','X':'b','Backspace':'b',
+        'Enter ':'a',
+      };
+      let btn = map[k];
+      if(!btn){
+        if(k==='a' || k==='A') btn='a';
+        if(k==='b' || k==='B') btn='b';
+      }
+      if(btn){ e.preventDefault(); handle(btn); }
+    };
+    window.addEventListener('keydown', onKey);
+    return ()=>window.removeEventListener('keydown', onKey);
+  },[handle]);
+
+  // ambient
+  useEffect(()=>{
+    const id = setInterval(()=>setBootTick(t=>t+1), 1000);
+    return ()=>clearInterval(id);
+  },[]);
+
+  // render the active screen content
+  const renderLCD = ()=>{
+    if(orientation==='landscape'){
+      return <RotateScreen palette={palette}/>;
+    }
+    if(secret){
+      return (
+        <div className="absolute inset-0 flex flex-col items-center justify-center" style={{padding:14, textAlign:'center'}}>
+          <div className="pixel" style={{fontSize:10, color:palette.ink, letterSpacing:1, marginBottom:8}}>!! SECRET !!</div>
+          <div className="pixel" style={{fontSize:8, color:palette.hi, letterSpacing:1, lineHeight:1.7}}>
+            YOU FOUND<br/>THE CHEAT CODE.<br/><br/>+30 LIVES
+          </div>
+          <div className="pixel" style={{fontSize:6, color:palette.mid, marginTop:14, letterSpacing:1}}>Ⓐ OR Ⓑ TO RETURN</div>
+        </div>
+      );
+    }
+    switch(screen){
+      case 'home':     return <HomeScreen     cursor={cursor} palette={palette} />;
+      case 'about':    return <AboutScreen    palette={palette} scrollY={scrollMap.about} />;
+      case 'projects': return <ProjectsScreen cursor={cursor} palette={palette} scrollY={scrollMap.projects} />;
+      case 'resume':   return <ResumeScreen   palette={palette} scrollY={scrollMap.resume} downloadBlink={downloadBlink}/>;
+      case 'contact':  return <ContactScreen  cursor={cursor} palette={palette} />;
+      default:         return null;
+    }
+  };
+
+  // ---- Layout ----
+  // We render an SVG-ish chassis using flex/CSS. Single device that scales via container query.
+  return (
+    <div className="noselect" style={{minHeight:'100dvh', display:'flex', alignItems:'center', justifyContent:'center', position:'relative', zIndex:1, padding:'12px 16px'}}>
+      <Device
+        renderLCD={renderLCD}
+        handle={handle}
+        pressed={pressed}
+        muted={muted}
+        confetti={confetti}
+        konamiOn={konamiOn}
+        palette={palette}
+      />
+      <Footer/>
+    </div>
+  );
+}
+
+function Footer(){
+  return (
+    <div style={{position:'fixed', bottom:8, left:0, right:0, textAlign:'center', zIndex:2, pointerEvents:'none'}}>
+      <span className="pixel" style={{fontSize:8, color:'rgba(255,255,255,.95)', letterSpacing:2, background:'rgba(20,10,40,.55)', padding:'4px 10px', borderRadius:4}}>
+        ▲▼◀▶ MOVE · Z=A · X=B · ENTER=SELECT
+      </span>
+    </div>
+  );
+}
+
+// ---- Device (chassis + controls) ----
+function Device({ renderLCD, handle, pressed, muted, confetti, palette }){
+  // Use a CSS variable-driven scale: full-bleed on mobile, bounded on desktop.
+  return (
+    <div
+      className="chassis"
+      style={{
+        width: 'min(94vw, 420px)',
+        height: 'min(96dvh, 720px)',
+        borderRadius: '28px 28px 56px 28px',
+        position:'relative',
+        padding: '8px 22px 22px',
+        display:'flex', flexDirection:'column',
+      }}
+    >
+      {/* Screen area (flex-grow within remaining space) */}
+      <ScreenArea renderLCD={renderLCD} confetti={confetti} palette={palette} muted={muted}/>
+
+      {/* Rainbow wordmark below screen, aligned over A/B buttons */}
+      <div style={{flexShrink:0, marginTop:10, textAlign:'center'}}>
+        <span className="pixel" style={{fontSize:13, letterSpacing:2, fontWeight:'bold', textShadow:'1px 1px 0 rgba(0,0,0,.25)'}}>
+          <span style={{color:'#e74c3c'}}>P</span>
+          <span style={{color:'#f39c12'}}>O</span>
+          <span style={{color:'#f1c40f'}}>C</span>
+          <span style={{color:'#27ae60'}}>K</span>
+          <span style={{color:'#2980b9'}}>E</span>
+          <span style={{color:'#8e44ad'}}>T</span>
+          <span style={{color:'#1f2d18'}}>{'\u00A0'}</span>
+          <span style={{color:'#e74c3c'}}>D</span>
+          <span style={{color:'#f39c12'}}>E</span>
+          <span style={{color:'#27ae60'}}>V</span>
+        </span>
+      </div>
+
+      {/* Controls (D-pad + A/B) up first */}
+      <div style={{
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        marginTop:10, paddingLeft:4, paddingRight:4, flexShrink:0,
+        gap:12,
+      }}>
+        <DPad handle={handle} pressed={pressed}/>
+        <ABButtons handle={handle} pressed={pressed}/>
+      </div>
+
+      {/* Start / Select below the controls */}
+      <div style={{
+        display:'flex', justifyContent:'center', gap:24,
+        marginTop:14, flexShrink:0,
+      }}>
+        <PillButton label="SELECT" onPress={()=>handle('select')} pressed={pressed['select']}/>
+        <PillButton label="START"  onPress={()=>handle('start')}  pressed={pressed['start']}/>
+      </div>
+
+      {/* Speaker grill */}
+      <div style={{
+        position:'absolute', right:36, bottom:24,
+        pointerEvents:'none',
+      }}>
+        <div className="grill" style={{width:64, height:44, transform:'rotate(-22deg)'}}/>
+      </div>
+
+      {/* Volume wheel on left edge */}
+      <div style={{
+        position:'absolute', left:'-6px', top:'24%',
+        width:'10px', height:'52px', borderRadius:'4px',
+        background:'linear-gradient(180deg,#1a1224 0%, #2a1c40 100%)',
+        boxShadow:'inset 0 0 4px rgba(0,0,0,.6), 1px 0 2px rgba(0,0,0,.3)',
+      }}>
+        <div className="wheel-ridge" style={{position:'absolute', inset:'4px 2px', borderRadius:2}}/>
+      </div>
+
+      {/* Mute icon near volume wheel */}
+      <button
+        onClick={()=>handle('select')}
+        title={muted ? 'Unmute (SELECT)' : 'Mute (SELECT)'}
+        className="pixel"
+        style={{
+          position:'absolute', left:'4%', top:'26%',
+          background:'rgba(40,20,70,.18)',
+          border:'1px solid rgba(40,20,70,.35)',
+          borderRadius:4, padding:'3px 5px',
+          fontSize:8, color:'rgba(40,20,60,.85)',
+          cursor:'pointer',
+        }}>
+        {muted ? '🔇' : '🔊'}
+      </button>
+    </div>
+  );
+}
+
+function ScreenArea({ renderLCD, confetti, palette, muted }){
+  return (
+    <div style={{
+      marginTop:8,
+      padding:'10px 14px 14px',
+      borderRadius:14,
+      background:'linear-gradient(180deg,#d7c5ec 0%, #b89cdf 100%)',
+      boxShadow:'inset 0 2px 0 rgba(255,255,255,.5), inset 0 -2px 4px rgba(40,20,70,.35)',
+      position:'relative',
+      flex:'1 1 auto',
+      display:'flex', flexDirection:'column',
+      minHeight:0,
+    }}>
+      {/* power LED + label */}
+      <div style={{display:'flex', alignItems:'center', gap:8, marginBottom:6, paddingLeft:4, flexShrink:0}}>
+        <span className="led" />
+        <span className="pixel engraved" style={{fontSize:7, letterSpacing:2}}>POWER</span>
+        <span style={{flex:1}}/>
+        {muted && <span className="pixel" style={{fontSize:7, color:'rgba(40,20,60,.7)', letterSpacing:1}}>● MUTE</span>}
+      </div>
+
+      <div className="bezel" style={{borderRadius:8, padding:8, flex:'1 1 auto', display:'flex', minHeight:0}}>
+        <div className="lcd" style={{
+          flex:'1 1 auto',
+          width:'100%',
+          borderRadius:4,
+          position:'relative',
+          minHeight:0,
+        }}>
+          {renderLCD()}
+          {confetti && <Confetti palette={palette}/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DPad({ handle, pressed }){
+  const arm = (dir, style)=>(
+    <button
+      aria-label={dir}
+      onMouseDown={()=>handle(dir)}
+      onTouchStart={(e)=>{ e.preventDefault(); handle(dir); }}
+      className={`dpad-arm ${pressed[dir]?'pressed':''}`}
+      style={{
+        position:'absolute', border:'none', cursor:'pointer',
+        ...style,
+      }}
+    />
+  );
+  return (
+    <div style={{position:'relative', width:'clamp(80px, 26%, 110px)', aspectRatio:'1/1', flexShrink:0}}>
+      <div className="dpad-base" style={{position:'absolute', inset:0, borderRadius:'12px', clipPath:'polygon(34% 0, 66% 0, 66% 34%, 100% 34%, 100% 66%, 66% 66%, 66% 100%, 34% 100%, 34% 66%, 0 66%, 0 34%, 34% 34%)'}}/>
+      {arm('up',    {top:0, left:'34%', width:'32%', height:'34%', borderRadius:'8px 8px 0 0'})}
+      {arm('down',  {bottom:0, left:'34%', width:'32%', height:'34%', borderRadius:'0 0 8px 8px'})}
+      {arm('left',  {top:'34%', left:0, width:'34%', height:'32%', borderRadius:'8px 0 0 8px'})}
+      {arm('right', {top:'34%', right:0, width:'34%', height:'32%', borderRadius:'0 8px 8px 0'})}
+      {/* center cap */}
+      <div style={{position:'absolute', top:'34%', left:'34%', width:'32%', height:'32%', background:'#0e0818', boxShadow:'inset 0 0 4px rgba(0,0,0,.6)'}}/>
+    </div>
+  );
+}
+
+function ABButtons({ handle, pressed }){
+  return (
+    <div style={{
+      display:'flex', alignItems:'center', gap:14,
+      transform:'rotate(-18deg)',
+      justifyContent:'flex-end', flexShrink:0,
+    }}>
+      <div style={{textAlign:'center'}}>
+        <button
+          aria-label="B"
+          onMouseDown={()=>handle('b')}
+          onTouchStart={(e)=>{ e.preventDefault(); handle('b'); }}
+          className={`ab-btn ${pressed['b']?'pressed':''}`}
+          style={{width:44, height:44, borderRadius:'50%', border:'none', cursor:'pointer'}}
+        />
+        <div className="pixel engraved" style={{fontSize:8, marginTop:6, transform:'rotate(18deg)'}}>B</div>
+      </div>
+      <div style={{textAlign:'center'}}>
+        <button
+          aria-label="A"
+          onMouseDown={()=>handle('a')}
+          onTouchStart={(e)=>{ e.preventDefault(); handle('a'); }}
+          className={`ab-btn ${pressed['a']?'pressed':''}`}
+          style={{width:48, height:48, borderRadius:'50%', border:'none', cursor:'pointer'}}
+        />
+        <div className="pixel engraved" style={{fontSize:8, marginTop:6, transform:'rotate(18deg)'}}>A</div>
+      </div>
+    </div>
+  );
+}
+
+function PillButton({ label, onPress, pressed }){
+  return (
+    <div style={{textAlign:'center', transform:'rotate(-18deg)'}}>
+      <button
+        onMouseDown={onPress}
+        onTouchStart={(e)=>{ e.preventDefault(); onPress(); }}
+        className={`pill ${pressed?'pressed':''}`}
+        style={{
+          width:54, height:14, borderRadius:8, border:'none', cursor:'pointer',
+        }}
+      />
+      <div className="pixel engraved" style={{fontSize:7, letterSpacing:1.5, marginTop:6}}>{label}</div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
