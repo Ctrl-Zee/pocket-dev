@@ -6,10 +6,10 @@ const homeMenuItems = [
   { label: 'Projects', href: '/projects' },
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
-]
+] as const
 
-const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV']
-const speakerSlotIds = ['slot-1', 'slot-2', 'slot-3', 'slot-4', 'slot-5']
+const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
+const speakerSlotCount = 5
 
 export function HomePage() {
   return (
@@ -91,8 +91,8 @@ function DeviceSystemControls() {
         <span className="pill" aria-label="Start" />
       </div>
       <div className="speaker-grill" aria-label="Speaker grill">
-        {speakerSlotIds.map((slotId) => (
-          <span key={slotId} />
+        {Array.from({ length: speakerSlotCount }, (_, slotIndex) => (
+          <span key={slotIndex} />
         ))}
       </div>
     </section>
