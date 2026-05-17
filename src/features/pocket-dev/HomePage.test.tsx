@@ -56,6 +56,15 @@ function getExpectedContactWindowTarget(href: string) {
   return href.startsWith('mailto:') || href.startsWith('tel:') ? '_self' : '_blank'
 }
 
+function getCssRule(selector: string) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const rule = pocketDevCss.match(new RegExp(`${escapedSelector}\\s*{[^}]*}`, 's'))?.[0]
+
+  expect(rule).toBeDefined()
+
+  return rule ?? ''
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const router = createRouter({
@@ -307,14 +316,14 @@ describe('Pocket Dev responsive styles', () => {
   })
 
   it('scales the desktop Device above the original handheld size while keeping viewport bounds', () => {
-    const desktopDeviceRule = pocketDevCss.match(/\.pocket-dev-device\s*{[^}]*}/s)?.[0]
+    const desktopDeviceRule = getCssRule('.pocket-dev-device')
 
     expect(desktopDeviceRule).toContain('width: min(94vw, 500px);')
     expect(desktopDeviceRule).toContain('height: min(96dvh, 780px);')
   })
 
   it('keeps the Device shell free of lower decorative artifacts', () => {
-    const shellDecorationRule = pocketDevCss.match(/\.pocket-dev-device::before\s*{[^}]*}/s)?.[0]
+    const shellDecorationRule = getCssRule('.pocket-dev-device::before')
 
     expect(shellDecorationRule).toContain('70% 22% / 64px 42px no-repeat')
     expect(shellDecorationRule).toContain('repeating-linear-gradient(0deg')
