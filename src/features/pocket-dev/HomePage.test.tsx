@@ -199,6 +199,24 @@ function expectSelectedHomeMenuLink(label: string) {
   expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
 }
 
+function expectSnakeHeadCell(lcd: HTMLElement, row: number, column: number) {
+  expect(
+    within(lcd).getByRole('gridcell', {
+      name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
+    }),
+  ).toBeInTheDocument()
+}
+
+function pressHardwareButton(name: RegExp) {
+  fireEvent.click(screen.getByRole('button', { name }))
+}
+
+function advanceSnakeTimer(milliseconds = 450) {
+  act(() => {
+    vi.advanceTimersByTime(milliseconds)
+  })
+}
+
 async function enterKonamiSequence(user: TestUser) {
   const pressControl = async (name: RegExp) => {
     await user.click(screen.getByRole('button', { name }))
@@ -557,19 +575,13 @@ describe('Home route', () => {
 
     const lcd = await openHiddenSnake(user)
 
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 5/i }),
-    ).toBeInTheDocument()
+    expectSnakeHeadCell(lcd, 3, 5)
 
     vi.useFakeTimers()
-    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
-    act(() => {
-      vi.advanceTimersByTime(450)
-    })
+    pressHardwareButton(/^a$/i)
+    advanceSnakeTimer()
 
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
-    ).toBeInTheDocument()
+    expectSnakeHeadCell(lcd, 3, 6)
   })
 
   it('uses D-pad direction for hidden SNAKE movement without changing the route', async () => {
@@ -577,17 +589,13 @@ describe('Home route', () => {
     const lcd = await openHiddenSnake(user)
 
     vi.useFakeTimers()
-    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
-    fireEvent.click(screen.getByRole('button', { name: /down/i }))
-    act(() => {
-      vi.advanceTimersByTime(450)
-    })
+    pressHardwareButton(/^a$/i)
+    pressHardwareButton(/down/i)
+    advanceSnakeTimer()
 
     expect(router.state.location.pathname).toBe('/')
     expect(within(lcd).getByText(/dir down/i)).toBeInTheDocument()
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 4 column 5/i }),
-    ).toBeInTheDocument()
+    expectSnakeHeadCell(lcd, 4, 5)
   })
 
   it('pauses hidden SNAKE movement with Start and resumes with A', async () => {
@@ -595,31 +603,19 @@ describe('Home route', () => {
     const lcd = await openHiddenSnake(user)
 
     vi.useFakeTimers()
-    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
-    act(() => {
-      vi.advanceTimersByTime(450)
-    })
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
-    ).toBeInTheDocument()
+    pressHardwareButton(/^a$/i)
+    advanceSnakeTimer()
+    expectSnakeHeadCell(lcd, 3, 6)
 
-    fireEvent.click(screen.getByRole('button', { name: /start/i }))
-    act(() => {
-      vi.advanceTimersByTime(900)
-    })
+    pressHardwareButton(/start/i)
+    advanceSnakeTimer(900)
     expect(within(lcd).getByText(/paused/i)).toBeInTheDocument()
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
-    ).toBeInTheDocument()
+    expectSnakeHeadCell(lcd, 3, 6)
 
-    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
-    act(() => {
-      vi.advanceTimersByTime(450)
-    })
+    pressHardwareButton(/^a$/i)
+    advanceSnakeTimer()
 
-    expect(
-      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 7/i }),
-    ).toBeInTheDocument()
+    expectSnakeHeadCell(lcd, 3, 7)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

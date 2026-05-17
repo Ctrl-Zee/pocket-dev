@@ -1,14 +1,17 @@
+import { clsx } from 'clsx'
 import { LcdPage } from '@/components/lcd'
-import { snakeBoard, type SnakeCell, type SnakeGameState } from '../snake/snakeGame'
+import {
+  getSnakeCellKey,
+  isSameSnakeCell,
+  snakeBoard,
+  snakeBoardCells,
+  type SnakeCell,
+  type SnakeGameState,
+} from '../snake/snakeGame'
 
 interface SecretSnakePageProps {
   game: SnakeGameState
 }
-
-const snakeBoardCells = Array.from({ length: snakeBoard.rows * snakeBoard.columns }, (_, index) => ({
-  row: Math.floor(index / snakeBoard.columns) + 1,
-  column: (index % snakeBoard.columns) + 1,
-}))
 
 export function SecretSnakePage({ game }: SecretSnakePageProps) {
   return (
@@ -22,10 +25,12 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
           role="grid"
         >
           {snakeBoardCells.map((cell) => {
-            const snakeSegmentIndex = game.snake.findIndex((segment) => isSameCell(segment, cell))
+            const snakeSegmentIndex = game.snake.findIndex((segment) =>
+              isSameSnakeCell(segment, cell),
+            )
             const isSnakeSegment = snakeSegmentIndex >= 0
             const isSnakeHead = snakeSegmentIndex === 0
-            const isFood = isSameCell(game.food, cell)
+            const isFood = isSameSnakeCell(game.food, cell)
 
             return (
               <span
@@ -33,7 +38,7 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
                 aria-label={getSnakeCellLabel(cell, snakeSegmentIndex, isFood)}
                 aria-rowindex={cell.row}
                 className={getSnakeCellClassName(isSnakeSegment, isSnakeHead, isFood)}
-                key={`${cell.row}-${cell.column}`}
+                key={getSnakeCellKey(cell)}
                 role="gridcell"
               />
             )
@@ -50,14 +55,12 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
 }
 
 function getSnakeCellClassName(isSnakeSegment: boolean, isSnakeHead: boolean, isFood: boolean) {
-  return [
+  return clsx(
     'snake-game-cell',
-    isSnakeSegment ? 'snake-game-segment' : '',
-    isSnakeHead ? 'snake-game-head' : '',
-    isFood ? 'snake-game-food' : '',
-  ]
-    .filter(Boolean)
-    .join(' ')
+    isSnakeSegment && 'snake-game-segment',
+    isSnakeHead && 'snake-game-head',
+    isFood && 'snake-game-food',
+  )
 }
 
 function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: boolean) {
@@ -70,8 +73,4 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 
 function getSnakeStatusLabel(status: SnakeGameState['status']) {
   return status === 'game-over' ? 'GAME OVER' : status.toUpperCase()
-}
-
-function isSameCell(firstCell: SnakeCell, secondCell: SnakeCell) {
-  return firstCell.row === secondCell.row && firstCell.column === secondCell.column
 }

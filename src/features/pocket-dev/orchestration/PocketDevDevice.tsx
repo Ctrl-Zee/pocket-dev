@@ -113,17 +113,17 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     ],
   )
 
-  const toggleSnakeStatus = useCallback(() => {
+  const toggleSnakeGameStatus = useCallback(() => {
     setSnakeGame(toggleSnakeGame)
   }, [])
 
-  const resetSnakeShell = useCallback(() => {
+  const resetSnakeGame = useCallback(() => {
     setSnakeGame(createInitialSnakeGame)
   }, [])
 
   const activateSelection = useCallback(() => {
     if (isShowingSnake) {
-      toggleSnakeStatus()
+      toggleSnakeGameStatus()
       playDeviceSfx('confirm')
       return
     }
@@ -164,13 +164,13 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     navigate,
     playDeviceSfx,
     trackKonamiInput,
-    toggleSnakeStatus,
+    toggleSnakeGameStatus,
   ])
 
   const returnHome = useCallback(() => {
     if (isShowingSnake) {
       setIsShowingSnake(false)
-      resetSnakeShell()
+      resetSnakeGame()
       playDeviceSfx('back')
       void navigate({ to: '/' })
       return
@@ -181,15 +181,15 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     setIsShowingSnakeUnlock(false)
     playDeviceSfx('back')
     void navigate({ to: '/' })
-  }, [isShowingSnake, navigate, playDeviceSfx, resetSnakeShell, trackKonamiInput])
+  }, [isShowingSnake, navigate, playDeviceSfx, resetSnakeGame, trackKonamiInput])
 
   const openSnake = useCallback(() => {
     if (!isSnakeUnlocked) return
 
     setIsShowingSnakeUnlock(false)
-    resetSnakeShell()
+    resetSnakeGame()
     setIsShowingSnake(true)
-  }, [isSnakeUnlocked, resetSnakeShell])
+  }, [isSnakeUnlocked, resetSnakeGame])
 
   const handleSelect = useCallback(() => {
     playDeviceSfx('select')
@@ -198,13 +198,13 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
   const handleStart = useCallback(() => {
     if (isShowingSnake) {
-      toggleSnakeStatus()
+      toggleSnakeGameStatus()
       playDeviceSfx('start')
       return
     }
 
     playDeviceSfx('start')
-  }, [isShowingSnake, playDeviceSfx, toggleSnakeStatus])
+  }, [isShowingSnake, playDeviceSfx, toggleSnakeGameStatus])
 
   useDeviceKeyboardControls({ activateSelection, moveSelection, returnHome })
 

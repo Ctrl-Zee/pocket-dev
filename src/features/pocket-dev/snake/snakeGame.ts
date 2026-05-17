@@ -21,6 +21,11 @@ export const snakeBoard = {
   columns: 10,
 } as const
 
+export const snakeBoardCells = Array.from(
+  { length: snakeBoard.rows * snakeBoard.columns },
+  (_, index) => getCellFromIndex(index),
+)
+
 export const snakeTickMs = 400
 
 const initialDirection: DeviceMoveDirection = 'right'
@@ -64,25 +69,39 @@ export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
   if (currentGame.status !== 'running') return currentGame
 
   const nextHead = getNextHead(currentGame.snake[0], currentGame.direction)
-  const willEatFood = isSameCell(nextHead, currentGame.food)
+  const willEatFood = isSameSnakeCell(nextHead, currentGame.food)
   const collisionSegments = willEatFood ? currentGame.snake : currentGame.snake.slice(0, -1)
 
-  if (!isInsideBoard(nextHead) || collisionSegments.some((segment) => isSameCell(segment, nextHead))) {
+  if (
+    !isInsideBoard(nextHead) ||
+    collisionSegments.some((segment) => isSameSnakeCell(segment, nextHead))
+  ) {
     return { ...currentGame, status: 'game-over' }
   }
 
-  const nextSnake = willEatFood
-    ? [nextHead, ...currentGame.snake]
-    : [nextHead, ...currentGame.snake.slice(0, -1)]
+  const nextSnake = getNextSnake(currentGame.snake, nextHead, willEatFood)
 
   return {
     ...currentGame,
-    direction: currentGame.direction,
     lastDirection: currentGame.direction,
     snake: nextSnake,
     food: willEatFood ? placeNextFood(nextSnake, currentGame.food) : currentGame.food,
     score: currentGame.score + (willEatFood ? 1 : 0),
   }
+}
+
+export function getSnakeCellKey(cell: SnakeCell) {
+  return `${cell.row}:${cell.column}`
+}
+
+export function isSameSnakeCell(firstCell: SnakeCell, secondCell: SnakeCell) {
+  return firstCell.row === secondCell.row && firstCell.column === secondCell.column
+}
+
+function getNextSnake(snake: SnakeCell[], nextHead: SnakeCell, shouldGrow: boolean) {
+  if (shouldGrow) return [nextHead, ...snake]
+
+  return [nextHead, ...snake.slice(0, -1)]
 }
 
 function getNextHead(head: SnakeCell, direction: DeviceMoveDirection): SnakeCell {
@@ -99,14 +118,14 @@ function getNextHead(head: SnakeCell, direction: DeviceMoveDirection): SnakeCell
 }
 
 function placeNextFood(snake: SnakeCell[], previousFood: SnakeCell): SnakeCell {
-  const occupiedCells = new Set(snake.map(getCellKey))
-  const totalCells = snakeBoard.rows * snakeBoard.columns
+  const occupiedCells = new Set(snake.map(getSnakeCellKey))
+  const totalCells = snakeBoardCells.length
   const startIndex = getCellIndex(previousFood)
 
   for (let offset = 1; offset <= totalCells; offset += 1) {
     const candidate = getCellFromIndex((startIndex + offset) % totalCells)
 
-    if (!occupiedCells.has(getCellKey(candidate))) return candidate
+    if (!occupiedCells.has(getSnakeCellKey(candidate))) return candidate
   }
 
   return previousFood
@@ -123,10 +142,6 @@ function getCellFromIndex(index: number): SnakeCell {
   }
 }
 
-function getCellKey(cell: SnakeCell) {
-  return `${cell.row}:${cell.column}`
-}
-
 function isInsideBoard(cell: SnakeCell) {
   return (
     cell.row >= 1 &&
@@ -134,10 +149,6 @@ function isInsideBoard(cell: SnakeCell) {
     cell.column >= 1 &&
     cell.column <= snakeBoard.columns
   )
-}
-
-function isSameCell(firstCell: SnakeCell, secondCell: SnakeCell) {
-  return firstCell.row === secondCell.row && firstCell.column === secondCell.column
 }
 
 function areOppositeDirections(
