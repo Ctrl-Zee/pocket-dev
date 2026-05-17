@@ -1,4 +1,4 @@
-import { resumeContent } from './resumeContent'
+import { resumeContent, type ProjectEntry } from './resumeContent'
 
 const expectedSkillNames = [
   'React',
@@ -23,6 +23,20 @@ const placeholderProjectNames = [
   'placeholder',
   'todo',
 ]
+
+function getProjectByName(projectName: string): ProjectEntry {
+  const project = resumeContent.projects.find(
+    ({ name }) => name === projectName,
+  )
+
+  expect(project).toBeDefined()
+
+  if (!project) {
+    throw new Error(`Expected project "${projectName}" to exist.`)
+  }
+
+  return project
+}
 
 describe('resumeContent', () => {
   it('exports curated factual resume data for Pocket Dev pages', () => {
@@ -86,18 +100,16 @@ describe('resumeContent', () => {
   })
 
   it('keeps the public-sector PEBT scale fact with the project entry', () => {
-    const pebtProject = resumeContent.projects.find((project) =>
-      project.name.includes('PEBT'),
+    const pebtProject = getProjectByName(
+      'Family and Social Services Administration / PEBT',
     )
 
-    expect(pebtProject?.highlights).toContain('Served 20K families.')
+    expect(pebtProject.highlights).toContain('Served 20K families.')
   })
 
   it('keeps the Benesys enterprise scale fact with the project entry', () => {
-    const benesysProject = resumeContent.projects.find(
-      (project) => project.name === 'Benesys',
-    )
+    const benesysProject = getProjectByName('Benesys')
 
-    expect(benesysProject?.highlights).toContain('Supported 100+ clients.')
+    expect(benesysProject.highlights).toContain('Supported 100+ clients.')
   })
 })

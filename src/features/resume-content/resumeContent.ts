@@ -239,4 +239,4 @@ export const resumeContent = {
       href: 'tel:+13172608411',
     },
   ],
-} satisfies ResumeContent
+} as const satisfies ResumeContent
