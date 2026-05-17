@@ -9,7 +9,6 @@ import { routeTree } from '@/routeTree.gen'
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
 const expectedPlaceholderRoutedPages = [
-  { path: '/resume', heading: /resume/i, content: /formal resume/i },
   { path: '/contact', heading: /contact/i, content: /contact links/i },
 ] as const
 const expectedWorkContent = [
@@ -203,5 +202,27 @@ describe('Projects route', () => {
     })
 
     expect(within(lcd).queryByText(/placeholder/i)).not.toBeInTheDocument()
+  })
+})
+
+describe('Resume route', () => {
+  it('renders a compact Resume Page with an Open PDF action', async () => {
+    renderRoute('/resume')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    expect(within(lcd).getByRole('heading', { name: /resume/i })).toBeInTheDocument()
+    expect(within(lcd).getByText(/andrew smith/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^software engineer$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/indianapolis, indiana/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/react \/ angular \/ javascript/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/responsive web design \/ \.net \/ azure/i)).toBeInTheDocument()
+
+    const openPdfLink = within(lcd).getByRole('link', { name: /open pdf/i })
+    expect(openPdfLink).toHaveAttribute('href', '/assets/Andrew_Smith_Resume.pdf')
+    expect(openPdfLink).toHaveAttribute('target', '_blank')
+    expect(openPdfLink).toHaveAttribute('rel', 'noreferrer')
+    expect(openPdfLink).not.toHaveAttribute('download')
   })
 })

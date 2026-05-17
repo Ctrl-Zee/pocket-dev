@@ -19,6 +19,11 @@ const lastHomeMenuIndex = homeMenuItems.length - 1
 type HomeSelectionDelta = -1 | 1
 const workExperienceHighlightLimit = 3
 const workSoftCompetencyLimit = 4
+const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
+const resumePreviewSkillRows = [
+  resumeContent.skills.slice(0, 3).map((skill) => skill.name),
+  resumeContent.skills.slice(3, 6).map((skill) => skill.name),
+] as const
 
 const dpadButtons = [
   { label: 'Up', className: 'dpad-button-up', delta: -1 },
@@ -28,7 +33,6 @@ const dpadButtons = [
 ] as const
 
 const placeholderPageContent = {
-  Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
   Contact:
     'Contact links placeholder for Contact Page. This LCD Page will expose email and profile links.',
 } as const
@@ -245,7 +249,42 @@ export function ProjectsPage() {
 }
 
 export function ResumePage() {
-  return <PlaceholderPage title="Resume" />
+  const { identity, highlights } = resumeContent
+
+  return (
+    <LcdPage title="Resume">
+      <div className="resume-page">
+        <section className="resume-preview" aria-label="Compact resume preview">
+          <div className="resume-preview-header">
+            <p className="resume-preview-name">{identity.name}</p>
+            <p>{identity.publicTitle}</p>
+            <p>{identity.location}</p>
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">SUMMARY</p>
+            <p>{identity.summary}</p>
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">TOOLS</p>
+            {resumePreviewSkillRows.map((skillRow) => (
+              <p key={skillRow.join('/')}>{skillRow.join(' / ')}</p>
+            ))}
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">SIGNAL</p>
+            <p>{highlights[0]}</p>
+          </div>
+        </section>
+
+        <a className="resume-open-pdf" href={resumePdfHref} target="_blank" rel="noreferrer">
+          OPEN PDF
+        </a>
+      </div>
+    </LcdPage>
+  )
 }
 
 export function ContactPage() {
