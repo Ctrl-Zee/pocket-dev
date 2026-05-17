@@ -146,11 +146,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   content: '';
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(31, 45, 24, 0.07) 0 1px,
-    transparent 1px 3px
-  );
+  background: repeating-linear-gradient(0deg, rgba(31, 45, 24, 0.07) 0 1px, transparent 1px 3px);
 }
 
 .lcd-screen::after {
@@ -195,6 +191,45 @@ body::before {
   margin: 0;
   font-size: 8px;
   line-height: 1.8;
+}
+
+.lcd-intro {
+  color: var(--lcd-mid);
+}
+
+.project-card-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.project-card {
+  padding: 7px;
+  border: 1px solid var(--lcd-mid);
+  background: rgba(219, 232, 200, 0.42);
+}
+
+.project-card h2 {
+  margin: 0 0 5px;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.project-card p {
+  font-size: 7px;
+  line-height: 1.7;
+}
+
+.project-card p + p {
+  margin-top: 5px;
+}
+
+.project-stack {
+  color: var(--lcd-mid);
+}
+
+.project-stack span {
+  color: var(--lcd-ink);
 }
 
 .home-wordmark {
@@ -314,7 +349,9 @@ body::before {
   position: absolute;
   content: '';
   background: #211a2b;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.14), 0 7px 0 rgba(20, 10, 34, 0.42);
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.14),
+    0 7px 0 rgba(20, 10, 34, 0.42);
 }
 
 .dpad::before {
@@ -346,7 +383,9 @@ body::before {
   background: #922144;
   color: rgba(255, 255, 255, 0.82);
   font: 700 12px var(--font-ui);
-  box-shadow: inset 0 5px 8px rgba(255, 255, 255, 0.18), 0 8px 0 #5f1731;
+  box-shadow:
+    inset 0 5px 8px rgba(255, 255, 255, 0.18),
+    0 8px 0 #5f1731;
 }
 
 .button-a {
@@ -382,7 +421,9 @@ body::before {
   height: 15px;
   border-radius: 999px;
   background: #5d5368;
-  box-shadow: inset 0 2px 3px rgba(255, 255, 255, 0.18), 0 4px 0 rgba(32, 20, 48, 0.5);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.18),
+    0 4px 0 rgba(32, 20, 48, 0.5);
 }
 
 .speaker-grill {
