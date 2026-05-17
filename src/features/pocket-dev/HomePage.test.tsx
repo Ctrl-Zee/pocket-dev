@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -168,6 +168,17 @@ describe('Home route', () => {
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
   })
 
+  it('returns from a top-level LCD Page to Home when the keyboard B key is pressed', async () => {
+    const { router, user } = renderRoute('/work')
+
+    await screen.findByRole('heading', { name: /work/i })
+    await user.keyboard('b')
+
+    expect(router.state.location.pathname).toBe('/')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+  })
+
   it('moves the Home selection with keyboard controls and activates it with Enter', async () => {
     const { router, user } = renderRoute('/')
 
@@ -177,6 +188,36 @@ describe('Home route', () => {
     expect(router.state.location.pathname).toBe('/work')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /work/i })).toBeInTheDocument()
+  })
+
+  it('activates the selected Home row when the keyboard A key is pressed', async () => {
+    const { router, user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    await user.keyboard('{ArrowDown}a')
+
+    expect(router.state.location.pathname).toBe('/work')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /work/i })).toBeInTheDocument()
+  })
+
+  it('ignores modified keyboard A and B shortcuts', async () => {
+    const homeView = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    fireEvent.keyDown(window, { key: 'a', ctrlKey: true })
+    fireEvent.keyDown(window, { key: 'A', metaKey: true })
+
+    expect(homeView.router.state.location.pathname).toBe('/')
+    homeView.unmount()
+
+    const pageView = renderRoute('/work')
+
+    await screen.findByRole('heading', { name: /work/i })
+    fireEvent.keyDown(window, { key: 'b', altKey: true })
+    fireEvent.keyDown(window, { key: 'B', ctrlKey: true })
+
+    expect(pageView.router.state.location.pathname).toBe('/work')
   })
 
   it('moves the Home selection with the D-pad and activates it with A', async () => {
