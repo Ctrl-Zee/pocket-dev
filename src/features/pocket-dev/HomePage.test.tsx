@@ -360,16 +360,16 @@ describe('Pocket Dev responsive styles', () => {
 
   it('centers Select and Start below the primary controls and anchors the speaker separately', () => {
     const systemRowRule = getCssRule('.system-row')
-    const pillsRule = getCssRule('.pills')
+    const systemButtonsRule = getCssRule('.system-buttons')
     const speakerRule = getCssRule('.speaker-grill')
 
     expect(systemRowRule).toContain('position: relative;')
     expect(systemRowRule).not.toContain('grid-template-columns: 1fr 1fr;')
 
-    expect(pillsRule).toContain('width: 100%;')
-    expect(pillsRule).toContain('justify-content: center;')
-    expect(pillsRule).toContain('gap: 24px;')
-    expect(pillsRule).toContain('transform: rotate(-18deg);')
+    expect(systemButtonsRule).toContain('width: 100%;')
+    expect(systemButtonsRule).toContain('justify-content: center;')
+    expect(systemButtonsRule).toContain('gap: 24px;')
+    expect(systemButtonsRule).toContain('transform: rotate(-18deg);')
 
     expect(speakerRule).toContain('position: absolute;')
     expect(speakerRule).toContain('right: 13px;')

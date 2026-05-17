@@ -57,9 +57,9 @@ export function DeviceControls({ onActivate, onMove, onReturnHome }: DeviceContr
 export function DeviceSystemControls() {
   return (
     <section className="system-row" aria-label="Device system controls">
-      <div className="pills" aria-label="Select and Start buttons">
-        <span className="pill" aria-label="Select" />
-        <span className="pill" aria-label="Start" />
+      <div className="system-buttons" aria-label="Select and Start buttons">
+        <span className="system-button" aria-label="Select" />
+        <span className="system-button" aria-label="Start" />
       </div>
       <div className="speaker-grill" aria-label="Speaker grill">
         {Array.from({ length: speakerSlotCount }, (_, slotIndex) => (

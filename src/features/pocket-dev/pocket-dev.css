@@ -687,10 +687,9 @@ body::before {
 
 .system-row {
   position: relative;
-  display: block;
 }
 
-.pills {
+.system-buttons {
   display: flex;
   width: 100%;
   gap: 24px;
@@ -698,7 +697,7 @@ body::before {
   transform: rotate(-18deg);
 }
 
-.pill {
+.system-button {
   width: 54px;
   height: 15px;
   border-radius: 999px;
@@ -820,7 +819,7 @@ body::before {
     top: 44px;
   }
 
-  .pill {
+  .system-button {
     width: 48px;
     height: 14px;
   }
