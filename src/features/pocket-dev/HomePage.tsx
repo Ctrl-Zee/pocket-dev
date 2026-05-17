@@ -12,16 +12,32 @@ const homeMenuItems = [
 const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
 
-interface PocketDevDeviceProps {
+const placeholderPageContent = {
+  About:
+    'Andrew Smith is a Software Engineer. Placeholder About Page content will introduce the person inside this LCD.',
+  Work: 'Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and professional history.',
+  Projects:
+    'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
+  Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
+  Contact:
+    'Contact links placeholder for Contact Page. This LCD Page will expose email and profile links.',
+} as const
+
+type PlaceholderPageTitle = keyof typeof placeholderPageContent
+
+interface ChildrenProps {
   children: ReactNode
 }
 
-interface LcdPageProps {
+interface LcdPageProps extends ChildrenProps {
   title: string
-  children: ReactNode
 }
 
-export function PocketDevDevice({ children }: PocketDevDeviceProps) {
+interface PlaceholderPageProps {
+  title: PlaceholderPageTitle
+}
+
+export function PocketDevDevice({ children }: ChildrenProps) {
   return (
     <div className="pocket-dev-stage">
       <main className="pocket-dev-device" aria-label="Pocket Dev Device">
@@ -60,50 +76,26 @@ export function HomePage() {
 }
 
 export function AboutPage() {
-  return (
-    <PlaceholderPage title="About">
-      Andrew Smith is a Software Engineer. Placeholder About Page content will introduce the
-      person inside this LCD.
-    </PlaceholderPage>
-  )
+  return <PlaceholderPage title="About" />
 }
 
 export function WorkPage() {
-  return (
-    <PlaceholderPage title="Work">
-      Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and
-      professional history.
-    </PlaceholderPage>
-  )
+  return <PlaceholderPage title="Work" />
 }
 
 export function ProjectsPage() {
-  return (
-    <PlaceholderPage title="Projects">
-      Selected projects placeholder for Projects Page. This LCD Page will list factual project
-      cards.
-    </PlaceholderPage>
-  )
+  return <PlaceholderPage title="Projects" />
 }
 
 export function ResumePage() {
-  return (
-    <PlaceholderPage title="Resume">
-      Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.
-    </PlaceholderPage>
-  )
+  return <PlaceholderPage title="Resume" />
 }
 
 export function ContactPage() {
-  return (
-    <PlaceholderPage title="Contact">
-      Contact links placeholder for Contact Page. This LCD Page will expose email and profile
-      links.
-    </PlaceholderPage>
-  )
+  return <PlaceholderPage title="Contact" />
 }
 
-function DeviceScreen({ children }: PocketDevDeviceProps) {
+function DeviceScreen({ children }: ChildrenProps) {
   return (
     <section className="lcd-bezel" aria-label="Device display bezel">
       <span className="power-led" aria-label="Power LED" />
@@ -124,11 +116,11 @@ function LcdPage({ title, children }: LcdPageProps) {
   )
 }
 
-function PlaceholderPage({ title, children }: LcdPageProps) {
+function PlaceholderPage({ title }: PlaceholderPageProps) {
   return (
     <LcdPage title={title}>
       <div className="lcd-page">
-        <p>{children}</p>
+        <p>{placeholderPageContent[title]}</p>
       </div>
     </LcdPage>
   )
