@@ -584,38 +584,36 @@ body::before {
   box-shadow: inset 0 0 0 2px var(--lcd-ink);
 }
 
-.snake-game-segment,
-.snake-game-food {
+.snake-game-cell {
+  position: relative;
+  display: grid;
+  width: 12px;
+  height: 12px;
+  place-items: center;
+}
+
+.snake-game-cell::before {
+  display: block;
   width: 10px;
   height: 10px;
-  align-self: center;
-  justify-self: center;
+  content: '';
+}
+
+.snake-game-segment::before {
   background: var(--lcd-ink);
 }
 
-.snake-game-segment:nth-child(1) {
-  grid-area: 3 / 5;
-}
-
-.snake-game-segment:nth-child(2) {
-  grid-area: 3 / 4;
-}
-
-.snake-game-segment:nth-child(3) {
-  grid-area: 3 / 3;
-}
-
 .snake-game-head::after {
-  display: block;
+  position: absolute;
+  top: 3px;
+  left: 7px;
   width: 2px;
   height: 2px;
-  margin: 2px 0 0 6px;
   content: '';
   background: var(--lcd-hi);
 }
 
-.snake-game-food {
-  grid-area: 5 / 8;
+.snake-game-food::before {
   background: var(--lcd-mid);
   animation: cursor-blink 0.7s steps(2, start) infinite;
 }

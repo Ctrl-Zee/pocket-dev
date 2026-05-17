@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -216,8 +216,18 @@ async function enterKonamiSequence(user: TestUser) {
   await pressControl(/^a$/i)
 }
 
-function renderRoute(path: string) {
-  const user = userEvent.setup()
+async function openHiddenSnake(user: TestUser) {
+  await screen.findByRole('heading', { name: /home/i })
+  await enterKonamiSequence(user)
+  await user.click(screen.getByRole('button', { name: /^b$/i }))
+
+  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+  await user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
+
+  return lcd
+}
+
+function renderRoute(path: string, user: TestUser = userEvent.setup()) {
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [path] }),
@@ -235,6 +245,7 @@ function stubAudioContext() {
 }
 
 afterEach(() => {
+  vi.useRealTimers()
   audioContextInstances.length = 0
   window.localStorage.clear()
   vi.clearAllMocks()
@@ -539,6 +550,76 @@ describe('Home route', () => {
       'data-selected',
       'true',
     )
+  })
+
+  it('starts hidden SNAKE and advances the head on a timer tick', async () => {
+    const { user } = renderRoute('/')
+
+    const lcd = await openHiddenSnake(user)
+
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 5/i }),
+    ).toBeInTheDocument()
+
+    vi.useFakeTimers()
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    act(() => {
+      vi.advanceTimersByTime(450)
+    })
+
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('uses D-pad direction for hidden SNAKE movement without changing the route', async () => {
+    const { router, user } = renderRoute('/')
+    const lcd = await openHiddenSnake(user)
+
+    vi.useFakeTimers()
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    fireEvent.click(screen.getByRole('button', { name: /down/i }))
+    act(() => {
+      vi.advanceTimersByTime(450)
+    })
+
+    expect(router.state.location.pathname).toBe('/')
+    expect(within(lcd).getByText(/dir down/i)).toBeInTheDocument()
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 4 column 5/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('pauses hidden SNAKE movement with Start and resumes with A', async () => {
+    const { user } = renderRoute('/')
+    const lcd = await openHiddenSnake(user)
+
+    vi.useFakeTimers()
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    act(() => {
+      vi.advanceTimersByTime(450)
+    })
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /start/i }))
+    act(() => {
+      vi.advanceTimersByTime(900)
+    })
+    expect(within(lcd).getByText(/paused/i)).toBeInTheDocument()
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 6/i }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    act(() => {
+      vi.advanceTimersByTime(450)
+    })
+
+    expect(
+      within(lcd).getByRole('gridcell', { name: /snake head row 3 column 7/i }),
+    ).toBeInTheDocument()
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
