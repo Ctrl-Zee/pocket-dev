@@ -328,6 +328,56 @@ body::before {
   color: var(--lcd-ink);
 }
 
+.contact-page {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.contact-list {
+  display: grid;
+  gap: 6px;
+}
+
+.contact-list a {
+  position: relative;
+  display: grid;
+  gap: 3px;
+  min-height: 40px;
+  padding: 7px 7px 7px 22px;
+  border: 1px solid var(--lcd-mid);
+  background: rgba(219, 232, 200, 0.42);
+  color: var(--lcd-ink);
+  text-decoration: none;
+}
+
+.contact-list a span {
+  color: var(--lcd-mid);
+  font-size: 6px;
+  line-height: 1.5;
+}
+
+.contact-list a strong {
+  overflow-wrap: anywhere;
+  font-size: 7px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.contact-list a.is-selected,
+.contact-list a:focus-visible,
+.contact-list a:hover {
+  background: var(--lcd-hi);
+}
+
+.contact-list a.is-selected::before {
+  position: absolute;
+  top: 13px;
+  left: 6px;
+  content: '>';
+  animation: cursor-blink 1s steps(2, start) infinite;
+}
+
 .resume-page {
   display: grid;
   height: 100%;
