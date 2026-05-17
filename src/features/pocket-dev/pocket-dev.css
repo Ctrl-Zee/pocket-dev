@@ -186,6 +186,17 @@ body::before {
   gap: 10px;
 }
 
+.lcd-page {
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.lcd-page p {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.8;
+}
+
 .home-wordmark {
   margin: 0;
   font-size: 13px;
