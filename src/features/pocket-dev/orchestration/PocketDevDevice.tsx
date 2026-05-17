@@ -20,10 +20,6 @@ interface PocketDevDeviceProps {
 }
 
 type KonamiInput = DeviceMoveDirection | 'a' | 'b'
-interface SecretLcdState {
-  isSnakeUnlocked: boolean
-  screen: 'snake-unlock' | null
-}
 
 const konamiSequence = [
   'up',
@@ -45,10 +41,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const isHomeRoute = location.pathname === '/'
   const isContactRoute = location.pathname === '/contact'
   const shouldShowRotatePrompt = useMobileLandscape()
-  const [secretLcdState, setSecretLcdState] = useState<SecretLcdState>({
-    isSnakeUnlocked: false,
-    screen: null,
-  })
+  const [isShowingSnakeUnlock, setIsShowingSnakeUnlock] = useState(false)
   const homeSelection = useLcdSelection(pageCatalog.length)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
     resetKey: isContactRoute ? location.pathname : undefined,
@@ -57,20 +50,14 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
   const trackKonamiInput = useCallback(
     (input: KonamiInput) => {
-      const progress = konamiProgressRef.current
-      const nextProgress =
-        input === konamiSequence[progress]
-          ? progress + 1
-          : input === konamiSequence[0]
-            ? 1
-            : 0
+      const nextProgress = getNextKonamiProgress(konamiProgressRef.current, input)
 
       konamiProgressRef.current = nextProgress
 
       if (nextProgress !== konamiSequence.length) return false
 
       konamiProgressRef.current = 0
-      setSecretLcdState({ isSnakeUnlocked: true, screen: 'snake-unlock' })
+      setIsShowingSnakeUnlock(true)
       playDeviceSfx('konami')
 
       return true
@@ -152,6 +139,16 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     [contactSelection, homeSelection],
   )
 
+  let lcdContent = children
+
+  if (isShowingSnakeUnlock) {
+    lcdContent = <SecretSnakeUnlockPage />
+  }
+
+  if (shouldShowRotatePrompt) {
+    lcdContent = <RotatePage />
+  }
+
   return (
     <div className="pocket-dev-stage">
       <DeviceNavigationContext.Provider value={deviceNavigation}>
@@ -163,17 +160,17 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
           onSelect={handleSelect}
           onStart={handleStart}
         >
-          {shouldShowRotatePrompt ? (
-            <RotatePage />
-          ) : secretLcdState.isSnakeUnlocked && secretLcdState.screen === 'snake-unlock' ? (
-            <SecretSnakeUnlockPage />
-          ) : (
-            children
-          )}
+          {lcdContent}
         </DeviceHardware>
       </DeviceNavigationContext.Provider>
 
       <p className="control-hint">ARROWS MOVE / ENTER A / ESC B</p>
     </div>
   )
+}
+
+function getNextKonamiProgress(currentProgress: number, input: KonamiInput) {
+  if (input === konamiSequence[currentProgress]) return currentProgress + 1
+  if (input === konamiSequence[0]) return 1
+  return 0
 }
