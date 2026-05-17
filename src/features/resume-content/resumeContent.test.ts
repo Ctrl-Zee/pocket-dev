@@ -45,6 +45,10 @@ describe('resumeContent', () => {
           label: 'Website',
           href: expect.stringContaining('andrewsmith.bio'),
         }),
+        expect.objectContaining({
+          label: 'Phone',
+          href: 'tel:+13172608411',
+        }),
       ]),
     )
 
