@@ -21,11 +21,11 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 ARG AGENT_UID=1000
 ARG AGENT_GID=1000
 
-# Rename the base image's "node" user to "agent" and align UID/GID.
+ # Rename the base image's "node" user to "agent" and align UID/GID.
 RUN usermod -u $AGENT_UID -d /home/agent -m -l agent node
 
-# Install pi coding agent (run as root before USER agent)
-RUN npm install -g @mariozechner/pi-coding-agent
+# Install Codex CLI (run as root before USER agent)
+RUN npm install -g @openai/codex
 
 USER ${AGENT_UID}:${AGENT_GID}
 

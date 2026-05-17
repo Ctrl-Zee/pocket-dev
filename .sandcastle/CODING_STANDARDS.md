@@ -1,4 +1,6 @@
-# Coding Standards
+# Architecture Reference
+
+---
 
 ## Stack
 

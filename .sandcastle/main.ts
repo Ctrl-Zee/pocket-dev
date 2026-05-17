@@ -67,10 +67,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     // One iteration is enough: the planner just needs to read and reason,
     // not write code.
     maxIterations: 1,
-    // Use the pi CLI installed by .sandcastle/Dockerfile.
-    // Thinking level is encoded in the pi model shorthand because sandcastle.pi()
-    // does not accept a provider-specific effort option.
-    agent: sandcastle.pi('openai/gpt-5.5:high'),
+    // Opus for planning: dependency analysis benefits from deeper reasoning.
+    agent: sandcastle.codex('gpt-5.4-mini'),
     promptFile: './.sandcastle/plan-prompt.md',
   })
 
@@ -120,7 +118,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
         const implement = await sandbox.run({
           name: 'implementer',
           maxIterations: 100,
-          agent: sandcastle.pi('openai/gpt-5.5:low'),
+          agent: sandcastle.codex('gpt-5.4-mini'),
           promptFile: './.sandcastle/implement-prompt.md',
           promptArgs: {
             TASK_ID: issue.id,
@@ -134,7 +132,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
           const review = await sandbox.run({
             name: 'reviewer',
             maxIterations: 1,
-            agent: sandcastle.pi('openai/gpt-5.5:low'),
+            agent: sandcastle.codex('gpt-5.4-mini'),
             promptFile: './.sandcastle/review-prompt.md',
             promptArgs: {
               BRANCH: issue.branch,
@@ -199,7 +197,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     sandbox: docker(),
     name: 'merger',
     maxIterations: 1,
-    agent: sandcastle.pi('openai/gpt-5.5:medium'),
+    agent: sandcastle.codex('gpt-5.4-mini'),
     promptFile: './.sandcastle/merge-prompt.md',
     promptArgs: {
       // A markdown list of branch names, one per line.
