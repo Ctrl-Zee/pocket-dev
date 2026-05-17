@@ -5,5 +5,3 @@ export const pageCatalog = [
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ] as const
-
-export type PageCatalogItem = (typeof pageCatalog)[number]

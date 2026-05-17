@@ -5,7 +5,6 @@ export interface LcdSelection {
   selectedIndex: number
   setSelectedIndex: (index: number) => void
   moveSelection: (delta: SelectionDelta) => void
-  resetSelection: () => void
 }
 
 interface LcdSelectionOptions {
@@ -17,24 +16,24 @@ interface LcdSelectionState {
   selectedIndex: number
 }
 
-const firstActionableRowIndex = 0
+const firstSelectableIndex = 0
 
 export function useLcdSelection(
-  actionableRowCount: number,
+  selectableItemCount: number,
   { resetKey }: LcdSelectionOptions = {},
 ): LcdSelection {
-  const lastActionableRowIndex = Math.max(firstActionableRowIndex, actionableRowCount - 1)
+  const lastSelectableIndex = Math.max(firstSelectableIndex, selectableItemCount - 1)
   const [selectionState, setSelectionState] = useState<LcdSelectionState>({
     appliedResetKey: resetKey,
-    selectedIndex: firstActionableRowIndex,
+    selectedIndex: firstSelectableIndex,
   })
   const shouldResetSelection =
     resetKey !== undefined && selectionState.appliedResetKey !== resetKey
   const shouldClearResetKey =
     resetKey === undefined && selectionState.appliedResetKey !== undefined
   const selectedIndex = shouldResetSelection
-    ? firstActionableRowIndex
-    : clampSelectionIndex(selectionState.selectedIndex, lastActionableRowIndex)
+    ? firstSelectableIndex
+    : clampSelectionIndex(selectionState.selectedIndex, lastSelectableIndex)
 
   if (shouldResetSelection || shouldClearResetKey) {
     setSelectionState({
@@ -47,18 +46,11 @@ export function useLcdSelection(
     (index: number) => {
       setSelectionState({
         appliedResetKey: resetKey,
-        selectedIndex: clampSelectionIndex(index, lastActionableRowIndex),
+        selectedIndex: clampSelectionIndex(index, lastSelectableIndex),
       })
     },
-    [lastActionableRowIndex, resetKey],
+    [lastSelectableIndex, resetKey],
   )
-
-  const resetSelection = useCallback(() => {
-    setSelectionState({
-      appliedResetKey: resetKey,
-      selectedIndex: firstActionableRowIndex,
-    })
-  }, [resetKey])
 
   const moveSelection = useCallback(
     (delta: SelectionDelta) => {
@@ -66,36 +58,35 @@ export function useLcdSelection(
         const hasPendingReset =
           resetKey !== undefined && currentState.appliedResetKey !== resetKey
         const currentIndex = hasPendingReset
-          ? firstActionableRowIndex
-          : clampSelectionIndex(currentState.selectedIndex, lastActionableRowIndex)
+          ? firstSelectableIndex
+          : clampSelectionIndex(currentState.selectedIndex, lastSelectableIndex)
 
         return {
           appliedResetKey: resetKey,
-          selectedIndex: getWrappedSelectionIndex(currentIndex, delta, lastActionableRowIndex),
+          selectedIndex: getWrappedSelectionIndex(currentIndex, delta, lastSelectableIndex),
         }
       })
     },
-    [lastActionableRowIndex, resetKey],
+    [lastSelectableIndex, resetKey],
   )
 
   return {
     selectedIndex,
     setSelectedIndex,
     moveSelection,
-    resetSelection,
   }
 }
 
 function getWrappedSelectionIndex(
   currentIndex: number,
   delta: SelectionDelta,
-  lastActionableRowIndex: number,
+  lastSelectableIndex: number,
 ) {
-  if (currentIndex === firstActionableRowIndex && delta < 0) return lastActionableRowIndex
-  if (currentIndex === lastActionableRowIndex && delta > 0) return firstActionableRowIndex
-  return clampSelectionIndex(currentIndex + delta, lastActionableRowIndex)
+  if (currentIndex === firstSelectableIndex && delta < 0) return lastSelectableIndex
+  if (currentIndex === lastSelectableIndex && delta > 0) return firstSelectableIndex
+  return clampSelectionIndex(currentIndex + delta, lastSelectableIndex)
 }
 
-function clampSelectionIndex(index: number, lastActionableRowIndex: number) {
-  return Math.min(Math.max(index, firstActionableRowIndex), lastActionableRowIndex)
+function clampSelectionIndex(index: number, lastSelectableIndex: number) {
+  return Math.min(Math.max(index, firstSelectableIndex), lastSelectableIndex)
 }
