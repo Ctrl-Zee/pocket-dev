@@ -17,6 +17,8 @@ const speakerSlotCount = 5
 const firstHomeMenuIndex = 0
 const lastHomeMenuIndex = homeMenuItems.length - 1
 type HomeSelectionDelta = -1 | 1
+const firstContactTargetIndex = 0
+const lastContactTargetIndex = resumeContent.contactTargets.length - 1
 const workExperienceHighlightLimit = 3
 const workSoftCompetencyLimit = 4
 const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
@@ -32,13 +34,6 @@ const dpadButtons = [
   { label: 'Right', className: 'dpad-button-right', delta: 1 },
 ] as const
 
-const placeholderPageContent = {
-  Contact:
-    'Contact links placeholder for Contact Page. This LCD Page will expose email and profile links.',
-} as const
-
-type PlaceholderPageTitle = keyof typeof placeholderPageContent
-
 interface ChildrenProps {
   children: ReactNode
 }
@@ -47,12 +42,10 @@ interface LcdPageProps extends ChildrenProps {
   title: string
 }
 
-interface PlaceholderPageProps {
-  title: PlaceholderPageTitle
-}
-
 interface DeviceNavigationValue {
   selectedHomeIndex: number
+  selectedContactIndex: number
+  setSelectedContactIndex: (index: number) => void
   setSelectedHomeIndex: (index: number) => void
 }
 
@@ -71,27 +64,50 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [selectedHomeIndex, setSelectedHomeIndex] = useState(firstHomeMenuIndex)
+  const [selectedContactIndex, setSelectedContactIndex] = useState(firstContactTargetIndex)
 
   const isHomeRoute = location.pathname === '/'
+  const isContactRoute = location.pathname === '/contact'
 
-  const moveHomeSelection = useCallback(
+  const moveSelection = useCallback(
     (delta: HomeSelectionDelta) => {
-      if (!isHomeRoute) return
+      if (isHomeRoute) {
+        setSelectedHomeIndex((currentIndex) => {
+          if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
+          if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
+          return currentIndex + delta
+        })
+      }
 
-      setSelectedHomeIndex((currentIndex) => {
-        if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
-        if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
-        return currentIndex + delta
-      })
+      if (isContactRoute) {
+        setSelectedContactIndex((currentIndex) => {
+          if (currentIndex === firstContactTargetIndex && delta < 0) return lastContactTargetIndex
+          if (currentIndex === lastContactTargetIndex && delta > 0) return firstContactTargetIndex
+          return currentIndex + delta
+        })
+      }
     },
-    [isHomeRoute],
+    [isContactRoute, isHomeRoute],
   )
 
-  const activateHomeSelection = useCallback(() => {
-    if (!isHomeRoute) return
+  const activateSelection = useCallback(() => {
+    if (isHomeRoute) {
+      void navigate({ to: homeMenuItems[selectedHomeIndex].href })
+      return
+    }
 
-    void navigate({ to: homeMenuItems[selectedHomeIndex].href })
-  }, [isHomeRoute, navigate, selectedHomeIndex])
+    if (isContactRoute) {
+      const contactTarget = resumeContent.contactTargets[selectedContactIndex]
+
+      window.open(
+        contactTarget.href,
+        contactTarget.href.startsWith('mailto:') || contactTarget.href.startsWith('tel:')
+          ? '_self'
+          : '_blank',
+        'noreferrer',
+      )
+    }
+  }, [isContactRoute, isHomeRoute, navigate, selectedContactIndex, selectedHomeIndex])
 
   const returnHome = useCallback(() => {
     void navigate({ to: '/' })
@@ -105,17 +121,17 @@ export function PocketDevDevice({ children }: ChildrenProps) {
         case 'ArrowUp':
         case 'ArrowLeft':
           event.preventDefault()
-          moveHomeSelection(-1)
+          moveSelection(-1)
           return
         case 'ArrowDown':
         case 'ArrowRight':
           event.preventDefault()
-          moveHomeSelection(1)
+          moveSelection(1)
           return
         case 'Enter':
         case ' ':
           event.preventDefault()
-          activateHomeSelection()
+          activateSelection()
           return
         case 'Escape':
         case 'Backspace':
@@ -129,11 +145,16 @@ export function PocketDevDevice({ children }: ChildrenProps) {
     return () => {
       window.removeEventListener('keydown', handleKeyboardControls)
     }
-  }, [activateHomeSelection, moveHomeSelection, returnHome])
+  }, [activateSelection, moveSelection, returnHome])
 
   const deviceNavigation = useMemo(
-    () => ({ selectedHomeIndex, setSelectedHomeIndex }),
-    [selectedHomeIndex],
+    () => ({
+      selectedContactIndex,
+      selectedHomeIndex,
+      setSelectedContactIndex,
+      setSelectedHomeIndex,
+    }),
+    [selectedContactIndex, selectedHomeIndex],
   )
 
   return (
@@ -144,8 +165,8 @@ export function PocketDevDevice({ children }: ChildrenProps) {
             <DeviceScreen>{children}</DeviceScreen>
             <DeviceBrandRow />
             <DeviceControls
-              onActivate={activateHomeSelection}
-              onMove={moveHomeSelection}
+              onActivate={activateSelection}
+              onMove={moveSelection}
               onReturnHome={returnHome}
             />
             <DeviceSystemControls />
@@ -288,7 +309,38 @@ export function ResumePage() {
 }
 
 export function ContactPage() {
-  return <PlaceholderPage title="Contact" />
+  const { selectedContactIndex, setSelectedContactIndex } = useDeviceNavigation()
+
+  return (
+    <LcdPage title="Contact">
+      <div className="lcd-page contact-page">
+        <p className="lcd-intro">Direct links for reaching Andrew.</p>
+
+        <nav className="contact-list" aria-label="Contact links">
+          {resumeContent.contactTargets.map((contactTarget, contactTargetIndex) => {
+            const isSelected = contactTargetIndex === selectedContactIndex
+            const opensInCurrentTab =
+              contactTarget.href.startsWith('mailto:') || contactTarget.href.startsWith('tel:')
+
+            return (
+              <a
+                className={isSelected ? 'is-selected' : undefined}
+                data-selected={isSelected ? 'true' : undefined}
+                href={contactTarget.href}
+                key={contactTarget.label}
+                onFocus={() => setSelectedContactIndex(contactTargetIndex)}
+                rel={opensInCurrentTab ? undefined : 'noreferrer'}
+                target={opensInCurrentTab ? undefined : '_blank'}
+              >
+                <span>{contactTarget.label}</span>
+                <strong>{contactTarget.value}</strong>
+              </a>
+            )
+          })}
+        </nav>
+      </div>
+    </LcdPage>
+  )
 }
 
 function DeviceScreen({ children }: ChildrenProps) {
@@ -309,16 +361,6 @@ function LcdPage({ title, children }: LcdPageProps) {
       {children}
       <p className="lcd-footer">D-PAD MOVE / A SELECT / B HOME</p>
     </div>
-  )
-}
-
-function PlaceholderPage({ title }: PlaceholderPageProps) {
-  return (
-    <LcdPage title={title}>
-      <div className="lcd-page">
-        <p>{placeholderPageContent[title]}</p>
-      </div>
-    </LcdPage>
   )
 }
 

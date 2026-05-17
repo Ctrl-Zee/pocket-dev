@@ -1,7 +1,7 @@
 export type ContactTarget = {
   label: string
   value: string
-  href?: string
+  href: string
 }
 
 export type Skill = {
@@ -98,8 +98,7 @@ export const resumeContent = {
     },
     {
       name: '.NET',
-      summary:
-        'Builds RESTful APIs with .NET, dependency injection, and database integration.',
+      summary: 'Builds RESTful APIs with .NET, dependency injection, and database integration.',
     },
     {
       name: 'Azure',
@@ -144,16 +143,8 @@ export const resumeContent = {
     {
       name: 'Benesys',
       client: 'Benesys',
-      stack: [
-        'React',
-        'Zustand',
-        'TanStack Query',
-        'React Hook Form',
-        'Tailwind',
-        'PrimeReact',
-      ],
-      summary:
-        'Enterprise benefits portal for trade workers, built as a scalable React front end.',
+      stack: ['React', 'Zustand', 'TanStack Query', 'React Hook Form', 'Tailwind', 'PrimeReact'],
+      summary: 'Enterprise benefits portal for trade workers, built as a scalable React front end.',
       highlights: [
         'Led front-end development.',
         'Supported 100+ clients.',
@@ -177,15 +168,7 @@ export const resumeContent = {
     {
       name: 'Schwarz Partners',
       client: 'Schwarz Partners',
-      stack: [
-        'Angular 14',
-        'TypeScript',
-        'Azure AD B2C',
-        '.NET',
-        'C#',
-        'SQL Server',
-        'Compodoc',
-      ],
+      stack: ['Angular 14', 'TypeScript', 'Azure AD B2C', '.NET', 'C#', 'SQL Server', 'Compodoc'],
       summary:
         'Product key management system with internal administration and external customer-facing applications.',
       highlights: [
@@ -199,8 +182,7 @@ export const resumeContent = {
       name: 'Venture Logistics',
       client: 'Venture Logistics',
       stack: ['Angular 13', 'TypeScript', '.NET', 'C#', 'SignalR'],
-      summary:
-        'Internal logistics management application with real-time user tracking.',
+      summary: 'Internal logistics management application with real-time user tracking.',
       highlights: [
         'Developed a responsive Angular front end.',
         'Implemented .NET APIs.',
@@ -226,7 +208,8 @@ export const resumeContent = {
     },
     {
       label: 'LinkedIn',
-      value: 'LinkedIn',
+      value: 'andrew-smith-indy',
+      href: 'https://www.linkedin.com/in/andrew-smith-indy/',
     },
     {
       label: 'Website',

@@ -2,15 +2,12 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/features/resume-content/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
-const expectedPlaceholderRoutedPages = [
-  { path: '/contact', heading: /contact/i, content: /contact links/i },
-] as const
 const expectedWorkContent = [
   /senior consultant/i,
   /moser consulting/i,
@@ -79,23 +76,6 @@ describe('Home route', () => {
     expect(device).not.toContainElement(controlHint)
   })
 
-  it.each(expectedPlaceholderRoutedPages)(
-    'renders the $path LCD Page inside the constant Pocket Dev Device',
-    async ({ path, heading, content }) => {
-      renderRoute(path)
-
-      const device = await screen.findByRole('main', { name: /pocket dev device/i })
-      const lcd = within(device).getByRole('region', { name: /lcd screen/i })
-
-      expect(within(lcd).getByRole('heading', { name: heading })).toBeInTheDocument()
-      expect(within(lcd).getByText(content)).toBeInTheDocument()
-
-      hardwareLabels.forEach((label) => {
-        expect(screen.getByLabelText(label)).toBeInTheDocument()
-      })
-    },
-  )
-
   it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
     const { router, user } = renderRoute('/')
 
@@ -138,6 +118,38 @@ describe('Home route', () => {
     expect(router.state.location.pathname).toBe('/projects')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  })
+})
+
+describe('Contact route', () => {
+  it('renders direct Contact links and opens the selected target with A', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const { user } = renderRoute('/contact')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    expect(within(lcd).getByRole('heading', { name: /contact/i })).toBeInTheDocument()
+
+    for (const contactTarget of resumeContent.contactTargets) {
+      const contactLink = within(lcd).getByRole('link', {
+        name: new RegExp(contactTarget.label, 'i'),
+      })
+
+      expect(contactLink).toHaveAttribute('href', contactTarget.href)
+      expect(contactLink).toHaveTextContent(contactTarget.value)
+    }
+
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(openSpy).toHaveBeenCalledWith(
+      resumeContent.contactTargets[1].href,
+      resumeContent.contactTargets[1].href?.startsWith('mailto:') ? '_self' : '_blank',
+      'noreferrer',
+    )
+
+    openSpy.mockRestore()
   })
 })
 
