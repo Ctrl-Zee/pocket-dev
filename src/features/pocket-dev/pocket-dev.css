@@ -9,6 +9,11 @@
   --lcd-hi: #dbe8c8;
   --lcd-mid: #4d6a3a;
   --lcd-ink: #1f2d18;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-ui: Inter, system-ui, sans-serif;
+  --dpad-size: 112px;
+  --dpad-arm-size: 38px;
+  --dpad-arm-offset: 37px;
 }
 
 * {
@@ -23,7 +28,7 @@ body,
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: var(--font-ui);
   background:
     radial-gradient(circle at 50% 28%, rgba(255, 80, 200, 0.28), transparent 31%),
     linear-gradient(180deg, #1a0a3a 0%, #4a1268 100%);
@@ -133,7 +138,7 @@ body::before {
   background: linear-gradient(180deg, var(--lcd-bg), var(--lcd-bg-dark));
   box-shadow: inset 0 0 16px rgba(31, 45, 24, 0.48);
   color: var(--lcd-ink);
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
 }
 
 .lcd-screen::before {
@@ -250,7 +255,7 @@ body::before {
 
 .wordmark {
   margin: 0 6px 3px 0;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 13px;
   letter-spacing: 1px;
   text-align: right;
@@ -289,8 +294,8 @@ body::before {
 
 .dpad {
   position: relative;
-  width: 112px;
-  height: 112px;
+  width: var(--dpad-size);
+  height: var(--dpad-size);
 }
 
 .dpad::before,
@@ -302,17 +307,17 @@ body::before {
 }
 
 .dpad::before {
-  top: 37px;
+  top: var(--dpad-arm-offset);
   left: 0;
-  width: 112px;
-  height: 38px;
+  width: var(--dpad-size);
+  height: var(--dpad-arm-size);
 }
 
 .dpad::after {
   top: 0;
-  left: 37px;
-  width: 38px;
-  height: 112px;
+  left: var(--dpad-arm-offset);
+  width: var(--dpad-arm-size);
+  height: var(--dpad-size);
 }
 
 .face-buttons {
@@ -329,7 +334,7 @@ body::before {
   border-radius: 999px;
   background: #922144;
   color: rgba(255, 255, 255, 0.82);
-  font: 700 12px Inter, system-ui, sans-serif;
+  font: 700 12px var(--font-ui);
   box-shadow: inset 0 5px 8px rgba(255, 255, 255, 0.18), 0 8px 0 #5f1731;
 }
 
@@ -395,7 +400,7 @@ body::before {
   border-radius: 999px;
   background: rgba(20, 10, 40, 0.55);
   color: white;
-  font-family: 'Press Start 2P', monospace;
+  font-family: var(--font-pixel);
   font-size: 8px;
   line-height: 1.4;
   transform: translateX(-50%);
