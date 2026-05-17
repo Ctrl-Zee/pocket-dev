@@ -276,6 +276,17 @@ body::before {
   background: rgba(219, 232, 200, 0.44);
 }
 
+.lcd-selectable-list {
+  display: grid;
+  align-content: start;
+}
+
+.lcd-selectable-link {
+  position: relative;
+  color: var(--lcd-ink);
+  text-decoration: none;
+}
+
 .work-entry + .work-entry {
   margin-top: 5px;
 }
@@ -425,8 +436,7 @@ body::before {
   color: var(--lcd-mid);
 }
 
-.resume-open-pdf {
-  justify-self: end;
+.lcd-action-link {
   padding: 7px 9px;
   border: 2px solid var(--lcd-ink);
   background: var(--lcd-ink);
@@ -436,10 +446,14 @@ body::before {
   text-decoration: none;
 }
 
-.resume-open-pdf:hover,
-.resume-open-pdf:focus-visible {
+.lcd-action-link:hover,
+.lcd-action-link:focus-visible {
   background: var(--lcd-hi);
   color: var(--lcd-ink);
+}
+
+.resume-open-pdf {
+  justify-self: end;
 }
 
 .rotate-page {

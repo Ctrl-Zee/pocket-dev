@@ -1,6 +1,14 @@
 import { Link } from '@tanstack/react-router'
+import {
+  LcdActionLink,
+  LcdPage,
+  LcdPanel,
+  LcdPixelList,
+  LcdScrollableArea,
+  LcdSelectableLink,
+  LcdSelectableList,
+} from '@/components/lcd'
 import { resumeContent, type ProjectEntry } from '@/content/resume/resumeContent'
-import { LcdPage, LcdSection } from './LCD'
 import { opensContactTargetInCurrentTab } from './contactTargets'
 import { pageCatalog } from './pageCatalog'
 import { useDeviceNavigation } from './Device'
@@ -34,23 +42,23 @@ export function HomePage() {
           <p className="home-version">ANDREW SMITH / SOFTWARE ENGINEER</p>
         </div>
 
-        <nav className="home-menu" aria-label="Home menu">
+        <LcdSelectableList className="home-menu" aria-label="Home menu">
           {pageCatalog.map((item, itemIndex) => {
             const isSelected = itemIndex === homeSelection.selectedIndex
 
             return (
-              <Link
-                className={isSelected ? 'is-selected' : undefined}
-                data-selected={isSelected ? 'true' : undefined}
+              <LcdSelectableLink
+                as={Link}
+                isSelected={isSelected}
                 key={item.href}
                 onFocus={() => homeSelection.setSelectedIndex(itemIndex)}
                 to={item.href}
               >
                 {item.label}
-              </Link>
+              </LcdSelectableLink>
             )
           })}
-        </nav>
+        </LcdSelectableList>
       </div>
     </LcdPage>
   )
@@ -61,7 +69,7 @@ export function AboutPage() {
 
   return (
     <LcdPage title="About">
-      <article className="lcd-page about-page">
+      <LcdScrollableArea as="article" className="about-page">
         <header className="about-hero">
           <h2>
             {identity.name} / {identity.publicTitle}
@@ -78,13 +86,9 @@ export function AboutPage() {
 
         <section aria-labelledby="about-activities">
           <h3 id="about-activities">After hours</h3>
-          <ul className="pixel-list">
-            {activities.map((activity) => (
-              <li key={activity}>{activity}</li>
-            ))}
-          </ul>
+          <LcdPixelList items={activities} />
         </section>
-      </article>
+      </LcdScrollableArea>
     </LcdPage>
   )
 }
@@ -100,7 +104,7 @@ export function WorkPage() {
 export function ProjectsPage() {
   return (
     <LcdPage title="Projects">
-      <div className="lcd-page projects-page">
+      <LcdScrollableArea className="projects-page">
         <p className="lcd-intro">Selected projects from Resume Data.</p>
 
         <div className="project-card-list">
@@ -108,7 +112,7 @@ export function ProjectsPage() {
             <ProjectCard key={project.name} project={project} />
           ))}
         </div>
-      </div>
+      </LcdScrollableArea>
     </LcdPage>
   )
 }
@@ -119,7 +123,7 @@ export function ResumePage() {
   return (
     <LcdPage title="Resume">
       <div className="resume-page">
-        <LcdSection className="resume-preview" aria-label="Compact resume preview">
+        <LcdPanel className="resume-preview" aria-label="Compact resume preview">
           <div className="resume-preview-header">
             <p className="resume-preview-name">{identity.name}</p>
             <p>{identity.publicTitle}</p>
@@ -142,11 +146,16 @@ export function ResumePage() {
             <p className="resume-preview-label">SIGNAL</p>
             <p>{highlights[0]}</p>
           </div>
-        </LcdSection>
+        </LcdPanel>
 
-        <a className="resume-open-pdf" href={resumePdfHref} target="_blank" rel="noreferrer">
+        <LcdActionLink
+          className="resume-open-pdf"
+          href={resumePdfHref}
+          target="_blank"
+          rel="noreferrer"
+        >
           OPEN PDF
-        </a>
+        </LcdActionLink>
       </div>
     </LcdPage>
   )
@@ -157,19 +166,18 @@ export function ContactPage() {
 
   return (
     <LcdPage title="Contact">
-      <div className="lcd-page contact-page">
+      <LcdScrollableArea className="contact-page">
         <p className="lcd-intro">Direct links for reaching Andrew.</p>
 
-        <nav className="contact-list" aria-label="Contact links">
+        <LcdSelectableList className="contact-list" aria-label="Contact links">
           {resumeContent.contactTargets.map((contactTarget, contactTargetIndex) => {
             const isSelected = contactTargetIndex === contactSelection.selectedIndex
             const opensInCurrentTab = opensContactTargetInCurrentTab(contactTarget.href)
 
             return (
-              <a
-                className={isSelected ? 'is-selected' : undefined}
-                data-selected={isSelected ? 'true' : undefined}
+              <LcdSelectableLink
                 href={contactTarget.href}
+                isSelected={isSelected}
                 key={contactTarget.label}
                 onFocus={() => contactSelection.setSelectedIndex(contactTargetIndex)}
                 rel={opensInCurrentTab ? undefined : 'noreferrer'}
@@ -177,21 +185,21 @@ export function ContactPage() {
               >
                 <span>{contactTarget.label}</span>
                 <strong>{contactTarget.value}</strong>
-              </a>
+              </LcdSelectableLink>
             )
           })}
-        </nav>
-      </div>
+        </LcdSelectableList>
+      </LcdScrollableArea>
     </LcdPage>
   )
 }
 
 function WorkDetails() {
   return (
-    <div className="lcd-page work-page" role="region" aria-label="Work details">
+    <LcdScrollableArea className="work-page" role="region" aria-label="Work details">
       <WorkSection headingId="work-experience-heading" title="Experience">
         {resumeContent.experience.map((entry) => (
-          <LcdSection
+          <LcdPanel
             as="article"
             className="work-entry"
             key={`${entry.employer}-${entry.role}`}
@@ -208,7 +216,7 @@ function WorkDetails() {
                 <li key={highlight}>{highlight}</li>
               ))}
             </ul>
-          </LcdSection>
+          </LcdPanel>
         ))}
       </WorkSection>
 
@@ -237,7 +245,7 @@ function WorkDetails() {
           </p>
         ))}
       </WorkSection>
-    </div>
+    </LcdScrollableArea>
   )
 }
 
@@ -252,12 +260,12 @@ function WorkSection({ headingId, title, children }: WorkSectionProps) {
 
 function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <article className="project-card">
+    <LcdPanel as="article" className="project-card">
       <h2>{project.name}</h2>
       <p>{project.summary}</p>
       <p className="project-stack">
         <span>Stack:</span> {project.stack.join(' / ')}
       </p>
-    </article>
+    </LcdPanel>
   )
 }
