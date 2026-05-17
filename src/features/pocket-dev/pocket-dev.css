@@ -20,6 +20,7 @@
   --dpad-size: 112px;
   --dpad-arm-size: 38px;
   --dpad-arm-offset: 37px;
+  --face-button-size: 56px;
 }
 
 * {
@@ -656,6 +657,8 @@ body::before {
   color: rgba(255, 255, 255, 0.82);
   cursor: pointer;
   font: 700 12px var(--font-ui);
+  width: var(--face-button-size);
+  height: var(--face-button-size);
   box-shadow:
     inset 0 5px 8px rgba(255, 255, 255, 0.18),
     0 8px 0 #5f1731;
@@ -664,15 +667,11 @@ body::before {
 .button-a {
   right: 13px;
   top: 22px;
-  width: 58px;
-  height: 58px;
 }
 
 .button-b {
   right: 82px;
   top: 47px;
-  width: 48px;
-  height: 48px;
 }
 
 .button-a:active,
@@ -774,6 +773,7 @@ body::before {
     --dpad-size: 96px;
     --dpad-arm-size: 34px;
     --dpad-arm-offset: 31px;
+    --face-button-size: 54px;
   }
 
   .pocket-dev-stage {
@@ -812,15 +812,11 @@ body::before {
   .button-a {
     right: 7px;
     top: 20px;
-    width: 54px;
-    height: 54px;
   }
 
   .button-b {
     right: 70px;
     top: 44px;
-    width: 46px;
-    height: 46px;
   }
 
   .pill {

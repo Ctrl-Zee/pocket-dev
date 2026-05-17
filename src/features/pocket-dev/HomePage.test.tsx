@@ -332,6 +332,18 @@ describe('Pocket Dev responsive styles', () => {
     expect(shellDecorationRule).not.toContain('74% 72% / 86px 52px no-repeat')
   })
 
+  it('renders A and B Device buttons at the same size across viewports', () => {
+    expect(pocketDevCss).toContain('--face-button-size: 56px;')
+    expect(pocketDevCss).toMatch(
+      /\.button-a,\s*\.button-b\s*{[^}]*width:\s*var\(--face-button-size\);[^}]*height:\s*var\(--face-button-size\);/s,
+    )
+    expect(pocketDevCss).toMatch(
+      /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*--face-button-size:\s*54px;/s,
+    )
+    expect(getCssRule('.button-a')).not.toMatch(/(?:width|height):\s*\d+px;/)
+    expect(getCssRule('.button-b')).not.toMatch(/(?:width|height):\s*\d+px;/)
+  })
+
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
     expect(pocketDevCss).toMatch(/body\s*{[^}]*overflow:\s*hidden;/s)
     expect(pocketDevCss).toMatch(
