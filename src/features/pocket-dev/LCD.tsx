@@ -13,17 +13,6 @@ interface LcdSectionProps extends ChildrenProps {
   className?: string
 }
 
-export function DeviceScreen({ children }: ChildrenProps) {
-  return (
-    <section className="lcd-bezel" aria-label="Device display bezel">
-      <span className="power-led" aria-label="Power LED" />
-      <div className="lcd-screen" role="region" aria-label="LCD screen">
-        {children}
-      </div>
-    </section>
-  )
-}
-
 export function LcdPage({ title, children }: LcdPageProps) {
   return (
     <div className="lcd-content">

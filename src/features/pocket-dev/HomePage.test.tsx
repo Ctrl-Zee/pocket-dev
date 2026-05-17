@@ -148,6 +148,24 @@ describe('Home route', () => {
     expect(within(lcd).queryByText(/d-pad move \/ a select \/ b home/i)).not.toBeInTheDocument()
   })
 
+  it('composes the physical Device from separate display, control, and system sections', async () => {
+    renderRoute('/')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const shell = within(device).getByLabelText(/device shell/i)
+    const display = within(shell).getByLabelText(/device display bezel/i)
+    const topHardware = within(shell).getByLabelText(/device hardware top controls/i)
+    const controls = within(shell).getByLabelText(/^device controls$/i)
+    const systemControls = within(shell).getByLabelText(/device system controls/i)
+
+    expect(within(display).getByRole('region', { name: /lcd screen/i })).toBeInTheDocument()
+    expect(within(topHardware).getByLabelText(/pocket dev wordmark/i)).toBeInTheDocument()
+    expect(within(controls).getByLabelText(/d-pad/i)).toBeInTheDocument()
+    expect(within(controls).getByLabelText(/a and b buttons/i)).toBeInTheDocument()
+    expect(within(systemControls).getByLabelText(/select and start buttons/i)).toBeInTheDocument()
+    expect(within(systemControls).getByLabelText(/speaker grill/i)).toBeInTheDocument()
+  })
+
   it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
     const { router, user } = renderRoute('/')
 
