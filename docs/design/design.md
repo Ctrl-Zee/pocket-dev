@@ -109,7 +109,7 @@ Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep gly
 | ---              | ---                | ---                                                       |
 | LCD              | Upper section      | Flex-grow within remaining vertical space                 |
 | Power LED        | Top-left of LCD bezel | Pulses softly (2.6s ease)                              |
-| Rainbow wordmark | Below LCD, right-aligned over A/B | "POCKET DEV" in 6-color sequence       |
+| Rainbow wordmark | Centered below LCD | "POCKET DEV" in 6-color sequence       |
 | D-pad            | Bottom-left        | Cross with sharp edges, dark plastic, four arms           |
 | A / B buttons    | Bottom-right       | Matching round red rubber buttons, tilted -18°            |
 | Select / Start   | Below D-pad/AB     | Gray pill rubber, tilted -18°                             |

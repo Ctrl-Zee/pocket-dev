@@ -998,9 +998,9 @@ function Device({ renderLCD, handle, pressed, muted, confetti, palette }){
       {/* Screen area (flex-grow within remaining space) */}
       <ScreenArea renderLCD={renderLCD} confetti={confetti} palette={palette} muted={muted}/>
 
-      {/* Rainbow wordmark below screen, aligned over A/B buttons */}
+      {/* Rainbow wordmark below screen, centered under the LCD */}
       <div style={{flexShrink:0, marginTop:10, textAlign:'center'}}>
-        <span className="pixel" style={{fontSize:13, letterSpacing:2, fontWeight:'bold', textShadow:'1px 1px 0 rgba(0,0,0,.25)'}}>
+        <span className="pixel" style={{fontSize:16, letterSpacing:2, fontWeight:'bold', textShadow:'1px 1px 0 rgba(0,0,0,.25)'}}>
           <span style={{color:'#e74c3c'}}>P</span>
           <span style={{color:'#f39c12'}}>O</span>
           <span style={{color:'#f1c40f'}}>C</span>
