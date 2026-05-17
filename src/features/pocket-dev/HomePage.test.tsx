@@ -9,6 +9,10 @@ import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
+const expectedHomeMenuPages = expectedHomeMenuItems.map((label, index) => ({
+  href: expectedHomeMenuHrefs[index],
+  label,
+}))
 const homeMenuLinkSelector = '.home-menu a'
 const selectedHomeMenuLinkSelector = [
   '.home-menu a.is-selected',
@@ -104,6 +108,12 @@ function getCssRules(selector: string) {
   )
 }
 
+function expectSelectedHomeMenuLink(label: string) {
+  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+
+  expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const router = createRouter({
@@ -135,6 +145,7 @@ describe('Home route', () => {
     const menuLinks = within(lcd).getAllByRole('link')
     expect(menuLinks.map((link) => link.textContent)).toEqual(expectedHomeMenuItems)
     expect(menuLinks.map((link) => link.getAttribute('href'))).toEqual(expectedHomeMenuHrefs)
+    expectSelectedHomeMenuLink('About')
 
     hardwareLabels.forEach((label) => {
       expect(screen.getByLabelText(label)).toBeInTheDocument()
@@ -184,6 +195,27 @@ describe('Home route', () => {
     expect(router.state.location.pathname).toBe('/')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+  })
+
+  it.each([
+    ['B button', async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.click(await screen.findByRole('button', { name: /b/i }))
+    }],
+    ['keyboard B key', async (user: ReturnType<typeof userEvent.setup>) => {
+      await user.keyboard('b')
+    }],
+  ])('remembers the selected Home row for every Page when returning with %s', async (_, pressB) => {
+    for (const page of expectedHomeMenuPages) {
+      const { router, user, unmount } = renderRoute('/')
+
+      await user.click(await screen.findByRole('link', { name: page.label }))
+      await pressB(user)
+
+      expect(router.state.location.pathname).toBe('/')
+      expectSelectedHomeMenuLink(page.label)
+
+      unmount()
+    }
   })
 
   it('returns from a top-level LCD Page to Home when the keyboard B key is pressed', async () => {
