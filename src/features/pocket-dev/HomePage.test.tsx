@@ -1,15 +1,37 @@
 import { render, screen, within } from '@testing-library/react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  RouterProvider,
+  createMemoryHistory,
+  createRouter,
+} from '@tanstack/react-router'
 import { describe, expect, it } from 'vitest'
-import { HomePage } from './HomePage'
+import { routeTree } from '../../routeTree.gen'
+
+function renderRoute(path: string) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  const router = createRouter({
+    routeTree,
+    history: createMemoryHistory({ initialEntries: [path] }),
+    context: { queryClient },
+    defaultPreloadStaleTime: 0,
+  })
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>,
+  )
+}
 
 describe('Home route', () => {
-  it('renders the Home Page inside the Pocket Dev experience at /', () => {
-    window.history.pushState({}, '', '/')
-
-    render(<HomePage />)
+  it('renders the Home Page inside the Pocket Dev experience at /', async () => {
+    renderRoute('/')
 
     expect(
-      screen.getByRole('main', { name: /pocket dev device/i }),
+      await screen.findByRole('main', { name: /pocket dev device/i }),
     ).toBeInTheDocument()
 
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
