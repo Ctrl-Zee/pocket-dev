@@ -69,7 +69,7 @@ The LCD is a fixed pixel canvas. Stick to this scale:
 - Body text: `9px`
 - Supporting body text: `8px`
 - Secondary detail text: `7px`
-- Hint/footer text: `7px`
+- Detail text: `7px`
 
 Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep glyphs legible.
 

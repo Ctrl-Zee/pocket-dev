@@ -20,7 +20,6 @@ export function LcdPage({ title, children }: LcdPageProps) {
     <div className="lcd-content">
       <h1 className="lcd-title">&gt; {title.toUpperCase()}</h1>
       {children}
-      <p className="lcd-footer">D-PAD MOVE / A SELECT / B HOME</p>
     </div>
   )
 }

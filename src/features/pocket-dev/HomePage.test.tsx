@@ -114,6 +114,8 @@ describe('Home route', () => {
     const controlHint = screen.getByText(/arrows move \/ enter a \/ esc b/i)
     expect(controlHint).toBeInTheDocument()
     expect(device).not.toContainElement(controlHint)
+
+    expect(within(lcd).queryByText(/d-pad move \/ a select \/ b home/i)).not.toBeInTheDocument()
   })
 
   it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
@@ -314,14 +316,17 @@ describe('Pocket Dev responsive styles', () => {
     expect(pocketDevCss).toContain('--lcd-body-text: 9px;')
     expect(pocketDevCss).toContain('--lcd-menu-text: 9px;')
     expect(pocketDevCss).toContain('--lcd-supporting-text: 8px;')
-    expect(pocketDevCss).toContain('--lcd-footer-text: 7px;')
 
     expect(pocketDevCss).toMatch(/\.lcd-screen\s*{[^}]*font-family:\s*var\(--font-pixel\);/s)
     expect(pocketDevCss).toMatch(/\.lcd-title\s*{[^}]*font-size:\s*var\(--lcd-title-text\);/s)
     expect(pocketDevCss).toMatch(/\.lcd-page p,\s*\.lcd-page li\s*{[^}]*font-size:\s*var\(--lcd-body-text\);/s)
     expect(pocketDevCss).toMatch(/\.home-menu a\s*{[^}]*font-size:\s*var\(--lcd-menu-text\);/s)
     expect(pocketDevCss).toMatch(/\.project-card p\s*{[^}]*font-size:\s*var\(--lcd-supporting-text\);/s)
-    expect(pocketDevCss).toMatch(/\.lcd-footer\s*{[^}]*font-size:\s*var\(--lcd-footer-text\);/s)
+    expect(pocketDevCss).toMatch(
+      /\.lcd-content\s*{[^}]*grid-template-rows:\s*auto minmax\(0,\s*1fr\);/s,
+    )
+    expect(pocketDevCss).not.toContain('--lcd-footer-text')
+    expect(pocketDevCss).not.toContain('.lcd-footer')
   })
 
   it('scales the desktop Device above the original handheld size while keeping viewport bounds', () => {
