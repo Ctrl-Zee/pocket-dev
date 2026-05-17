@@ -9,6 +9,7 @@ import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
+const expectedWordmarkLetters = ['P', 'O', 'C', 'K', 'E', 'T', 'D', 'E', 'V']
 const homeMenuLinkSelector = '.home-menu a'
 const selectedHomeMenuLinkSelector = [
   '.home-menu a.is-selected',
@@ -58,6 +59,17 @@ const expectedLcdFontSizeRules = [
   ['.project-card p', '--lcd-supporting-text'],
   ['.contact-list a strong', '--lcd-supporting-text'],
   ['.lcd-action-link', '--lcd-detail-text'],
+] as const
+const expectedWordmarkRainbowRules = [
+  ['.wordmark span:nth-child(1)', '#ff3da6'],
+  ['.wordmark span:nth-child(2)', '#ffd83d'],
+  ['.wordmark span:nth-child(3)', '#3dff7a'],
+  ['.wordmark span:nth-child(4)', '#3df0ff'],
+  ['.wordmark span:nth-child(5)', '#a23dff'],
+  ['.wordmark span:nth-child(6)', '#ff7d3d'],
+  ['.wordmark span:nth-child(7)', '#ff3da6'],
+  ['.wordmark span:nth-child(8)', '#ffd83d'],
+  ['.wordmark span:nth-child(9)', '#3dff7a'],
 ] as const
 
 function mockMobileLandscapeQuery(matches: boolean) {
@@ -164,6 +176,15 @@ describe('Home route', () => {
     expect(within(controls).getByLabelText(/a and b buttons/i)).toBeInTheDocument()
     expect(within(systemControls).getByLabelText(/select and start buttons/i)).toBeInTheDocument()
     expect(within(systemControls).getByLabelText(/speaker grill/i)).toBeInTheDocument()
+  })
+
+  it('renders every visible Pocket Dev wordmark letter as a separate rainbow segment', async () => {
+    renderRoute('/')
+
+    const wordmark = await screen.findByLabelText(/pocket dev wordmark/i)
+    const letters = Array.from(wordmark.querySelectorAll('span'))
+
+    expect(letters.map((letter) => letter.textContent)).toEqual(expectedWordmarkLetters)
   })
 
   it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
@@ -481,6 +502,10 @@ describe('Pocket Dev responsive styles', () => {
     expect(wordmarkRule).toContain('margin: 0 0 3px;')
     expect(wordmarkRule).toContain('font-size: var(--wordmark-text);')
     expect(wordmarkRule).toContain('text-align: center;')
+    for (const [selector, color] of expectedWordmarkRainbowRules) {
+      expect(getCssRule(selector)).toContain(`color: ${color};`)
+    }
+    expect(getCssRule('.wordmark span:nth-child(7)')).toContain('margin-left: 0.55em;')
     expect(pocketDevCss).toMatch(
       /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*\.wordmark\s*{[^}]*font-size:\s*var\(--wordmark-mobile-text\);/s,
     )
