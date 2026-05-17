@@ -291,8 +291,10 @@ describe('Resume route', () => {
 
 describe('Pocket Dev responsive styles', () => {
   it('scales the desktop Device above the original handheld size while keeping viewport bounds', () => {
-    expect(pocketDevCss).toMatch(/\.pocket-dev-device\s*{[^}]*width:\s*min\(94vw,\s*500px\);/s)
-    expect(pocketDevCss).toMatch(/\.pocket-dev-device\s*{[^}]*height:\s*min\(96dvh,\s*780px\);/s)
+    const desktopDeviceRule = pocketDevCss.match(/\.pocket-dev-device\s*{[^}]*}/s)?.[0]
+
+    expect(desktopDeviceRule).toContain('width: min(94vw, 500px);')
+    expect(desktopDeviceRule).toContain('height: min(96dvh, 780px);')
   })
 
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
