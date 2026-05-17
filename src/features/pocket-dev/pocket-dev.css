@@ -697,7 +697,6 @@ body::before {
   width: 100%;
   gap: 24px;
   justify-content: center;
-  transform: rotate(-18deg);
 }
 
 .system-button {
