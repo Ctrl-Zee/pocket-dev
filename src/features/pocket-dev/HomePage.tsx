@@ -13,6 +13,10 @@ const homeMenuItems = [
 const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
 const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
+const resumePreviewSkillRows = [
+  resumeContent.skills.slice(0, 3).map((skill) => skill.name),
+  resumeContent.skills.slice(3, 6).map((skill) => skill.name),
+] as const
 
 const placeholderPageContent = {
   About:
@@ -20,7 +24,6 @@ const placeholderPageContent = {
   Work: 'Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and professional history.',
   Projects:
     'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
-  Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
   Contact:
     'Contact links placeholder for Contact Page. This LCD Page will expose email and profile links.',
 } as const
@@ -90,34 +93,33 @@ export function ProjectsPage() {
 }
 
 export function ResumePage() {
-  const featuredSkills = resumeContent.skills
-    .slice(0, 6)
-    .map((skill) => skill.name)
+  const { identity, highlights } = resumeContent
 
   return (
     <LcdPage title="Resume">
       <div className="resume-page">
         <section className="resume-preview" aria-label="Compact resume preview">
           <div className="resume-preview-header">
-            <p className="resume-preview-name">{resumeContent.identity.name}</p>
-            <p>{resumeContent.identity.publicTitle}</p>
-            <p>{resumeContent.identity.location}</p>
+            <p className="resume-preview-name">{identity.name}</p>
+            <p>{identity.publicTitle}</p>
+            <p>{identity.location}</p>
           </div>
 
           <div className="resume-preview-section">
             <p className="resume-preview-label">SUMMARY</p>
-            <p>{resumeContent.identity.summary}</p>
+            <p>{identity.summary}</p>
           </div>
 
           <div className="resume-preview-section">
             <p className="resume-preview-label">TOOLS</p>
-            <p>{featuredSkills.slice(0, 3).join(' / ')}</p>
-            <p>{featuredSkills.slice(3).join(' / ')}</p>
+            {resumePreviewSkillRows.map((skillRow) => (
+              <p key={skillRow.join('/')}>{skillRow.join(' / ')}</p>
+            ))}
           </div>
 
           <div className="resume-preview-section">
             <p className="resume-preview-label">SIGNAL</p>
-            <p>{resumeContent.highlights[0]}</p>
+            <p>{highlights[0]}</p>
           </div>
         </section>
 
