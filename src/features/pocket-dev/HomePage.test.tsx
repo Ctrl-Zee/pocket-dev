@@ -36,6 +36,22 @@ const pocketDevCss = readFileSync(
   join(process.cwd(), 'src/features/pocket-dev/pocket-dev.css'),
   'utf8',
 )
+const expectedLcdTypeScale = {
+  '--lcd-title-text': '12px',
+  '--lcd-body-text': '10px',
+  '--lcd-menu-text': '10px',
+  '--lcd-supporting-text': '9px',
+  '--lcd-detail-text': '8px',
+} as const
+const expectedLcdFontSizeRules = [
+  ['.lcd-title', '--lcd-title-text'],
+  ['.lcd-page p, .lcd-page li', '--lcd-body-text'],
+  ['.home-menu a', '--lcd-menu-text'],
+  ['.pixel-list li', '--lcd-detail-text'],
+  ['.project-card p', '--lcd-supporting-text'],
+  ['.contact-list a strong', '--lcd-supporting-text'],
+  ['.resume-open-pdf', '--lcd-detail-text'],
+] as const
 
 function mockMobileLandscapeQuery(matches: boolean) {
   const mediaQueryList = {
@@ -56,8 +72,15 @@ function getExpectedContactWindowTarget(href: string) {
   return href.startsWith('mailto:') || href.startsWith('tel:') ? '_self' : '_blank'
 }
 
+function getEscapedCssSelector(selector: string) {
+  return selector
+    .trim()
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\s+/g, '\\s+')
+}
+
 function getCssRule(selector: string) {
-  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escapedSelector = getEscapedCssSelector(selector)
   const rule = pocketDevCss.match(new RegExp(`${escapedSelector}\\s*{[^}]*}`, 's'))?.[0]
 
   expect(rule).toBeDefined()
@@ -66,7 +89,7 @@ function getCssRule(selector: string) {
 }
 
 function getCssRules(selector: string) {
-  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const escapedSelector = getEscapedCssSelector(selector)
 
   return Array.from(
     pocketDevCss.matchAll(new RegExp(`${escapedSelector}\\s*{[^}]*}`, 'gs')),
@@ -312,23 +335,18 @@ describe('Resume route', () => {
 describe('Pocket Dev responsive styles', () => {
   it('uses a larger readable LCD typography scale while preserving the pixel font', () => {
     expect(pocketDevCss).toContain("--font-pixel: 'Press Start 2P', monospace;")
-    expect(pocketDevCss).toContain('--lcd-title-text: 12px;')
-    expect(pocketDevCss).toContain('--lcd-body-text: 10px;')
-    expect(pocketDevCss).toContain('--lcd-menu-text: 10px;')
-    expect(pocketDevCss).toContain('--lcd-supporting-text: 9px;')
-    expect(pocketDevCss).toContain('--lcd-detail-text: 8px;')
 
-    expect(pocketDevCss).toMatch(/\.lcd-screen\s*{[^}]*font-family:\s*var\(--font-pixel\);/s)
-    expect(pocketDevCss).toMatch(/\.lcd-title\s*{[^}]*font-size:\s*var\(--lcd-title-text\);/s)
-    expect(pocketDevCss).toMatch(/\.lcd-page p,\s*\.lcd-page li\s*{[^}]*font-size:\s*var\(--lcd-body-text\);/s)
-    expect(pocketDevCss).toMatch(/\.home-menu a\s*{[^}]*font-size:\s*var\(--lcd-menu-text\);/s)
-    expect(pocketDevCss).toMatch(/\.pixel-list li\s*{[^}]*font-size:\s*var\(--lcd-detail-text\);/s)
-    expect(pocketDevCss).toMatch(/\.project-card p\s*{[^}]*font-size:\s*var\(--lcd-supporting-text\);/s)
-    expect(pocketDevCss).toMatch(/\.contact-list a strong\s*{[^}]*font-size:\s*var\(--lcd-supporting-text\);/s)
-    expect(pocketDevCss).toMatch(/\.resume-open-pdf\s*{[^}]*font-size:\s*var\(--lcd-detail-text\);/s)
-    expect(pocketDevCss).toMatch(
-      /\.lcd-content\s*{[^}]*grid-template-rows:\s*auto minmax\(0,\s*1fr\);/s,
-    )
+    for (const [token, size] of Object.entries(expectedLcdTypeScale)) {
+      expect(pocketDevCss).toContain(`${token}: ${size};`)
+    }
+
+    expect(getCssRule('.lcd-screen')).toContain('font-family: var(--font-pixel);')
+
+    for (const [selector, token] of expectedLcdFontSizeRules) {
+      expect(getCssRule(selector)).toContain(`font-size: var(${token});`)
+    }
+
+    expect(getCssRule('.lcd-content')).toContain('grid-template-rows: auto minmax(0, 1fr);')
     expect(pocketDevCss).not.toContain('--lcd-footer-text')
     expect(pocketDevCss).not.toContain('.lcd-footer')
   })
