@@ -286,6 +286,45 @@ body::before {
   gap: 5px;
 }
 
+.lcd-intro {
+  color: var(--lcd-mid);
+}
+
+.project-card-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.project-card {
+  padding: 7px;
+  border: 1px solid var(--lcd-mid);
+  background: rgba(219, 232, 200, 0.42);
+}
+
+.project-card h2 {
+  margin: 0 0 5px;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.project-card p {
+  font-size: 7px;
+  line-height: 1.7;
+}
+
+.project-card p + p {
+  margin-top: 5px;
+}
+
+.project-stack {
+  color: var(--lcd-mid);
+}
+
+.project-stack span {
+  color: var(--lcd-ink);
+}
+
 .home-wordmark {
   margin: 0;
   font-size: 13px;

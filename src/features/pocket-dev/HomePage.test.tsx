@@ -3,12 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { describe, expect, it } from 'vitest'
+import { resumeContent } from '@/features/resume-content/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
 const expectedPlaceholderRoutedPages = [
-  { path: '/projects', heading: /projects/i, content: /selected projects/i },
   { path: '/resume', heading: /resume/i, content: /formal resume/i },
   { path: '/contact', heading: /contact/i, content: /contact links/i },
 ] as const
@@ -104,7 +104,7 @@ describe('Home route', () => {
 
     expect(router.state.location.pathname).toBe('/projects')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
-    expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+    expect(await within(lcd).findByRole('heading', { name: /projects/i })).toBeInTheDocument()
   })
 
   it('returns from a top-level LCD Page to Home when B is pressed', async () => {
@@ -179,5 +179,29 @@ describe('Work route', () => {
     expectedWorkContent.forEach((content) => {
       expect(within(workPane).getAllByText(content).length).toBeGreaterThan(0)
     })
+  })
+})
+
+describe('Projects route', () => {
+  it('renders resume-derived professional project cards inside the LCD', async () => {
+    renderRoute('/projects')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    const projectCards = within(lcd).getAllByRole('article')
+
+    expect(projectCards).toHaveLength(resumeContent.projects.length)
+    expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+
+    resumeContent.projects.forEach((project, index) => {
+      const projectCard = projectCards[index]
+
+      expect(within(projectCard).getByRole('heading', { name: project.name })).toBeInTheDocument()
+      expect(projectCard).toHaveTextContent(project.summary)
+      expect(projectCard).toHaveTextContent(`Stack: ${project.stack.join(' / ')}`)
+    })
+
+    expect(within(lcd).queryByText(/placeholder/i)).not.toBeInTheDocument()
   })
 })

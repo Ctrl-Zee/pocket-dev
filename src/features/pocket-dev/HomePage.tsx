@@ -2,7 +2,7 @@ import './pocket-dev.css'
 import { Link, useLocation, useNavigate } from '@tanstack/react-router'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { resumeContent } from '@/features/resume-content/resumeContent'
+import { resumeContent, type ProjectEntry } from '@/features/resume-content/resumeContent'
 
 const homeMenuItems = [
   { label: 'About', href: '/about' },
@@ -28,8 +28,6 @@ const dpadButtons = [
 ] as const
 
 const placeholderPageContent = {
-  Projects:
-    'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
   Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
   Contact:
     'Contact links placeholder for Contact Page. This LCD Page will expose email and profile links.',
@@ -59,6 +57,10 @@ const DeviceNavigationContext = createContext<DeviceNavigationValue | null>(null
 interface WorkSectionProps extends ChildrenProps {
   headingId: string
   title: string
+}
+
+interface ProjectCardProps {
+  project: ProjectEntry
 }
 
 export function PocketDevDevice({ children }: ChildrenProps) {
@@ -227,7 +229,19 @@ export function WorkPage() {
 }
 
 export function ProjectsPage() {
-  return <PlaceholderPage title="Projects" />
+  return (
+    <LcdPage title="Projects">
+      <div className="lcd-page projects-page">
+        <p className="lcd-intro">Selected projects from Resume Data.</p>
+
+        <div className="project-card-list">
+          {resumeContent.projects.map((project) => (
+            <ProjectCard key={project.name} project={project} />
+          ))}
+        </div>
+      </div>
+    </LcdPage>
+  )
 }
 
 export function ResumePage() {
@@ -326,6 +340,18 @@ function WorkSection({ headingId, title, children }: WorkSectionProps) {
       <h2 id={headingId}>{title}</h2>
       {children}
     </section>
+  )
+}
+
+function ProjectCard({ project }: ProjectCardProps) {
+  return (
+    <article className="project-card">
+      <h2>{project.name}</h2>
+      <p>{project.summary}</p>
+      <p className="project-stack">
+        <span>Stack:</span> {project.stack.join(' / ')}
+      </p>
+    </article>
   )
 }
 
