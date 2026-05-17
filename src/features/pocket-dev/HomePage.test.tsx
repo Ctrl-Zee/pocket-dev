@@ -6,7 +6,7 @@ import {
   createRouter,
 } from '@tanstack/react-router'
 import { describe, expect, it } from 'vitest'
-import { routeTree } from '../../routeTree.gen'
+import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
@@ -49,8 +49,7 @@ describe('Home route', () => {
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
 
     const menuLinks = within(lcd).getAllByRole('link')
-    const menuItems = menuLinks.map((link) => link.textContent)
-    expect(menuItems).toEqual(expectedHomeMenuItems)
+    expect(menuLinks.map((link) => link.textContent)).toEqual(expectedHomeMenuItems)
     expect(menuLinks.map((link) => link.getAttribute('href'))).toEqual(expectedHomeMenuHrefs)
 
     hardwareLabels.forEach((label) => {
