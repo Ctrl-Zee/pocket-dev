@@ -12,6 +12,7 @@
   --lcd-title-text: 11px;
   --lcd-body-text: 9px;
   --lcd-menu-text: 9px;
+  --lcd-supporting-text: 8px;
   --lcd-detail-text: 7px;
   --lcd-footer-text: 7px;
   --font-pixel: 'Press Start 2P', monospace;
@@ -317,7 +318,7 @@ body::before {
 }
 
 .project-card p {
-  font-size: 8px;
+  font-size: var(--lcd-supporting-text);
   line-height: 1.7;
 }
 
@@ -364,7 +365,7 @@ body::before {
 
 .contact-list a strong {
   overflow-wrap: anywhere;
-  font-size: 8px;
+  font-size: var(--lcd-supporting-text);
   font-weight: 400;
   line-height: 1.5;
 }

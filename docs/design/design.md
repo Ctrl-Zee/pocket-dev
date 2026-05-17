@@ -67,6 +67,7 @@ The LCD is a fixed pixel canvas. Stick to this scale:
 - Headers (page name): `11px`
 - Menu items / labels: `9px`
 - Body text: `9px`
+- Supporting body text: `8px`
 - Secondary detail text: `7px`
 - Hint/footer text: `7px`
 
