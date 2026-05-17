@@ -9,6 +9,12 @@ import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
+const homeMenuLinkSelector = '.home-menu a'
+const selectedHomeMenuLinkSelector = [
+  '.home-menu a.is-selected',
+  '.home-menu a:focus-visible',
+  '.home-menu a:hover',
+].join(',\n')
 const expectedWorkContent = [
   /senior consultant/i,
   /moser consulting/i,
@@ -47,7 +53,7 @@ const expectedLcdTypeScale = {
 const expectedLcdFontSizeRules = [
   ['.lcd-title', '--lcd-title-text'],
   ['.lcd-page p, .lcd-page li', '--lcd-body-text'],
-  ['.home-menu a', '--lcd-home-menu-text'],
+  [homeMenuLinkSelector, '--lcd-home-menu-text'],
   ['.pixel-list li', '--lcd-detail-text'],
   ['.project-card p', '--lcd-supporting-text'],
   ['.contact-list a strong', '--lcd-supporting-text'],
@@ -385,10 +391,8 @@ describe('Pocket Dev responsive styles', () => {
   })
 
   it('makes Home menu links larger and higher contrast while keeping selection distinct', () => {
-    const homeMenuRule = getCssRule('.home-menu a')
-    const selectedHomeMenuRule = getCssRule(
-      '.home-menu a.is-selected,\n.home-menu a:focus-visible,\n.home-menu a:hover',
-    )
+    const homeMenuRule = getCssRule(homeMenuLinkSelector)
+    const selectedHomeMenuRule = getCssRule(selectedHomeMenuLinkSelector)
 
     expect(pocketDevCss).toContain('--lcd-home-menu-text: 11px;')
     expect(homeMenuRule).toContain('background: rgba(219, 232, 200, 0.5);')
