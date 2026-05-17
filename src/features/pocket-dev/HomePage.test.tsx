@@ -316,6 +316,7 @@ describe('Pocket Dev responsive styles', () => {
     expect(pocketDevCss).toContain('--lcd-body-text: 9px;')
     expect(pocketDevCss).toContain('--lcd-menu-text: 9px;')
     expect(pocketDevCss).toContain('--lcd-supporting-text: 8px;')
+    expect(pocketDevCss).toContain('--lcd-detail-text: 7px;')
 
     expect(pocketDevCss).toMatch(/\.lcd-screen\s*{[^}]*font-family:\s*var\(--font-pixel\);/s)
     expect(pocketDevCss).toMatch(/\.lcd-title\s*{[^}]*font-size:\s*var\(--lcd-title-text\);/s)
