@@ -24,6 +24,19 @@ const forbiddenPlaceholderProjectNames = [
   'todo',
 ]
 
+const expectedContactTargets = [
+  {
+    label: 'Email',
+    value: 'andrew.smith.indy@gmail.com',
+    href: 'mailto:andrew.smith.indy@gmail.com',
+  },
+  {
+    label: 'LinkedIn',
+    value: 'andrew-smith-aa763164',
+    href: 'https://www.linkedin.com/in/andrew-smith-aa763164/',
+  },
+]
+
 function getProjectByName(projectName: string): ProjectEntry {
   const project = resumeContent.projects.find(
     ({ name }) => name === projectName,
@@ -46,17 +59,7 @@ describe('resumeContent', () => {
     expect(resumeContent.identity.publicTitle).toBe('Software Engineer')
     expect(resumeContent.identity.location).toContain('Indianapolis')
 
-    expect(resumeContent.contactTargets).toEqual([
-      expect.objectContaining({
-        label: 'Email',
-        href: 'mailto:andrew.smith.indy@gmail.com',
-      }),
-      {
-        label: 'LinkedIn',
-        value: 'andrew-smith-aa763164',
-        href: 'https://www.linkedin.com/in/andrew-smith-aa763164/',
-      },
-    ])
+    expect(resumeContent.contactTargets).toEqual(expectedContactTargets)
 
     for (const skill of requiredSkillNames) {
       expect(resumeContent.skills).toContainEqual(

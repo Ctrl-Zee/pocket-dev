@@ -1,6 +1,6 @@
 # Andrew Smith
 
-Indianapolis IN • andrew.smith.indy@gmail.com  
+Indianapolis IN • andrew.smith.indy@gmail.com<br>
 LinkedIn: https://www.linkedin.com/in/andrew-smith-aa763164/
 
 Senior Consultant with 10+ years of software design experience. I am a highly motivated and detail-oriented software engineer seeking to use my expertise in software development to provide innovative solutions and outstanding customer service.
