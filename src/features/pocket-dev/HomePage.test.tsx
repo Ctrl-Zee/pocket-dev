@@ -341,6 +341,16 @@ describe('Pocket Dev responsive styles', () => {
     expect(shellDecorationRule).not.toContain('74% 72% / 86px 52px no-repeat')
   })
 
+  it('centers and enlarges the colorful Device shell wordmark below the LCD', () => {
+    const brandRowRule = getCssRule('.device-brand-row')
+    const wordmarkRule = getCssRule('.wordmark')
+
+    expect(brandRowRule).toContain('justify-content: center;')
+    expect(wordmarkRule).toContain('margin: 0 0 3px;')
+    expect(wordmarkRule).toContain('font-size: 16px;')
+    expect(wordmarkRule).toContain('text-align: center;')
+  })
+
   it('renders A and B Device buttons at the same size across viewports', () => {
     const faceButtonRules = [...getCssRules('.button-a'), ...getCssRules('.button-b')]
 
