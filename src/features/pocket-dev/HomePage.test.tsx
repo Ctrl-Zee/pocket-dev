@@ -40,13 +40,14 @@ const expectedLcdTypeScale = {
   '--lcd-title-text': '12px',
   '--lcd-body-text': '10px',
   '--lcd-menu-text': '10px',
+  '--lcd-home-menu-text': '11px',
   '--lcd-supporting-text': '9px',
   '--lcd-detail-text': '8px',
 } as const
 const expectedLcdFontSizeRules = [
   ['.lcd-title', '--lcd-title-text'],
   ['.lcd-page p, .lcd-page li', '--lcd-body-text'],
-  ['.home-menu a', '--lcd-menu-text'],
+  ['.home-menu a', '--lcd-home-menu-text'],
   ['.pixel-list li', '--lcd-detail-text'],
   ['.project-card p', '--lcd-supporting-text'],
   ['.contact-list a strong', '--lcd-supporting-text'],
@@ -381,6 +382,22 @@ describe('Pocket Dev responsive styles', () => {
     expect(pocketDevCss).toMatch(
       /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*\.wordmark\s*{[^}]*font-size:\s*var\(--wordmark-mobile-text\);/s,
     )
+  })
+
+  it('makes Home menu links larger and higher contrast while keeping selection distinct', () => {
+    const homeMenuRule = getCssRule('.home-menu a')
+    const selectedHomeMenuRule = getCssRule(
+      '.home-menu a.is-selected,\n.home-menu a:focus-visible,\n.home-menu a:hover',
+    )
+
+    expect(pocketDevCss).toContain('--lcd-home-menu-text: 11px;')
+    expect(homeMenuRule).toContain('background: rgba(219, 232, 200, 0.5);')
+    expect(homeMenuRule).toContain('color: var(--lcd-ink);')
+    expect(homeMenuRule).toContain('font-size: var(--lcd-home-menu-text);')
+    expect(homeMenuRule).toContain('line-height: 1.45;')
+
+    expect(selectedHomeMenuRule).toContain('background: var(--lcd-ink);')
+    expect(selectedHomeMenuRule).toContain('color: var(--lcd-hi);')
   })
 
   it('renders A and B Device buttons at the same size across viewports', () => {

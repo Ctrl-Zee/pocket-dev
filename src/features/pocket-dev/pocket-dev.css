@@ -12,6 +12,7 @@
   --lcd-title-text: 12px;
   --lcd-body-text: 10px;
   --lcd-menu-text: 10px;
+  --lcd-home-menu-text: 11px;
   --lcd-supporting-text: 9px;
   --lcd-detail-text: 8px;
   --wordmark-text: 16px;
@@ -495,16 +496,18 @@ body::before {
   display: block;
   min-height: 25px;
   padding: 7px 7px 7px 22px;
+  background: rgba(219, 232, 200, 0.5);
   color: var(--lcd-ink);
-  font-size: var(--lcd-menu-text);
-  line-height: 1.35;
+  font-size: var(--lcd-home-menu-text);
+  line-height: 1.45;
   text-decoration: none;
 }
 
 .home-menu a.is-selected,
 .home-menu a:focus-visible,
 .home-menu a:hover {
-  background: var(--lcd-hi);
+  background: var(--lcd-ink);
+  color: var(--lcd-hi);
 }
 
 .home-menu a.is-selected::before {

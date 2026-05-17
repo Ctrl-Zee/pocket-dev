@@ -189,15 +189,15 @@ Every interaction has SFX. No background music.
 
 ## 9. Pages
 
-| Page     | Content                                                            |
-| ---      | ---                                                                |
-| Home     | Wordmark header, version sub-line, vertical menu of 4 items        |
-| About    | Pixel avatar (16×16) + 3-line identity + scrollable bio + skills   |
-| Projects | 4 framed project cards, each with name / stack / blurb             |
-| Resume   | Pixel "scan" of the PDF, scrollable, with a real Download button   |
-| Contact  | 3 framed link rows: GitHub, LinkedIn, Email, each with a sprite    |
-| Rotate   | Mobile-only landscape alert ("PLEASE ROTATE YOUR DEVICE")          |
-| Secret   | Konami payoff: hot-pink palette + +30 lives message                |
+| Page     | Content                                                                  |
+| ---      | ---                                                                      |
+| Home     | Wordmark header, version sub-line, vertical menu of 5 high-contrast links |
+| About    | Pixel avatar (16×16) + 3-line identity + scrollable bio + skills         |
+| Projects | 4 framed project cards, each with name / stack / blurb                   |
+| Resume   | Pixel "scan" of the PDF, scrollable, with a real Download button         |
+| Contact  | 3 framed link rows: GitHub, LinkedIn, Email, each with a sprite          |
+| Rotate   | Mobile-only landscape alert ("PLEASE ROTATE YOUR DEVICE")                |
+| Secret   | Konami payoff: hot-pink palette + +30 lives message                      |
 
 ### Rules
 - Every page renders into the same LCD area. No modals, no overlays inside the device.
