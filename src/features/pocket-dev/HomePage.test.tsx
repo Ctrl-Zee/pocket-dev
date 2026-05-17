@@ -313,6 +313,16 @@ describe('Pocket Dev responsive styles', () => {
     expect(desktopDeviceRule).toContain('height: min(96dvh, 780px);')
   })
 
+  it('keeps the Device shell free of lower decorative artifacts', () => {
+    const shellDecorationRule = pocketDevCss.match(/\.pocket-dev-device::before\s*{[^}]*}/s)?.[0]
+
+    expect(shellDecorationRule).toContain('70% 22% / 64px 42px no-repeat')
+    expect(shellDecorationRule).toContain('repeating-linear-gradient(0deg')
+    expect(shellDecorationRule).toContain('repeating-linear-gradient(90deg')
+    expect(shellDecorationRule).not.toContain('radial-gradient(circle at 78% 82%')
+    expect(shellDecorationRule).not.toContain('74% 72% / 86px 52px no-repeat')
+  })
+
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
     expect(pocketDevCss).toMatch(/body\s*{[^}]*overflow:\s*hidden;/s)
     expect(pocketDevCss).toMatch(

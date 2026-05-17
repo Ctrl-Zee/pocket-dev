@@ -91,9 +91,7 @@ body::before {
   opacity: 0.22;
   mix-blend-mode: multiply;
   background:
-    radial-gradient(circle at 78% 82%, var(--shell-deep) 0 46px, transparent 47px),
     linear-gradient(var(--shell-deep), var(--shell-deep)) 70% 22% / 64px 42px no-repeat,
-    linear-gradient(var(--shell-deep), var(--shell-deep)) 74% 72% / 86px 52px no-repeat,
     repeating-linear-gradient(0deg, transparent 0 13px, var(--shell-deep) 14px),
     repeating-linear-gradient(90deg, transparent 0 13px, var(--shell-deep) 14px);
 }

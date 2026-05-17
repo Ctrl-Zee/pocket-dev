@@ -93,7 +93,7 @@ Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep gly
 
 ### Materials
 - **Translucent purple plastic.** Achieved with layered gradients + inner shadows + a top sheen (`::after` overlay).
-- **Internal-component silhouettes** under the surface using `::before`: faint battery shape lower-right, repeating circuit-board grid (1px lines @ 14px), an IC chip silhouette upper-right, speaker-driver circle behind the grill. All at low opacity, `mix-blend-mode: multiply`. They should read as "barely visible" — never as a literal illustration.
+- **Internal-component silhouettes** under the surface using `::before`: repeating circuit-board grid (1px lines @ 14px) and an IC chip silhouette upper-right. All at low opacity, `mix-blend-mode: multiply`. They should read as "barely visible" — never as a literal illustration.
 - **Highlights:** subtle inset white on top edge, deeper purple on bottom; a glossy upper-half sheen at ~32% opacity.
 
 ### Don't
