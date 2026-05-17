@@ -1,5 +1,6 @@
 import './pocket-dev.css'
 import type { ReactNode } from 'react'
+import { resumeContent } from '@/features/resume-content/resumeContent'
 
 const homeMenuItems = [
   { label: 'About', href: '/about' },
@@ -11,6 +12,7 @@ const homeMenuItems = [
 
 const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
+const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
 
 const placeholderPageContent = {
   About:
@@ -88,7 +90,48 @@ export function ProjectsPage() {
 }
 
 export function ResumePage() {
-  return <PlaceholderPage title="Resume" />
+  const featuredSkills = resumeContent.skills
+    .slice(0, 6)
+    .map((skill) => skill.name)
+
+  return (
+    <LcdPage title="Resume">
+      <div className="resume-page">
+        <section className="resume-preview" aria-label="Compact resume preview">
+          <div className="resume-preview-header">
+            <p className="resume-preview-name">{resumeContent.identity.name}</p>
+            <p>{resumeContent.identity.publicTitle}</p>
+            <p>{resumeContent.identity.location}</p>
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">SUMMARY</p>
+            <p>{resumeContent.identity.summary}</p>
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">TOOLS</p>
+            <p>{featuredSkills.slice(0, 3).join(' / ')}</p>
+            <p>{featuredSkills.slice(3).join(' / ')}</p>
+          </div>
+
+          <div className="resume-preview-section">
+            <p className="resume-preview-label">SIGNAL</p>
+            <p>{resumeContent.highlights[0]}</p>
+          </div>
+        </section>
+
+        <a
+          className="resume-open-pdf"
+          href={resumePdfHref}
+          target="_blank"
+          rel="noreferrer"
+        >
+          OPEN PDF
+        </a>
+      </div>
+    </LcdPage>
+  )
 }
 
 export function ContactPage() {
