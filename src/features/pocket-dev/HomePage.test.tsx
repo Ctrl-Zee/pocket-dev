@@ -7,12 +7,38 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
-const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
-const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
-const expectedHomeMenuPages = expectedHomeMenuItems.map((label, index) => ({
-  href: expectedHomeMenuHrefs[index],
-  label,
-}))
+const expectedHomeMenuPages = [
+  { label: 'About', href: '/about' },
+  { label: 'Work', href: '/work' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Resume', href: '/resume' },
+  { label: 'Contact', href: '/contact' },
+] as const
+const expectedHomeMenuItems = expectedHomeMenuPages.map(({ label }) => label)
+const expectedHomeMenuHrefs = expectedHomeMenuPages.map(({ href }) => href)
+type TestUser = ReturnType<typeof userEvent.setup>
+
+const returnHomeControls = [
+  {
+    controlName: 'B button',
+    press: async (user: TestUser) => {
+      await user.click(await screen.findByRole('button', { name: /b/i }))
+    },
+  },
+  {
+    controlName: 'keyboard B key',
+    press: async (user: TestUser) => {
+      await user.keyboard('b')
+    },
+  },
+]
+const homeSelectionReturnCases = expectedHomeMenuPages.flatMap((page) =>
+  returnHomeControls.map((control) => ({
+    controlName: control.controlName,
+    page,
+    pressReturnHome: control.press,
+  })),
+)
 const homeMenuLinkSelector = '.home-menu a'
 const selectedHomeMenuLinkSelector = [
   '.home-menu a.is-selected',
@@ -197,26 +223,18 @@ describe('Home route', () => {
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
   })
 
-  it.each([
-    ['B button', async (user: ReturnType<typeof userEvent.setup>) => {
-      await user.click(await screen.findByRole('button', { name: /b/i }))
-    }],
-    ['keyboard B key', async (user: ReturnType<typeof userEvent.setup>) => {
-      await user.keyboard('b')
-    }],
-  ])('remembers the selected Home row for every Page when returning with %s', async (_, pressB) => {
-    for (const page of expectedHomeMenuPages) {
-      const { router, user, unmount } = renderRoute('/')
+  it.each(homeSelectionReturnCases)(
+    'remembers the selected Home row for $page.label when returning with $controlName',
+    async ({ page, pressReturnHome }) => {
+      const { router, user } = renderRoute('/')
 
       await user.click(await screen.findByRole('link', { name: page.label }))
-      await pressB(user)
+      await pressReturnHome(user)
 
       expect(router.state.location.pathname).toBe('/')
       expectSelectedHomeMenuLink(page.label)
-
-      unmount()
-    }
-  })
+    },
+  )
 
   it('returns from a top-level LCD Page to Home when the keyboard B key is pressed', async () => {
     const { router, user } = renderRoute('/work')
