@@ -21,13 +21,19 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 ARG AGENT_UID=1000
 ARG AGENT_GID=1000
 
- # Rename the base image's "node" user to "agent" and align UID/GID.
+# Rename the base image's "node" user to "agent" and align UID/GID.
 RUN usermod -u $AGENT_UID -d /home/agent -m -l agent node
 
 # Install Codex CLI (run as root before USER agent)
 RUN npm install -g @openai/codex
 
+RUN mkdir -p /home/agent/.codex \
+  && chown -R ${AGENT_UID}:${AGENT_GID} /home/agent/.codex
+
 USER ${AGENT_UID}:${AGENT_GID}
+
+ENV HOME=/home/agent
+ENV CODEX_HOME=/home/agent/.codex
 
 WORKDIR /home/agent
 

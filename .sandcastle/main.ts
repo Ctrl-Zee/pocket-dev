@@ -22,6 +22,7 @@
 // Or add to package.json:
 //   "scripts": { "sandcastle": "npx tsx .sandcastle/main.ts" }
 
+import { execFileSync } from 'node:child_process'
 import * as sandcastle from '@ai-hero/sandcastle'
 import { docker } from '@ai-hero/sandcastle/sandboxes/docker'
 
@@ -39,10 +40,34 @@ const hooks = {
   sandbox: { onSandboxReady: [{ command: 'npm install' }] },
 }
 
+const codexDockerSandbox = docker({
+  mounts: [
+    {
+      hostPath: '~/.codex/auth.json',
+      sandboxPath: '/home/agent/.codex/auth.json',
+      readonly: true,
+    },
+    {
+      hostPath: '~/.codex/config.toml',
+      sandboxPath: '/home/agent/.codex/config.toml',
+      readonly: true,
+    },
+  ],
+})
+
 // Copy node_modules from the host into the worktree before each sandbox
 // starts. Avoids a full npm install from scratch; the hook above handles
 // platform-specific binaries and any packages added since the last copy.
 const copyToWorktree = ['node_modules']
+
+const isBranchMergedIntoCurrentBranch = (branch: string) => {
+  try {
+    execFileSync('git', ['merge-base', '--is-ancestor', branch, 'HEAD'], { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Main loop
@@ -62,13 +87,13 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   // -------------------------------------------------------------------------
   const plan = await sandcastle.run({
     hooks,
-    sandbox: docker(),
+    sandbox: codexDockerSandbox,
     name: 'planner',
     // One iteration is enough: the planner just needs to read and reason,
     // not write code.
     maxIterations: 1,
-    // Opus for planning: dependency analysis benefits from deeper reasoning.
-    agent: sandcastle.codex('gpt-5.4-mini'),
+    // High reasoning for planning: dependency analysis benefits from deeper reasoning.
+    agent: sandcastle.codex('gpt-5.5', { effort: 'high' }),
     promptFile: './.sandcastle/plan-prompt.md',
   })
 
@@ -79,9 +104,17 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   }
 
   // The plan JSON contains an array of issues, each with id, title, branch.
-  const { issues } = JSON.parse(planMatch[1]!) as {
+  const { issues: plannedIssues } = JSON.parse(planMatch[1]!) as {
     issues: { id: string; title: string; branch: string }[]
   }
+
+  const issues = plannedIssues.filter((issue) => {
+    const alreadyMerged = isBranchMergedIntoCurrentBranch(issue.branch)
+    if (alreadyMerged) {
+      console.log(`Skipping ${issue.id}: ${issue.branch} is already merged into the current branch.`)
+    }
+    return !alreadyMerged
+  })
 
   if (issues.length === 0) {
     // No unblocked work — either everything is done or everything is blocked.
@@ -108,7 +141,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     issues.map(async (issue) => {
       const sandbox = await sandcastle.createSandbox({
         branch: issue.branch,
-        sandbox: docker(),
+        sandbox: codexDockerSandbox,
         hooks,
         copyToWorktree,
       })
@@ -118,7 +151,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
         const implement = await sandbox.run({
           name: 'implementer',
           maxIterations: 100,
-          agent: sandcastle.codex('gpt-5.4-mini'),
+          agent: sandcastle.codex('gpt-5.5', { effort: 'medium' }),
           promptFile: './.sandcastle/implement-prompt.md',
           promptArgs: {
             TASK_ID: issue.id,
@@ -132,7 +165,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
           const review = await sandbox.run({
             name: 'reviewer',
             maxIterations: 1,
-            agent: sandcastle.codex('gpt-5.4-mini'),
+            agent: sandcastle.codex('gpt-5.5', { effort: 'medium' }),
             promptFile: './.sandcastle/review-prompt.md',
             promptArgs: {
               BRANCH: issue.branch,
@@ -194,10 +227,10 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   // -------------------------------------------------------------------------
   await sandcastle.run({
     hooks,
-    sandbox: docker(),
+    sandbox: codexDockerSandbox,
     name: 'merger',
     maxIterations: 1,
-    agent: sandcastle.codex('gpt-5.4-mini'),
+    agent: sandcastle.codex('gpt-5.5', { effort: 'high' }),
     promptFile: './.sandcastle/merge-prompt.md',
     promptArgs: {
       // A markdown list of branch names, one per line.
