@@ -90,6 +90,6 @@ describe('resumeContent', () => {
       project.name.includes('PEBT'),
     )
 
-    expect(JSON.stringify(pebtProject)).toContain('20K families')
+    expect(pebtProject?.highlights).toContain('Served 20K families.')
   })
 })
