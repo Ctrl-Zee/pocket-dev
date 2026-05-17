@@ -16,15 +16,15 @@ export type ExperienceEntry = {
   startYear: string
   endYear: string
   summary: string
-  highlights: string[]
+  highlights: readonly string[]
 }
 
 export type ProjectEntry = {
   name: string
   client: string
-  stack: string[]
+  stack: readonly string[]
   summary: string
-  highlights: string[]
+  highlights: readonly string[]
 }
 
 export type EducationEntry = {
@@ -44,14 +44,14 @@ export type ResumeIdentity = {
 
 export type ResumeContent = {
   identity: ResumeIdentity
-  highlights: string[]
-  softCompetencies: string[]
-  skills: Skill[]
-  experience: ExperienceEntry[]
-  projects: ProjectEntry[]
-  education: EducationEntry[]
-  activities: string[]
-  contactTargets: ContactTarget[]
+  highlights: readonly string[]
+  softCompetencies: readonly string[]
+  skills: readonly Skill[]
+  experience: readonly ExperienceEntry[]
+  projects: readonly ProjectEntry[]
+  education: readonly EducationEntry[]
+  activities: readonly string[]
+  contactTargets: readonly ContactTarget[]
 }
 
 export const resumeContent = {
