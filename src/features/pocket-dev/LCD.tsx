@@ -1,7 +1,14 @@
+import { clsx } from 'clsx'
 import type { ChildrenProps } from './types'
 
 interface LcdPageProps extends ChildrenProps {
   title: string
+}
+
+interface LcdSectionProps extends ChildrenProps {
+  ariaLabel?: string
+  as?: 'article' | 'section'
+  className?: string
 }
 
 export function DeviceScreen({ children }: ChildrenProps) {
@@ -21,5 +28,18 @@ export function LcdPage({ title, children }: LcdPageProps) {
       <h1 className="lcd-title">&gt; {title.toUpperCase()}</h1>
       {children}
     </div>
+  )
+}
+
+export function LcdSection({
+  ariaLabel,
+  as: Component = 'section',
+  children,
+  className,
+}: LcdSectionProps) {
+  return (
+    <Component className={clsx('lcd-section', className)} aria-label={ariaLabel}>
+      {children}
+    </Component>
   )
 }

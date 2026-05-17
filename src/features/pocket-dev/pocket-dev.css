@@ -269,7 +269,7 @@ body::before {
   line-height: 1.6;
 }
 
-.work-entry {
+.lcd-section {
   display: grid;
   gap: 4px;
   padding: 6px;
@@ -394,15 +394,7 @@ body::before {
 }
 
 .resume-preview {
-  display: grid;
-  gap: 7px;
   overflow: auto;
-  padding: 8px;
-  border: 2px solid var(--lcd-ink);
-  background:
-    linear-gradient(90deg, rgba(31, 45, 24, 0.11) 1px, transparent 1px),
-    linear-gradient(0deg, rgba(31, 45, 24, 0.11) 1px, transparent 1px), var(--lcd-hi);
-  background-size: 8px 8px;
 }
 
 .resume-preview p {

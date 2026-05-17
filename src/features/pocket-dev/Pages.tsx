@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { resumeContent, type ProjectEntry } from '@/features/resume-content/resumeContent'
-import { LcdPage } from './LCD'
+import { LcdPage, LcdSection } from './LCD'
 import { opensContactTargetInCurrentTab } from './contactTargets'
 import { pageCatalog } from './pageCatalog'
 import { useDeviceNavigation } from './Device'
@@ -119,7 +119,7 @@ export function ResumePage() {
   return (
     <LcdPage title="Resume">
       <div className="resume-page">
-        <section className="resume-preview" aria-label="Compact resume preview">
+        <LcdSection className="resume-preview" ariaLabel="Compact resume preview">
           <div className="resume-preview-header">
             <p className="resume-preview-name">{identity.name}</p>
             <p>{identity.publicTitle}</p>
@@ -142,7 +142,7 @@ export function ResumePage() {
             <p className="resume-preview-label">SIGNAL</p>
             <p>{highlights[0]}</p>
           </div>
-        </section>
+        </LcdSection>
 
         <a className="resume-open-pdf" href={resumePdfHref} target="_blank" rel="noreferrer">
           OPEN PDF
@@ -191,7 +191,11 @@ function WorkDetails() {
     <div className="lcd-page work-page" role="region" aria-label="Work details">
       <WorkSection headingId="work-experience-heading" title="Experience">
         {resumeContent.experience.map((entry) => (
-          <article className="work-entry" key={`${entry.employer}-${entry.role}`}>
+          <LcdSection
+            as="article"
+            className="work-entry"
+            key={`${entry.employer}-${entry.role}`}
+          >
             <p className="work-kicker">
               {entry.startYear}-{entry.endYear}
             </p>
@@ -204,7 +208,7 @@ function WorkDetails() {
                 <li key={highlight}>{highlight}</li>
               ))}
             </ul>
-          </article>
+          </LcdSection>
         ))}
       </WorkSection>
 

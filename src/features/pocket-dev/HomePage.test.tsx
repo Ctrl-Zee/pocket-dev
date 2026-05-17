@@ -291,6 +291,25 @@ describe('Work route', () => {
       expect(within(workPane).getAllByText(content).length).toBeGreaterThan(0)
     })
   })
+
+  it('uses the shared LCD section panel treatment for Work entries and the Resume preview', async () => {
+    const sharedSectionRule = getCssRule('.lcd-section')
+
+    expect(sharedSectionRule).toContain('background: rgba(219, 232, 200, 0.44);')
+
+    const { unmount } = renderRoute('/work')
+    const workPane = await screen.findByRole('region', { name: /work details/i })
+    const workEntry = within(workPane).getByText(/senior consultant/i).closest('.lcd-section')
+
+    expect(workEntry).toBeInTheDocument()
+
+    unmount()
+    renderRoute('/resume')
+
+    const resumePreview = await screen.findByLabelText(/compact resume preview/i)
+
+    expect(resumePreview).toHaveClass('lcd-section')
+  })
 })
 
 describe('Projects route', () => {
