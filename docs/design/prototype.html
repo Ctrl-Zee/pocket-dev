@@ -383,6 +383,12 @@ const ICON_MAIL = [
   '11111111',
 ];
 
+const CONTACT_ITEMS = [
+  { id:'github',   label:'GITHUB',   sub:'@CTRL-ZEE',      icon:ICON_GH,   href:'https://github.com/Ctrl-Zee' },
+  { id:'linkedin', label:'LINKEDIN', sub:'/IN/ANDREW-SMITH', icon:ICON_LI, href:'https://www.linkedin.com/in/andrew-smith-aa763164/' },
+  { id:'email',    label:'EMAIL',    sub:'ANDREW.SMITH.INDY@GMAIL', icon:ICON_MAIL, href:'mailto:andrew.smith.indy@gmail.com' },
+];
+
 // folder for projects
 const ICON_FOLDER = [
   '..111...',
@@ -635,18 +641,13 @@ function ResumeScreen({ palette, scrollY, downloadBlink }){
 }
 
 function ContactScreen({ cursor, palette }){
-  const items = [
-    { id:'github',   label:'GITHUB',   sub:'@CTRL-ZEE',      icon:ICON_GH,   href:'https://github.com/Ctrl-Zee' },
-    { id:'linkedin', label:'LINKEDIN', sub:'/IN/ANDREW-S',   icon:ICON_LI,   href:'https://www.linkedin.com/in/andrew-smith-indy/' },
-    { id:'email',    label:'EMAIL',    sub:'ANDREW.SMITH.INDY@GMAIL', icon:ICON_MAIL, href:'mailto:andrew.smith.indy@gmail.com' },
-  ];
   return (
     <div className="absolute inset-0 flex flex-col" style={{padding:'10px 12px'}}>
       <div className="pixel" style={{fontSize:10, color:palette.ink, marginBottom:8, letterSpacing:1}}>
         &gt; CONTACT
       </div>
       <div style={{flex:1, display:'flex', flexDirection:'column', gap:8}}>
-        {items.map((it,i)=>(
+        {CONTACT_ITEMS.map((it,i)=>(
           <div key={it.id} style={{
             display:'flex', alignItems:'center', gap:8,
             padding:'6px 8px',
@@ -790,7 +791,7 @@ function App(){
   const cursorMax = useCallback((s)=>{
     if(s==='home') return MENU.length;
     if(s==='projects') return 4;
-    if(s==='contact') return 3;
+    if(s==='contact') return CONTACT_ITEMS.length;
     return 1;
   },[]);
 
@@ -842,13 +843,8 @@ function App(){
         a.click();
       }
     } else if(screen==='contact'){
-      const items = [
-        'https://github.com/Ctrl-Zee',
-        'https://www.linkedin.com/in/andrew-smith-indy/',
-        'mailto:andrew.smith.indy@gmail.com',
-      ];
       sfx.confirm();
-      window.open(items[cursor], '_blank', 'noopener,noreferrer');
+      window.open(CONTACT_ITEMS[cursor].href, '_blank', 'noopener,noreferrer');
     } else if(screen==='secret'){
       setSecret(false);
       setScreen('home');

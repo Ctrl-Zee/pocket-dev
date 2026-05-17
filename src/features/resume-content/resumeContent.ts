@@ -208,18 +208,8 @@ export const resumeContent = {
     },
     {
       label: 'LinkedIn',
-      value: 'andrew-smith-indy',
-      href: 'https://www.linkedin.com/in/andrew-smith-indy/',
-    },
-    {
-      label: 'Website',
-      value: 'andrewsmith.bio',
-      href: 'https://andrewsmith.bio',
-    },
-    {
-      label: 'Phone',
-      value: '(317) 260-8411',
-      href: 'tel:+13172608411',
+      value: 'andrew-smith-aa763164',
+      href: 'https://www.linkedin.com/in/andrew-smith-aa763164/',
     },
   ],
 } as const satisfies ResumeContent
