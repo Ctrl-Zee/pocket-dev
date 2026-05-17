@@ -60,6 +60,10 @@ _Avoid_: Automatically extracted PDF text as runtime content, placeholder projec
 The D-pad and buttons that provide the canonical in-world interaction model for Pocket Dev.
 _Avoid_: The only way to interact with links or downloads
 
+**LCD Selection**:
+The currently highlighted actionable row inside the LCD that can be moved with Device Controls and activated with A/Enter.
+_Avoid_: Browser focus, hover state, route state
+
 **Sound**:
 Optional quiet interaction effects that are muted by default and can be enabled by the visitor.
 _Avoid_: Background music, surprise audio
@@ -91,6 +95,9 @@ _Avoid_: Recruiters as the only audience
 - Top-level routes are `/`, `/about`, `/work`, `/projects`, `/resume`, and `/contact`.
 - Secret and Rotate are not top-level routes for the first complete version.
 - **Device Controls** define the primary interaction metaphor, while normal web click and tap behavior remains available for menu navigation and actionable content.
+- **LCD Selection** is the selected actionable row inside a **Page**, not browser focus or hover state.
+- Home and Contact have **LCD Selection** in the first complete version.
+- **LCD Selection** resets to the first actionable row when entering a **Page**.
 - The B control returns from any top-level **Page** to Home instead of replaying browser history.
 - **Sound** supports the handheld feel but is never required to use **Pocket Dev**.
 - **Secret** is aligned with the playful product direction but is not required for the first complete version.
