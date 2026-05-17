@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -199,24 +199,6 @@ function expectSelectedHomeMenuLink(label: string) {
   expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
 }
 
-function expectSnakeHeadCell(lcd: HTMLElement, row: number, column: number) {
-  expect(
-    within(lcd).getByRole('gridcell', {
-      name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
-    }),
-  ).toBeInTheDocument()
-}
-
-function pressHardwareButton(name: RegExp) {
-  fireEvent.click(screen.getByRole('button', { name }))
-}
-
-function advanceSnakeTimer(milliseconds = 450) {
-  act(() => {
-    vi.advanceTimersByTime(milliseconds)
-  })
-}
-
 async function enterKonamiSequence(user: TestUser) {
   const pressControl = async (name: RegExp) => {
     await user.click(screen.getByRole('button', { name }))
@@ -232,17 +214,6 @@ async function enterKonamiSequence(user: TestUser) {
   await pressControl(/right/i)
   await pressControl(/^b$/i)
   await pressControl(/^a$/i)
-}
-
-async function openHiddenSnake(user: TestUser) {
-  await screen.findByRole('heading', { name: /home/i })
-  await enterKonamiSequence(user)
-  await user.click(screen.getByRole('button', { name: /^b$/i }))
-
-  const lcd = screen.getByRole('region', { name: /lcd screen/i })
-  await user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
-
-  return lcd
 }
 
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
@@ -531,7 +502,7 @@ describe('Home route', () => {
     expect(within(lcd).queryByRole('button', { name: 'SNAKE' })).not.toBeInTheDocument()
   })
 
-  it('runs the hidden SNAKE shell controls inside the LCD without moving Home selection', async () => {
+  it('opens hidden SNAKE to a clean LCD Start state without running old gameplay', async () => {
     const { router, user } = renderRoute('/')
 
     await screen.findByRole('heading', { name: /home/i })
@@ -545,20 +516,30 @@ describe('Home route', () => {
 
     lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /^> snake$/i })).toBeInTheDocument()
-    expect(within(lcd).getByText(/ready/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^start$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/d-pad turn/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/a \/ start begin/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /^a$/i }))
-    expect(within(lcd).getByText(/running/i)).toBeInTheDocument()
+    const board = within(lcd).getByRole('grid', { name: /snake board/i })
+    expect(board).toHaveAttribute('aria-rowcount', '6')
+    expect(board).toHaveAttribute('aria-colcount', '10')
+    expect(within(board).getAllByRole('gridcell')).toHaveLength(60)
+    expect(
+      within(board).getByRole('gridcell', { name: /snake head row 3 column 5/i }),
+    ).toBeInTheDocument()
+    expect(within(board).getByRole('gridcell', { name: /food row 5 column 8/i })).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: /down/i }))
-    expect(within(lcd).getByText(/dir down/i)).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/')
-
-    await user.click(screen.getByRole('button', { name: /start/i }))
-    expect(within(lcd).getByText(/paused/i)).toBeInTheDocument()
-
     await user.click(screen.getByRole('button', { name: /^a$/i }))
-    expect(within(lcd).getByText(/running/i)).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /start/i }))
+
+    expect(within(lcd).queryByText(/running/i)).not.toBeInTheDocument()
+    expect(
+      within(board).getByRole('gridcell', { name: /snake head row 3 column 5/i }),
+    ).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/')
 
     await user.click(screen.getByRole('button', { name: /^b$/i }))
 
@@ -568,54 +549,6 @@ describe('Home route', () => {
       'data-selected',
       'true',
     )
-  })
-
-  it('starts hidden SNAKE and advances the head on a timer tick', async () => {
-    const { user } = renderRoute('/')
-
-    const lcd = await openHiddenSnake(user)
-
-    expectSnakeHeadCell(lcd, 3, 5)
-
-    vi.useFakeTimers()
-    pressHardwareButton(/^a$/i)
-    advanceSnakeTimer()
-
-    expectSnakeHeadCell(lcd, 3, 6)
-  })
-
-  it('uses D-pad direction for hidden SNAKE movement without changing the route', async () => {
-    const { router, user } = renderRoute('/')
-    const lcd = await openHiddenSnake(user)
-
-    vi.useFakeTimers()
-    pressHardwareButton(/^a$/i)
-    pressHardwareButton(/down/i)
-    advanceSnakeTimer()
-
-    expect(router.state.location.pathname).toBe('/')
-    expect(within(lcd).getByText(/dir down/i)).toBeInTheDocument()
-    expectSnakeHeadCell(lcd, 4, 5)
-  })
-
-  it('pauses hidden SNAKE movement with Start and resumes with A', async () => {
-    const { user } = renderRoute('/')
-    const lcd = await openHiddenSnake(user)
-
-    vi.useFakeTimers()
-    pressHardwareButton(/^a$/i)
-    advanceSnakeTimer()
-    expectSnakeHeadCell(lcd, 3, 6)
-
-    pressHardwareButton(/start/i)
-    advanceSnakeTimer(900)
-    expect(within(lcd).getByText(/paused/i)).toBeInTheDocument()
-    expectSnakeHeadCell(lcd, 3, 6)
-
-    pressHardwareButton(/^a$/i)
-    advanceSnakeTimer()
-
-    expectSnakeHeadCell(lcd, 3, 7)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

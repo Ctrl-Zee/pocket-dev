@@ -3,7 +3,6 @@ import { LcdPage } from '@/components/lcd'
 import {
   getSnakeCellKey,
   isSameSnakeCell,
-  snakeBoard,
   snakeBoardCells,
   type SnakeCell,
   type SnakeGameState,
@@ -18,9 +17,9 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
     <LcdPage title="Snake">
       <div className="snake-game-page" aria-label="SNAKE game">
         <div
-          aria-colcount={snakeBoard.columns}
+          aria-colcount={game.board.columns}
           aria-label="SNAKE board"
-          aria-rowcount={snakeBoard.rows}
+          aria-rowcount={game.board.rows}
           className="snake-game-grid"
           role="grid"
         >
@@ -45,9 +44,10 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
           })}
         </div>
         <div className="snake-game-status" aria-label="SNAKE shell status">
-          <p>State {getSnakeStatusLabel(game.status)}</p>
-          <p>Dir {game.direction.toUpperCase()}</p>
-          <p>Score {game.score.toString().padStart(3, '0')}</p>
+          <p>{getSnakeStatusLabel(game.status)}</p>
+          <p>D-PAD TURN</p>
+          <p>A / START BEGIN</p>
+          <p>Score {game.score}</p>
         </div>
       </div>
     </LcdPage>
@@ -72,5 +72,5 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 }
 
 function getSnakeStatusLabel(status: SnakeGameState['status']) {
-  return status === 'game-over' ? 'GAME OVER' : status.toUpperCase()
+  return status.toUpperCase()
 }
