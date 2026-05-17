@@ -8,6 +8,9 @@ const homeMenuItems = [
   { label: 'Contact', href: '/contact' },
 ]
 
+const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV']
+const speakerSlots = Array.from({ length: 5 })
+
 export function HomePage() {
   return (
     <div className="pocket-dev-stage">
@@ -42,12 +45,9 @@ export function HomePage() {
           <section className="device-brand-row" aria-label="Device hardware top controls">
             <div className="volume-wheel" aria-label="Volume wheel" />
             <p className="wordmark" aria-label="Pocket Dev wordmark">
-              <span>P</span>
-              <span>O</span>
-              <span>C</span>
-              <span>K</span>
-              <span>E</span>
-              <span>T DEV</span>
+              {deviceWordmarkSegments.map((segment) => (
+                <span key={segment}>{segment}</span>
+              ))}
             </p>
           </section>
 
@@ -65,11 +65,9 @@ export function HomePage() {
               <span className="pill" aria-label="Start" />
             </div>
             <div className="speaker-grill" aria-label="Speaker grill">
-              <span />
-              <span />
-              <span />
-              <span />
-              <span />
+              {speakerSlots.map((_, index) => (
+                <span key={index} />
+              ))}
             </div>
           </section>
         </div>
