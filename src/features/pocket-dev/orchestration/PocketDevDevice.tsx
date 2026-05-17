@@ -11,7 +11,7 @@ import { useLcdSelection } from '../navigation/lcdSelection'
 import type { SelectionDelta } from '../navigation/lcdSelection'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { RotatePage } from '../pages/RotatePage'
-import { SecretSnakePage } from '../pages/SecretSnakePage'
+import { SecretSnakePage, type SnakeShellStatus } from '../pages/SecretSnakePage'
 import { SecretSnakeUnlockPage } from '../pages/SecretSnakeUnlockPage'
 import { useDeviceSfx } from '../sfx/deviceSfx'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
@@ -21,7 +21,6 @@ interface PocketDevDeviceProps {
 }
 
 type KonamiInput = DeviceMoveDirection | 'a' | 'b'
-type SnakeShellStatus = 'ready' | 'running' | 'paused'
 
 const konamiSequence = [
   'up',
@@ -36,6 +35,9 @@ const konamiSequence = [
   'a',
 ] as const satisfies readonly KonamiInput[]
 
+const initialSnakeDirection: DeviceMoveDirection = 'right'
+const initialSnakeStatus: SnakeShellStatus = 'ready'
+
 export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -46,8 +48,8 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const [isSnakeUnlocked, setIsSnakeUnlocked] = useState(false)
   const [isShowingSnake, setIsShowingSnake] = useState(false)
   const [isShowingSnakeUnlock, setIsShowingSnakeUnlock] = useState(false)
-  const [snakeDirection, setSnakeDirection] = useState<DeviceMoveDirection>('right')
-  const [snakeStatus, setSnakeStatus] = useState<SnakeShellStatus>('ready')
+  const [snakeDirection, setSnakeDirection] = useState<DeviceMoveDirection>(initialSnakeDirection)
+  const [snakeStatus, setSnakeStatus] = useState<SnakeShellStatus>(initialSnakeStatus)
   const visibleHomeItemCount = isSnakeUnlocked ? pageCatalog.length + 1 : pageCatalog.length
   const homeSelection = useLcdSelection(visibleHomeItemCount)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
@@ -109,7 +111,12 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   )
 
   const toggleSnakeStatus = useCallback(() => {
-    setSnakeStatus((currentStatus) => (currentStatus === 'running' ? 'paused' : 'running'))
+    setSnakeStatus(getNextSnakeShellStatus)
+  }, [])
+
+  const resetSnakeShell = useCallback(() => {
+    setSnakeDirection(initialSnakeDirection)
+    setSnakeStatus(initialSnakeStatus)
   }, [])
 
   const activateSelection = useCallback(() => {
@@ -161,8 +168,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const returnHome = useCallback(() => {
     if (isShowingSnake) {
       setIsShowingSnake(false)
-      setSnakeDirection('right')
-      setSnakeStatus('ready')
+      resetSnakeShell()
       playDeviceSfx('back')
       void navigate({ to: '/' })
       return
@@ -173,16 +179,15 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     setIsShowingSnakeUnlock(false)
     playDeviceSfx('back')
     void navigate({ to: '/' })
-  }, [isShowingSnake, navigate, playDeviceSfx, trackKonamiInput])
+  }, [isShowingSnake, navigate, playDeviceSfx, resetSnakeShell, trackKonamiInput])
 
   const openSnake = useCallback(() => {
     if (!isSnakeUnlocked) return
 
     setIsShowingSnakeUnlock(false)
-    setSnakeDirection('right')
-    setSnakeStatus('ready')
+    resetSnakeShell()
     setIsShowingSnake(true)
-  }, [isSnakeUnlocked])
+  }, [isSnakeUnlocked, resetSnakeShell])
 
   const handleSelect = useCallback(() => {
     playDeviceSfx('select')
@@ -249,4 +254,8 @@ function getNextKonamiProgress(currentProgress: number, input: KonamiInput) {
   if (input === konamiSequence[currentProgress]) return currentProgress + 1
   if (input === konamiSequence[0]) return 1
   return 0
+}
+
+function getNextSnakeShellStatus(currentStatus: SnakeShellStatus): SnakeShellStatus {
+  return currentStatus === 'running' ? 'paused' : 'running'
 }

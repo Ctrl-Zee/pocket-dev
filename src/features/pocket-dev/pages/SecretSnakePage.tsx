@@ -1,7 +1,7 @@
 import { LcdPage } from '@/components/lcd'
 import type { DeviceMoveDirection } from '@/components/device/types'
 
-type SnakeShellStatus = 'ready' | 'running' | 'paused'
+export type SnakeShellStatus = 'ready' | 'running' | 'paused'
 
 interface SecretSnakePageProps {
   direction: DeviceMoveDirection
