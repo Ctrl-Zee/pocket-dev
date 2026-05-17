@@ -1,19 +1,34 @@
-const systemButtons = ['Select', 'Start'] as const
+type SystemButtonLabel = 'Select' | 'Start'
 
 interface SystemButtonProps {
-  label: (typeof systemButtons)[number]
+  label: SystemButtonLabel
+  isPressed?: boolean
+  onPress: () => void
 }
 
-export function SystemButtons() {
+interface SystemButtonsProps {
+  isMuted: boolean
+  onSelect: () => void
+  onStart: () => void
+}
+
+export function SystemButtons({ isMuted, onSelect, onStart }: SystemButtonsProps) {
   return (
     <div className="system-buttons" aria-label="Select and Start buttons">
-      {systemButtons.map((label) => (
-        <SystemButton key={label} label={label} />
-      ))}
+      <SystemButton isPressed={isMuted} label="Select" onPress={onSelect} />
+      <SystemButton label="Start" onPress={onStart} />
     </div>
   )
 }
 
-export function SystemButton({ label }: SystemButtonProps) {
-  return <span className="system-button" aria-label={label} />
+export function SystemButton({ isPressed, label, onPress }: SystemButtonProps) {
+  return (
+    <button
+      aria-label={label === 'Select' ? `${label} mute sound` : label}
+      aria-pressed={isPressed}
+      className="system-button"
+      type="button"
+      onClick={onPress}
+    />
+  )
 }

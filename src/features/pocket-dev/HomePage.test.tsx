@@ -101,6 +101,53 @@ const expectedWordmarkRainbowRules = [
   ['.wordmark span:nth-child(8)', '#ffd83d'],
   ['.wordmark span:nth-child(9)', '#3dff7a'],
 ] as const
+const oscillatorStartSpy = vi.fn()
+const oscillatorStopSpy = vi.fn()
+const oscillatorConnectSpy = vi.fn()
+const gainConnectSpy = vi.fn()
+const gainSetValueSpy = vi.fn()
+const gainRampSpy = vi.fn()
+const audioDestination = {}
+const audioContextInstances: MockAudioContext[] = []
+
+class MockAudioParam {
+  value = 0
+
+  setValueAtTime = gainSetValueSpy
+  exponentialRampToValueAtTime = gainRampSpy
+}
+
+class MockOscillator {
+  frequency = new MockAudioParam()
+  type: OscillatorType = 'sine'
+
+  connect = oscillatorConnectSpy
+  start = oscillatorStartSpy
+  stop = oscillatorStopSpy
+}
+
+class MockGain {
+  gain = new MockAudioParam()
+
+  connect = gainConnectSpy
+}
+
+class MockAudioContext {
+  currentTime = 1
+  destination = audioDestination
+
+  constructor() {
+    audioContextInstances.push(this)
+  }
+
+  createGain() {
+    return new MockGain()
+  }
+
+  createOscillator() {
+    return new MockOscillator()
+  }
+}
 
 function mockMobileLandscapeQuery(matches: boolean) {
   const mediaQueryList = {
@@ -165,7 +212,15 @@ function renderRoute(path: string) {
   return { router, user, ...view }
 }
 
+function stubAudioContext() {
+  vi.stubGlobal('AudioContext', MockAudioContext)
+  vi.stubGlobal('webkitAudioContext', MockAudioContext)
+}
+
 afterEach(() => {
+  audioContextInstances.length = 0
+  window.localStorage.clear()
+  vi.clearAllMocks()
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
@@ -320,6 +375,57 @@ describe('Home route', () => {
     expect(router.state.location.pathname).toBe('/projects')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  })
+
+  it('generates Device SFX through Web Audio for movement, confirm, back, start, and invalid actions', async () => {
+    stubAudioContext()
+    const { user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+
+    expect(audioContextInstances).toHaveLength(0)
+
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(await screen.findByRole('button', { name: /b/i }))
+    await user.click(screen.getByRole('button', { name: /start/i }))
+
+    expect(audioContextInstances).toHaveLength(1)
+    expect(oscillatorStartSpy).toHaveBeenCalledTimes(6)
+    expect(oscillatorStopSpy).toHaveBeenCalledTimes(6)
+    expect(oscillatorConnectSpy).toHaveBeenCalledTimes(6)
+    expect(gainConnectSpy).toHaveBeenCalledWith(audioDestination)
+  })
+
+  it('persists the Select mute toggle and suppresses generated SFX while muted', async () => {
+    stubAudioContext()
+    const firstView = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    await firstView.user.click(screen.getByRole('button', { name: /select mute sound/i }))
+
+    expect(window.localStorage.getItem('pocket-dev-device-muted')).toBe('true')
+    expect(oscillatorStartSpy).toHaveBeenCalledTimes(1)
+
+    firstView.unmount()
+
+    const secondView = renderRoute('/')
+    await screen.findByRole('heading', { name: /home/i })
+
+    const mutedSelectButton = screen.getByRole('button', { name: /select mute sound/i })
+
+    expect(mutedSelectButton).toHaveAttribute('aria-pressed', 'true')
+
+    await secondView.user.click(screen.getByRole('button', { name: /down/i }))
+
+    expect(oscillatorStartSpy).toHaveBeenCalledTimes(1)
+
+    await secondView.user.click(mutedSelectButton)
+    await secondView.user.click(screen.getByRole('button', { name: /down/i }))
+
+    expect(window.localStorage.getItem('pocket-dev-device-muted')).toBe('false')
+    expect(oscillatorStartSpy).toHaveBeenCalledTimes(2)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

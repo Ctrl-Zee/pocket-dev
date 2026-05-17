@@ -39,6 +39,7 @@ describe('Pocket Dev Page modules', () => {
       'navigation/pageCatalog.ts',
       'orchestration/DeviceNavigationContext.tsx',
       'orchestration/PocketDevDevice.tsx',
+      'sfx/deviceSfx.ts',
     ] as const
     const rootBehaviorModules = [
       'contactTargets.ts',

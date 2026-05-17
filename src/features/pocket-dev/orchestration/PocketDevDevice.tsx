@@ -10,6 +10,7 @@ import { useLcdSelection } from '../navigation/lcdSelection'
 import type { SelectionDelta } from '../navigation/lcdSelection'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { RotatePage } from '../pages/RotatePage'
+import { useDeviceSfx } from '../sfx/deviceSfx'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
 
 interface PocketDevDeviceProps {
@@ -26,23 +27,30 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
     resetKey: isContactRoute ? location.pathname : undefined,
   })
+  const { isMuted, playDeviceSfx, toggleMute } = useDeviceSfx()
 
   const moveSelection = useCallback(
     (delta: SelectionDelta) => {
       if (isHomeRoute) {
+        playDeviceSfx('blip')
         homeSelection.moveSelection(delta)
         return
       }
 
       if (isContactRoute) {
+        playDeviceSfx('blip')
         contactSelection.moveSelection(delta)
+        return
       }
+
+      playDeviceSfx('error')
     },
-    [contactSelection, homeSelection, isContactRoute, isHomeRoute],
+    [contactSelection, homeSelection, isContactRoute, isHomeRoute, playDeviceSfx],
   )
 
   const activateSelection = useCallback(() => {
     if (isHomeRoute) {
+      playDeviceSfx('confirm')
       void navigate({ to: pageCatalog[homeSelection.selectedIndex].href })
       return
     }
@@ -50,19 +58,34 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     if (isContactRoute) {
       const contactTarget = resumeContent.contactTargets[contactSelection.selectedIndex]
 
+      playDeviceSfx('confirm')
       window.open(contactTarget.href, getContactTargetWindowTarget(contactTarget.href), 'noreferrer')
+      return
     }
+
+    playDeviceSfx('error')
   }, [
     contactSelection.selectedIndex,
     homeSelection.selectedIndex,
     isContactRoute,
     isHomeRoute,
     navigate,
+    playDeviceSfx,
   ])
 
   const returnHome = useCallback(() => {
+    playDeviceSfx('back')
     void navigate({ to: '/' })
-  }, [navigate])
+  }, [navigate, playDeviceSfx])
+
+  const handleSelect = useCallback(() => {
+    playDeviceSfx('select')
+    toggleMute()
+  }, [playDeviceSfx, toggleMute])
+
+  const handleStart = useCallback(() => {
+    playDeviceSfx('start')
+  }, [playDeviceSfx])
 
   useDeviceKeyboardControls({ activateSelection, moveSelection, returnHome })
 
@@ -78,9 +101,12 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     <div className="pocket-dev-stage">
       <DeviceNavigationContext.Provider value={deviceNavigation}>
         <DeviceHardware
+          isMuted={isMuted}
           onActivate={activateSelection}
           onMove={moveSelection}
           onReturnHome={returnHome}
+          onSelect={handleSelect}
+          onStart={handleStart}
         >
           {shouldShowRotatePrompt ? <RotatePage /> : children}
         </DeviceHardware>

@@ -11,13 +11,19 @@ interface PocketDevDeviceProps extends DeviceChildrenProps {
   onActivate: () => void
   onMove: (delta: DeviceMoveDelta) => void
   onReturnHome: () => void
+  onSelect: () => void
+  onStart: () => void
+  isMuted: boolean
 }
 
 export function PocketDevDevice({
   children,
+  isMuted,
   onActivate,
   onMove,
   onReturnHome,
+  onSelect,
+  onStart,
 }: PocketDevDeviceProps) {
   return (
     <main className="pocket-dev-device" aria-label="Pocket Dev Device">
@@ -29,7 +35,7 @@ export function PocketDevDevice({
           <FaceButtons onActivate={onActivate} onReturnHome={onReturnHome} />
         </section>
         <section className="system-row" aria-label="Device system controls">
-          <SystemButtons />
+          <SystemButtons isMuted={isMuted} onSelect={onSelect} onStart={onStart} />
           <SpeakerGrill />
         </section>
       </DeviceShell>
