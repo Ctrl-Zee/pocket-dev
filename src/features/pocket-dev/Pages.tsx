@@ -1,6 +1,0 @@
-export { AboutPage } from './pages/AboutPage'
-export { ContactPage } from './pages/ContactPage'
-export { HomePage } from './pages/HomePage'
-export { ProjectsPage } from './pages/ProjectsPage'
-export { ResumePage } from './pages/ResumePage'
-export { WorkPage } from './pages/WorkPage'
