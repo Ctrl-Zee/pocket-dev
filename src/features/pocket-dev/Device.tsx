@@ -1,9 +1,8 @@
 import './pocket-dev.css'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { PocketDevDevice as DeviceHardware } from '@/components/device'
 import { resumeContent } from '@/features/resume-content/resumeContent'
-import { DeviceBrandRow, DeviceControls, DeviceSystemControls } from './DeviceControls'
-import { DeviceScreen } from './LCD'
 import { RotatePage } from './RotatePage'
 import { getContactTargetWindowTarget } from './contactTargets'
 import { useLcdSelection, type LcdSelection } from './lcdSelection'
@@ -118,18 +117,13 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   return (
     <div className="pocket-dev-stage">
       <DeviceNavigationContext.Provider value={deviceNavigation}>
-        <main className="pocket-dev-device" aria-label="Pocket Dev Device">
-          <div className="device-surface">
-            <DeviceScreen>{shouldShowRotatePrompt ? <RotatePage /> : children}</DeviceScreen>
-            <DeviceBrandRow />
-            <DeviceControls
-              onActivate={activateSelection}
-              onMove={moveSelection}
-              onReturnHome={returnHome}
-            />
-            <DeviceSystemControls />
-          </div>
-        </main>
+        <DeviceHardware
+          onActivate={activateSelection}
+          onMove={moveSelection}
+          onReturnHome={returnHome}
+        >
+          {shouldShowRotatePrompt ? <RotatePage /> : children}
+        </DeviceHardware>
       </DeviceNavigationContext.Provider>
 
       <p className="control-hint">ARROWS MOVE / ENTER A / ESC B</p>
