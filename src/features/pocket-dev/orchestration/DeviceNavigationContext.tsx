@@ -4,6 +4,8 @@ import type { LcdSelection } from '../navigation/lcdSelection'
 interface DeviceNavigationValue {
   contactSelection: LcdSelection
   homeSelection: LcdSelection
+  isSnakeUnlocked: boolean
+  openSnake: () => void
 }
 
 export const DeviceNavigationContext = createContext<DeviceNavigationValue | null>(null)

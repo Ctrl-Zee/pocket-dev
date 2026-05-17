@@ -37,6 +37,9 @@ interface LcdSelectableLinkProps extends ComponentPropsWithoutRef<'a'> {
 }
 
 type LcdActionLinkProps = ComponentPropsWithoutRef<'a'>
+type LcdSelectableButtonProps = ComponentPropsWithoutRef<'button'> & {
+  isSelected?: boolean
+}
 
 interface LcdPixelListProps {
   className?: string
@@ -124,6 +127,27 @@ export function LcdSelectableLink({
     >
       {children}
     </Component>
+  )
+}
+
+export function LcdSelectableButton({
+  children,
+  className,
+  isSelected = false,
+  type = 'button',
+  ...props
+}: LcdSelectableButtonProps) {
+  const selectedDataValue = isSelected ? 'true' : undefined
+
+  return (
+    <button
+      {...props}
+      className={clsx('lcd-selectable-link', className, isSelected && 'is-selected')}
+      data-selected={selectedDataValue}
+      type={type}
+    >
+      {children}
+    </button>
   )
 }
 

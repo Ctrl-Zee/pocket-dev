@@ -1,10 +1,11 @@
 import { Link } from '@tanstack/react-router'
-import { LcdPage, LcdSelectableLink, LcdSelectableList } from '@/components/lcd'
+import { LcdPage, LcdSelectableButton, LcdSelectableLink, LcdSelectableList } from '@/components/lcd'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { useDeviceNavigation } from '../orchestration/DeviceNavigationContext'
 
 export function HomePage() {
-  const { homeSelection } = useDeviceNavigation()
+  const { homeSelection, isSnakeUnlocked, openSnake } = useDeviceNavigation()
+  const snakeItemIndex = pageCatalog.length
 
   return (
     <LcdPage title="Home">
@@ -30,6 +31,15 @@ export function HomePage() {
               </LcdSelectableLink>
             )
           })}
+          {isSnakeUnlocked ? (
+            <LcdSelectableButton
+              isSelected={homeSelection.selectedIndex === snakeItemIndex}
+              onClick={openSnake}
+              onFocus={() => homeSelection.setSelectedIndex(snakeItemIndex)}
+            >
+              SNAKE
+            </LcdSelectableButton>
+          ) : null}
         </LcdSelectableList>
       </div>
     </LcdPage>

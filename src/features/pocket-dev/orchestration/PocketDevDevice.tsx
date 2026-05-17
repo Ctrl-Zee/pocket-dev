@@ -11,6 +11,7 @@ import { useLcdSelection } from '../navigation/lcdSelection'
 import type { SelectionDelta } from '../navigation/lcdSelection'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { RotatePage } from '../pages/RotatePage'
+import { SecretSnakePage } from '../pages/SecretSnakePage'
 import { SecretSnakeUnlockPage } from '../pages/SecretSnakeUnlockPage'
 import { useDeviceSfx } from '../sfx/deviceSfx'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
@@ -41,8 +42,11 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const isHomeRoute = location.pathname === '/'
   const isContactRoute = location.pathname === '/contact'
   const shouldShowRotatePrompt = useMobileLandscape()
+  const [isSnakeUnlocked, setIsSnakeUnlocked] = useState(false)
+  const [isShowingSnake, setIsShowingSnake] = useState(false)
   const [isShowingSnakeUnlock, setIsShowingSnakeUnlock] = useState(false)
-  const homeSelection = useLcdSelection(pageCatalog.length)
+  const visibleHomeItemCount = isSnakeUnlocked ? pageCatalog.length + 1 : pageCatalog.length
+  const homeSelection = useLcdSelection(visibleHomeItemCount)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
     resetKey: isContactRoute ? location.pathname : undefined,
   })
@@ -57,6 +61,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
       if (nextProgress !== konamiSequence.length) return false
 
       konamiProgressRef.current = 0
+      setIsSnakeUnlocked(true)
       setIsShowingSnakeUnlock(true)
       playDeviceSfx('konami')
 
@@ -90,8 +95,17 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     if (trackKonamiInput('a')) return
 
     if (isHomeRoute) {
+      const selectedPage = pageCatalog[homeSelection.selectedIndex]
+
       playDeviceSfx('confirm')
-      void navigate({ to: pageCatalog[homeSelection.selectedIndex].href })
+      if (!selectedPage && isSnakeUnlocked) {
+        setIsShowingSnake(true)
+        return
+      }
+
+      if (!selectedPage) return
+
+      void navigate({ to: selectedPage.href })
       return
     }
 
@@ -109,6 +123,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     homeSelection.selectedIndex,
     isContactRoute,
     isHomeRoute,
+    isSnakeUnlocked,
     navigate,
     playDeviceSfx,
     trackKonamiInput,
@@ -116,9 +131,18 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
   const returnHome = useCallback(() => {
     trackKonamiInput('b')
+    setIsShowingSnake(false)
+    setIsShowingSnakeUnlock(false)
     playDeviceSfx('back')
     void navigate({ to: '/' })
   }, [navigate, playDeviceSfx, trackKonamiInput])
+
+  const openSnake = useCallback(() => {
+    if (!isSnakeUnlocked) return
+
+    setIsShowingSnakeUnlock(false)
+    setIsShowingSnake(true)
+  }, [isSnakeUnlocked])
 
   const handleSelect = useCallback(() => {
     playDeviceSfx('select')
@@ -135,14 +159,20 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     () => ({
       contactSelection,
       homeSelection,
+      isSnakeUnlocked,
+      openSnake,
     }),
-    [contactSelection, homeSelection],
+    [contactSelection, homeSelection, isSnakeUnlocked, openSnake],
   )
 
   let lcdContent = children
 
   if (isShowingSnakeUnlock) {
     lcdContent = <SecretSnakeUnlockPage />
+  }
+
+  if (isShowingSnake) {
+    lcdContent = <SecretSnakePage />
   }
 
   if (shouldShowRotatePrompt) {

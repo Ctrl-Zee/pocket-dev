@@ -199,6 +199,23 @@ function expectSelectedHomeMenuLink(label: string) {
   expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
 }
 
+async function enterKonamiSequence(user: TestUser) {
+  const pressControl = async (name: RegExp) => {
+    await user.click(screen.getByRole('button', { name }))
+  }
+
+  await pressControl(/up/i)
+  await pressControl(/up/i)
+  await pressControl(/down/i)
+  await pressControl(/down/i)
+  await pressControl(/left/i)
+  await pressControl(/right/i)
+  await pressControl(/left/i)
+  await pressControl(/right/i)
+  await pressControl(/^b$/i)
+  await pressControl(/^a$/i)
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const router = createRouter({
@@ -433,21 +450,7 @@ describe('Home route', () => {
     const { router, user } = renderRoute('/')
 
     await screen.findByRole('heading', { name: /home/i })
-
-    const pressControl = async (name: RegExp) => {
-      await user.click(screen.getByRole('button', { name }))
-    }
-
-    await pressControl(/up/i)
-    await pressControl(/up/i)
-    await pressControl(/down/i)
-    await pressControl(/down/i)
-    await pressControl(/left/i)
-    await pressControl(/right/i)
-    await pressControl(/left/i)
-    await pressControl(/right/i)
-    await pressControl(/^b$/i)
-    await pressControl(/^a$/i)
+    await enterKonamiSequence(user)
 
     expect(router.state.location.pathname).toBe('/')
 
@@ -456,6 +459,47 @@ describe('Home route', () => {
     expect(within(lcd).getByText(/snake is ready/i)).toBeInTheDocument()
     expect(audioParamSetValueSpy).toHaveBeenCalledWith(1320, expect.any(Number))
     expect(window.localStorage.getItem('pocket-dev-snake-unlocked')).toBeNull()
+  })
+
+  it('adds session-only SNAKE to Home after unlock and opens it without a public route', async () => {
+    const firstView = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+
+    let lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).queryByRole('button', { name: 'SNAKE' })).not.toBeInTheDocument()
+    expect(within(lcd).getAllByRole('link').map((link) => link.textContent)).toEqual(
+      expectedHomeMenuItems,
+    )
+
+    await enterKonamiSequence(firstView.user)
+    await firstView.user.click(screen.getByRole('button', { name: /^b$/i }))
+
+    lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+    expect(within(lcd).getAllByRole('link').map((link) => link.textContent)).toEqual(
+      expectedHomeMenuItems,
+    )
+    expect(within(lcd).getByRole('button', { name: 'SNAKE' })).toBeInTheDocument()
+
+    await firstView.user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
+
+    expect(firstView.router.state.location.pathname).toBe('/')
+    lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /^> snake$/i })).toBeInTheDocument()
+    expect(within(lcd).queryByRole('heading', { name: /> snake unlocked/i })).not.toBeInTheDocument()
+
+    await firstView.user.click(screen.getByRole('button', { name: /^b$/i }))
+
+    lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+    expect(firstView.router.state.location.pathname).toBe('/')
+
+    firstView.unmount()
+
+    renderRoute('/')
+    lcd = await screen.findByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).queryByRole('button', { name: 'SNAKE' })).not.toBeInTheDocument()
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
