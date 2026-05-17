@@ -2,6 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { describe, expect, it } from 'vitest'
+import { resumeContent } from '@/features/resume-content/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
@@ -91,34 +92,16 @@ describe('Projects route', () => {
 
     const projectCards = within(lcd).getAllByRole('article')
 
-    expect(projectCards).toHaveLength(4)
+    expect(projectCards).toHaveLength(resumeContent.projects.length)
     expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
 
-    expect(projectCards[0]).toHaveTextContent(/benesys/i)
-    expect(projectCards[0]).toHaveTextContent(/react/i)
-    expect(projectCards[0]).toHaveTextContent(/zustand/i)
-    expect(projectCards[0]).toHaveTextContent(/tanstack query/i)
-    expect(projectCards[0]).toHaveTextContent(/react hook form/i)
-    expect(projectCards[0]).toHaveTextContent(/tailwind/i)
+    resumeContent.projects.forEach((project, index) => {
+      const projectCard = projectCards[index]
 
-    expect(projectCards[1]).toHaveTextContent(/family and social services administration \/ pebt/i)
-    expect(projectCards[1]).toHaveTextContent(/angular 15/i)
-    expect(projectCards[1]).toHaveTextContent(/typescript/i)
-    expect(projectCards[1]).toHaveTextContent(/ngrx component store/i)
-
-    expect(projectCards[2]).toHaveTextContent(/schwarz partners/i)
-    expect(projectCards[2]).toHaveTextContent(/angular/i)
-    expect(projectCards[2]).toHaveTextContent(/azure ad b2c/i)
-    expect(projectCards[2]).toHaveTextContent(/\.net/i)
-    expect(projectCards[2]).toHaveTextContent(/c#/i)
-    expect(projectCards[2]).toHaveTextContent(/sql server/i)
-    expect(projectCards[2]).toHaveTextContent(/product key management/i)
-
-    expect(projectCards[3]).toHaveTextContent(/venture logistics/i)
-    expect(projectCards[3]).toHaveTextContent(/angular/i)
-    expect(projectCards[3]).toHaveTextContent(/\.net/i)
-    expect(projectCards[3]).toHaveTextContent(/c#/i)
-    expect(projectCards[3]).toHaveTextContent(/signalr/i)
+      expect(within(projectCard).getByRole('heading', { name: project.name })).toBeInTheDocument()
+      expect(projectCard).toHaveTextContent(project.summary)
+      expect(projectCard).toHaveTextContent(`Stack: ${project.stack.join(' / ')}`)
+    })
 
     expect(within(lcd).queryByText(/placeholder/i)).not.toBeInTheDocument()
   })

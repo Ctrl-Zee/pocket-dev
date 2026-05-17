@@ -1,6 +1,9 @@
 import './pocket-dev.css'
 import type { ReactNode } from 'react'
-import { resumeContent } from '@/features/resume-content/resumeContent'
+import {
+  resumeContent,
+  type ProjectEntry,
+} from '@/features/resume-content/resumeContent'
 
 const homeMenuItems = [
   { label: 'About', href: '/about' },
@@ -36,6 +39,10 @@ interface LcdPageProps extends ChildrenProps {
 
 interface PlaceholderPageProps {
   title: PlaceholderPageTitle
+}
+
+interface ProjectCardProps {
+  project: ProjectEntry
 }
 
 export function PocketDevDevice({ children }: ChildrenProps) {
@@ -92,13 +99,7 @@ export function ProjectsPage() {
 
         <div className="project-card-list">
           {resumeContent.projects.map((project) => (
-            <article className="project-card" key={project.name}>
-              <h2>{project.name}</h2>
-              <p>{project.summary}</p>
-              <p className="project-stack">
-                <span>Stack:</span> {project.stack.join(' / ')}
-              </p>
-            </article>
+            <ProjectCard key={project.name} project={project} />
           ))}
         </div>
       </div>
@@ -142,6 +143,18 @@ function PlaceholderPage({ title }: PlaceholderPageProps) {
         <p>{placeholderPageContent[title]}</p>
       </div>
     </LcdPage>
+  )
+}
+
+function ProjectCard({ project }: ProjectCardProps) {
+  return (
+    <article className="project-card">
+      <h2>{project.name}</h2>
+      <p>{project.summary}</p>
+      <p className="project-stack">
+        <span>Stack:</span> {project.stack.join(' / ')}
+      </p>
+    </article>
   )
 }
 
