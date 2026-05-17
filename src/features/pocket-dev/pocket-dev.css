@@ -15,6 +15,8 @@
   --lcd-supporting-text: 8px;
   --lcd-detail-text: 7px;
   --lcd-footer-text: 7px;
+  --wordmark-text: 16px;
+  --wordmark-mobile-text: 13px;
   --font-pixel: 'Press Start 2P', monospace;
   --font-ui: Inter, system-ui, sans-serif;
   --dpad-size: 112px;
@@ -529,7 +531,7 @@ body::before {
 .wordmark {
   margin: 0 0 3px;
   font-family: var(--font-pixel);
-  font-size: 16px;
+  font-size: var(--wordmark-text);
   letter-spacing: 1px;
   text-align: center;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.28);
@@ -801,7 +803,7 @@ body::before {
   }
 
   .wordmark {
-    font-size: 13px;
+    font-size: var(--wordmark-mobile-text);
   }
 
   .face-buttons {
