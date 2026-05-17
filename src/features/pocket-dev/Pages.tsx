@@ -119,7 +119,7 @@ export function ResumePage() {
   return (
     <LcdPage title="Resume">
       <div className="resume-page">
-        <LcdSection className="resume-preview" ariaLabel="Compact resume preview">
+        <LcdSection className="resume-preview" aria-label="Compact resume preview">
           <div className="resume-preview-header">
             <p className="resume-preview-name">{identity.name}</p>
             <p>{identity.publicTitle}</p>

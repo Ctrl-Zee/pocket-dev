@@ -5,9 +5,11 @@ interface LcdPageProps extends ChildrenProps {
   title: string
 }
 
+type LcdSectionElement = 'article' | 'section'
+
 interface LcdSectionProps extends ChildrenProps {
-  ariaLabel?: string
-  as?: 'article' | 'section'
+  'aria-label'?: string
+  as?: LcdSectionElement
   className?: string
 }
 
@@ -32,7 +34,7 @@ export function LcdPage({ title, children }: LcdPageProps) {
 }
 
 export function LcdSection({
-  ariaLabel,
+  'aria-label': ariaLabel,
   as: Component = 'section',
   children,
   className,
