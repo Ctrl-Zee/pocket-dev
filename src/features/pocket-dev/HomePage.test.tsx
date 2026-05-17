@@ -9,6 +9,7 @@ import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
+const expectedWordmarkLetters = ['P', 'O', 'C', 'K', 'E', 'T', 'D', 'E', 'V']
 const homeMenuLinkSelector = '.home-menu a'
 const selectedHomeMenuLinkSelector = [
   '.home-menu a.is-selected',
@@ -183,17 +184,7 @@ describe('Home route', () => {
     const wordmark = await screen.findByLabelText(/pocket dev wordmark/i)
     const letters = Array.from(wordmark.querySelectorAll('span'))
 
-    expect(letters.map((letter) => letter.textContent)).toEqual([
-      'P',
-      'O',
-      'C',
-      'K',
-      'E',
-      'T',
-      'D',
-      'E',
-      'V',
-    ])
+    expect(letters.map((letter) => letter.textContent)).toEqual(expectedWordmarkLetters)
   })
 
   it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
