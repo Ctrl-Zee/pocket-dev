@@ -9,6 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { routeTree } from '../../routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
+const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
 const hardwareLabels = [
   /pocket dev wordmark/i,
   /power led/i,
@@ -47,8 +48,10 @@ describe('Home route', () => {
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
 
-    const menuItems = within(lcd).getAllByRole('link').map((link) => link.textContent)
+    const menuLinks = within(lcd).getAllByRole('link')
+    const menuItems = menuLinks.map((link) => link.textContent)
     expect(menuItems).toEqual(expectedHomeMenuItems)
+    expect(menuLinks.map((link) => link.getAttribute('href'))).toEqual(expectedHomeMenuHrefs)
 
     hardwareLabels.forEach((label) => {
       expect(screen.getByLabelText(label)).toBeInTheDocument()
