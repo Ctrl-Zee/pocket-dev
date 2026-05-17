@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "prepare": "husky"
+    "prepare": "husky",
+    "sandcastle": "npx tsx .sandcastle/main.ts"
   },
   "devDependencies": {
     "@ai-hero/sandcastle": "^0.5.10",

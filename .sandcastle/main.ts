@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // Parallel Planner with Review — four-phase orchestration loop
 //
 // This template drives a multi-phase workflow:
