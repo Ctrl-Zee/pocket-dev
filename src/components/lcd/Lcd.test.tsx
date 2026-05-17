@@ -4,10 +4,10 @@ import {
   LcdActionLink,
   LcdPage,
   LcdPanel,
+  LcdPixelList,
   LcdScrollableArea,
   LcdSelectableLink,
   LcdSelectableList,
-  PixelList,
 } from './index'
 
 describe('shared LCD components', () => {
@@ -19,7 +19,7 @@ describe('shared LCD components', () => {
             <p>Stable signal</p>
           </LcdPanel>
 
-          <PixelList items={['React', 'TypeScript']} />
+          <LcdPixelList items={['React', 'TypeScript']} />
 
           <LcdSelectableList aria-label="Status actions">
             <LcdSelectableLink href="/work" isSelected>
@@ -49,12 +49,11 @@ describe('shared LCD components', () => {
     expect(pixelItems[0].closest('ul')).toHaveClass('pixel-list')
 
     const actionList = screen.getByRole('navigation', { name: /status actions/i })
+    const selectedAction = within(actionList).getByRole('link', { name: 'Work' })
+
     expect(actionList).toHaveClass('lcd-selectable-list')
-    expect(within(actionList).getByRole('link', { name: 'Work' })).toHaveClass('is-selected')
-    expect(within(actionList).getByRole('link', { name: 'Work' })).toHaveAttribute(
-      'data-selected',
-      'true',
-    )
+    expect(selectedAction).toHaveClass('is-selected')
+    expect(selectedAction).toHaveAttribute('data-selected', 'true')
     expect(screen.getByRole('link', { name: /open pdf/i })).toHaveClass('lcd-action-link')
   })
 })

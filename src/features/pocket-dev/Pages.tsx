@@ -3,10 +3,10 @@ import {
   LcdActionLink,
   LcdPage,
   LcdPanel,
+  LcdPixelList,
   LcdScrollableArea,
   LcdSelectableLink,
   LcdSelectableList,
-  PixelList,
 } from '@/components/lcd'
 import { resumeContent, type ProjectEntry } from '@/features/resume-content/resumeContent'
 import { opensContactTargetInCurrentTab } from './contactTargets'
@@ -86,7 +86,7 @@ export function AboutPage() {
 
         <section aria-labelledby="about-activities">
           <h3 id="about-activities">After hours</h3>
-          <PixelList items={activities} />
+          <LcdPixelList items={activities} />
         </section>
       </LcdScrollableArea>
     </LcdPage>
