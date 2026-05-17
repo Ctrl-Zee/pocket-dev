@@ -107,7 +107,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   )
 
   const resetSnakeGame = useCallback(() => {
-    setSnakeGame(createSnakeStartState)
+    setSnakeGame(createSnakeStartState())
   }, [])
 
   const activateSelection = useCallback(() => {
@@ -184,13 +184,8 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }, [playDeviceSfx, toggleMute])
 
   const handleStart = useCallback(() => {
-    if (isShowingSnake) {
-      playDeviceSfx('start')
-      return
-    }
-
     playDeviceSfx('start')
-  }, [isShowingSnake, playDeviceSfx])
+  }, [playDeviceSfx])
 
   useDeviceKeyboardControls({ activateSelection, moveSelection, returnHome })
 
