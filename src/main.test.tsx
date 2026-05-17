@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
-import { act, screen } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('app entrypoint', () => {
@@ -11,9 +11,9 @@ describe('app entrypoint', () => {
   })
 
   it('mounts the routed Pocket Dev Device at / without boilerplate setup', async () => {
-    await act(async () => {
-      await import('./main')
-    })
+    const { App } = await import('./App')
+
+    render(<App />)
 
     expect(await screen.findByRole('main', { name: /pocket dev device/i })).toBeInTheDocument()
   })
