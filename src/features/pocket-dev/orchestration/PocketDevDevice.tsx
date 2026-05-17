@@ -1,18 +1,22 @@
 import '../pocket-dev.css'
 import { useLocation, useNavigate } from '@tanstack/react-router'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, type ReactNode } from 'react'
 import { PocketDevDevice as DeviceHardware } from '@/components/device'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { getContactTargetWindowTarget } from '../contact/contactTargets'
 import { useDeviceKeyboardControls } from '../hooks/useDeviceKeyboardControls'
 import { useMobileLandscape } from '../hooks/useMobileLandscape'
 import { useLcdSelection } from '../navigation/lcdSelection'
+import type { SelectionDelta } from '../navigation/lcdSelection'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { RotatePage } from '../pages/RotatePage'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
-import type { ChildrenProps, SelectionDelta } from './types'
 
-export function PocketDevDevice({ children }: ChildrenProps) {
+interface PocketDevDeviceProps {
+  children: ReactNode
+}
+
+export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const isHomeRoute = location.pathname === '/'

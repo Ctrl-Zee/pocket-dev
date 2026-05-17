@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import type { SelectionDelta } from '../orchestration/types'
+import type { SelectionDelta } from '../navigation/lcdSelection'
 
 interface DeviceKeyboardControls {
   activateSelection: () => void
