@@ -428,6 +428,36 @@ describe('Home route', () => {
     expect(oscillatorStartSpy).toHaveBeenCalledTimes(2)
   })
 
+  it('transitions to the hidden SNAKE unlock payoff after the Konami control sequence', async () => {
+    stubAudioContext()
+    const { router, user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+
+    const pressControl = async (name: RegExp) => {
+      await user.click(screen.getByRole('button', { name }))
+    }
+
+    await pressControl(/up/i)
+    await pressControl(/up/i)
+    await pressControl(/down/i)
+    await pressControl(/down/i)
+    await pressControl(/left/i)
+    await pressControl(/right/i)
+    await pressControl(/left/i)
+    await pressControl(/right/i)
+    await pressControl(/^b$/i)
+    await pressControl(/^a$/i)
+
+    expect(router.state.location.pathname).toBe('/')
+
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /> snake unlocked/i })).toBeInTheDocument()
+    expect(within(lcd).getByText(/snake is ready/i)).toBeInTheDocument()
+    expect(audioParamSetValueSpy).toHaveBeenCalledWith(1320, expect.any(Number))
+    expect(window.localStorage.getItem('pocket-dev-snake-unlocked')).toBeNull()
+  })
+
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
     mockMobileLandscapeQuery(true)
 

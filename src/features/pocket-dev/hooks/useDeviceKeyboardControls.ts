@@ -1,9 +1,10 @@
 import { useEffect } from 'react'
 import type { SelectionDelta } from '../navigation/lcdSelection'
+import type { DeviceMoveDirection } from '@/components/device/types'
 
 interface DeviceKeyboardControls {
   activateSelection: () => void
-  moveSelection: (delta: SelectionDelta) => void
+  moveSelection: (delta: SelectionDelta, direction: DeviceMoveDirection) => void
   returnHome: () => void
 }
 
@@ -20,14 +21,20 @@ export function useDeviceKeyboardControls({
 
       switch (key) {
         case 'ArrowUp':
+          event.preventDefault()
+          moveSelection(-1, 'up')
+          return
         case 'ArrowLeft':
           event.preventDefault()
-          moveSelection(-1)
+          moveSelection(-1, 'left')
           return
         case 'ArrowDown':
+          event.preventDefault()
+          moveSelection(1, 'down')
+          return
         case 'ArrowRight':
           event.preventDefault()
-          moveSelection(1)
+          moveSelection(1, 'right')
           return
         case 'Enter':
         case ' ':

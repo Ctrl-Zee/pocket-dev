@@ -1,7 +1,8 @@
 import '../pocket-dev.css'
 import { useLocation, useNavigate } from '@tanstack/react-router'
-import { useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PocketDevDevice as DeviceHardware } from '@/components/device'
+import type { DeviceMoveDirection } from '@/components/device/types'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { getContactTargetWindowTarget } from '../contact/contactTargets'
 import { useDeviceKeyboardControls } from '../hooks/useDeviceKeyboardControls'
@@ -10,6 +11,7 @@ import { useLcdSelection } from '../navigation/lcdSelection'
 import type { SelectionDelta } from '../navigation/lcdSelection'
 import { pageCatalog } from '../navigation/pageCatalog'
 import { RotatePage } from '../pages/RotatePage'
+import { SecretSnakeUnlockPage } from '../pages/SecretSnakeUnlockPage'
 import { useDeviceSfx } from '../sfx/deviceSfx'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
 
@@ -17,20 +19,69 @@ interface PocketDevDeviceProps {
   children: ReactNode
 }
 
+type KonamiInput = DeviceMoveDirection | 'a' | 'b'
+interface SecretLcdState {
+  isSnakeUnlocked: boolean
+  screen: 'snake-unlock' | null
+}
+
+const konamiSequence = [
+  'up',
+  'up',
+  'down',
+  'down',
+  'left',
+  'right',
+  'left',
+  'right',
+  'b',
+  'a',
+] as const satisfies readonly KonamiInput[]
+
 export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const navigate = useNavigate()
   const location = useLocation()
+  const konamiProgressRef = useRef(0)
   const isHomeRoute = location.pathname === '/'
   const isContactRoute = location.pathname === '/contact'
   const shouldShowRotatePrompt = useMobileLandscape()
+  const [secretLcdState, setSecretLcdState] = useState<SecretLcdState>({
+    isSnakeUnlocked: false,
+    screen: null,
+  })
   const homeSelection = useLcdSelection(pageCatalog.length)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
     resetKey: isContactRoute ? location.pathname : undefined,
   })
   const { isMuted, playDeviceSfx, toggleMute } = useDeviceSfx()
 
+  const trackKonamiInput = useCallback(
+    (input: KonamiInput) => {
+      const progress = konamiProgressRef.current
+      const nextProgress =
+        input === konamiSequence[progress]
+          ? progress + 1
+          : input === konamiSequence[0]
+            ? 1
+            : 0
+
+      konamiProgressRef.current = nextProgress
+
+      if (nextProgress !== konamiSequence.length) return false
+
+      konamiProgressRef.current = 0
+      setSecretLcdState({ isSnakeUnlocked: true, screen: 'snake-unlock' })
+      playDeviceSfx('konami')
+
+      return true
+    },
+    [playDeviceSfx],
+  )
+
   const moveSelection = useCallback(
-    (delta: SelectionDelta) => {
+    (delta: SelectionDelta, direction: DeviceMoveDirection) => {
+      trackKonamiInput(direction)
+
       if (isHomeRoute) {
         playDeviceSfx('blip')
         homeSelection.moveSelection(delta)
@@ -45,10 +96,12 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
       playDeviceSfx('error')
     },
-    [contactSelection, homeSelection, isContactRoute, isHomeRoute, playDeviceSfx],
+    [contactSelection, homeSelection, isContactRoute, isHomeRoute, playDeviceSfx, trackKonamiInput],
   )
 
   const activateSelection = useCallback(() => {
+    if (trackKonamiInput('a')) return
+
     if (isHomeRoute) {
       playDeviceSfx('confirm')
       void navigate({ to: pageCatalog[homeSelection.selectedIndex].href })
@@ -71,12 +124,14 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     isHomeRoute,
     navigate,
     playDeviceSfx,
+    trackKonamiInput,
   ])
 
   const returnHome = useCallback(() => {
+    trackKonamiInput('b')
     playDeviceSfx('back')
     void navigate({ to: '/' })
-  }, [navigate, playDeviceSfx])
+  }, [navigate, playDeviceSfx, trackKonamiInput])
 
   const handleSelect = useCallback(() => {
     playDeviceSfx('select')
@@ -108,7 +163,13 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
           onSelect={handleSelect}
           onStart={handleStart}
         >
-          {shouldShowRotatePrompt ? <RotatePage /> : children}
+          {shouldShowRotatePrompt ? (
+            <RotatePage />
+          ) : secretLcdState.isSnakeUnlocked && secretLcdState.screen === 'snake-unlock' ? (
+            <SecretSnakeUnlockPage />
+          ) : (
+            children
+          )}
         </DeviceHardware>
       </DeviceNavigationContext.Provider>
 

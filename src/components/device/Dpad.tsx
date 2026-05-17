@@ -1,14 +1,14 @@
-import type { DeviceMoveDelta } from './types'
+import type { DeviceMoveDelta, DeviceMoveDirection } from './types'
 
 const dpadButtons = [
-  { label: 'Up', className: 'dpad-button-up', delta: -1 },
-  { label: 'Down', className: 'dpad-button-down', delta: 1 },
-  { label: 'Left', className: 'dpad-button-left', delta: -1 },
-  { label: 'Right', className: 'dpad-button-right', delta: 1 },
+  { label: 'Up', className: 'dpad-button-up', delta: -1, direction: 'up' },
+  { label: 'Down', className: 'dpad-button-down', delta: 1, direction: 'down' },
+  { label: 'Left', className: 'dpad-button-left', delta: -1, direction: 'left' },
+  { label: 'Right', className: 'dpad-button-right', delta: 1, direction: 'right' },
 ] as const
 
 interface DpadProps {
-  onMove: (delta: DeviceMoveDelta) => void
+  onMove: (delta: DeviceMoveDelta, direction: DeviceMoveDirection) => void
 }
 
 interface DpadButtonProps {
@@ -25,7 +25,7 @@ export function Dpad({ onMove }: DpadProps) {
           className={button.className}
           key={button.label}
           label={button.label}
-          onPress={() => onMove(button.delta)}
+          onPress={() => onMove(button.delta, button.direction)}
         />
       ))}
     </div>

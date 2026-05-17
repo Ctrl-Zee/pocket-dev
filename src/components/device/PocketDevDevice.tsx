@@ -5,11 +5,11 @@ import { Dpad } from './Dpad'
 import { FaceButtons } from './FaceButtons'
 import { SpeakerGrill } from './SpeakerGrill'
 import { SystemButtons } from './SystemButtons'
-import type { DeviceChildrenProps, DeviceMoveDelta } from './types'
+import type { DeviceChildrenProps, DeviceMoveDelta, DeviceMoveDirection } from './types'
 
 interface PocketDevDeviceProps extends DeviceChildrenProps {
   onActivate: () => void
-  onMove: (delta: DeviceMoveDelta) => void
+  onMove: (delta: DeviceMoveDelta, direction: DeviceMoveDirection) => void
   onReturnHome: () => void
   onSelect: () => void
   onStart: () => void
