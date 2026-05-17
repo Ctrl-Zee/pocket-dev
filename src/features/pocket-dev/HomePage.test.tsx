@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/features/resume-content/resumeContent'
@@ -60,21 +59,13 @@ function getExpectedContactWindowTarget(href: string) {
 
 function renderRoute(path: string) {
   const user = userEvent.setup()
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  })
   const router = createRouter({
     routeTree,
     history: createMemoryHistory({ initialEntries: [path] }),
-    context: { queryClient },
     defaultPreloadStaleTime: 0,
   })
 
-  const view = render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>,
-  )
+  const view = render(<RouterProvider router={router} />)
 
   return { router, user, ...view }
 }
