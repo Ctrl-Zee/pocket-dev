@@ -193,6 +193,23 @@ describe('Contact route', () => {
       'noreferrer',
     )
   })
+
+  it('resets Contact LCD selection to the first actionable row when re-entering the Page', async () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null)
+    const { user } = renderRoute('/contact')
+
+    await screen.findByRole('heading', { name: /contact/i })
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(screen.getByRole('button', { name: /b/i }))
+    await user.click(await screen.findByRole('link', { name: 'Contact' }))
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(openSpy).toHaveBeenCalledWith(
+      resumeContent.contactTargets[0].href,
+      getExpectedContactWindowTarget(resumeContent.contactTargets[0].href),
+      'noreferrer',
+    )
+  })
 })
 
 describe('About route', () => {

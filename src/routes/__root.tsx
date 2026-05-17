@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import type { QueryClient } from '@tanstack/react-query'
-import { PocketDevDevice } from '@/features/pocket-dev/HomePage'
+import { PocketDevDevice } from '@/features/pocket-dev/Device'
 
 interface RouterContext {
   queryClient: QueryClient
