@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import type { SelectionDelta } from './types'
+import type { SelectionDelta } from '../orchestration/types'
 
 export interface LcdSelection {
   selectedIndex: number

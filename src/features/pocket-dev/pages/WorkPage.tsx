@@ -1,6 +1,6 @@
 import { LcdPage, LcdPanel, LcdScrollableArea } from '@/components/lcd'
 import { resumeContent } from '@/content/resume/resumeContent'
-import type { ChildrenProps } from '../types'
+import type { ChildrenProps } from '../orchestration/types'
 
 const workExperienceHighlightLimit = 3
 const workSoftCompetencyLimit = 4

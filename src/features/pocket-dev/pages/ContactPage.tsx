@@ -1,7 +1,7 @@
 import { LcdPage, LcdScrollableArea, LcdSelectableLink, LcdSelectableList } from '@/components/lcd'
 import { resumeContent } from '@/content/resume/resumeContent'
-import { opensContactTargetInCurrentTab } from '../contactTargets'
-import { useDeviceNavigation } from '../Device'
+import { opensContactTargetInCurrentTab } from '../contact/contactTargets'
+import { useDeviceNavigation } from '../orchestration/DeviceNavigationContext'
 
 export function ContactPage() {
   const { contactSelection } = useDeviceNavigation()

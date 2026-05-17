@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { LcdPage, LcdSelectableLink, LcdSelectableList } from '@/components/lcd'
-import { useDeviceNavigation } from '../Device'
-import { pageCatalog } from '../pageCatalog'
+import { pageCatalog } from '../navigation/pageCatalog'
+import { useDeviceNavigation } from '../orchestration/DeviceNavigationContext'
 
 export function HomePage() {
   const { homeSelection } = useDeviceNavigation()
