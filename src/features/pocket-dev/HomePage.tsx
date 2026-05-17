@@ -12,11 +12,12 @@ const homeMenuItems = [
 
 const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
+const workExperienceHighlightLimit = 3
+const workSoftCompetencyLimit = 4
 
 const placeholderPageContent = {
   About:
     'Andrew Smith is a Software Engineer. Placeholder About Page content will introduce the person inside this LCD.',
-  Work: 'Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and professional history.',
   Projects:
     'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
   Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
@@ -36,6 +37,11 @@ interface LcdPageProps extends ChildrenProps {
 
 interface PlaceholderPageProps {
   title: PlaceholderPageTitle
+}
+
+interface WorkSectionProps extends ChildrenProps {
+  headingId: string
+  title: string
 }
 
 export function PocketDevDevice({ children }: ChildrenProps) {
@@ -83,56 +89,7 @@ export function AboutPage() {
 export function WorkPage() {
   return (
     <LcdPage title="Work">
-      <div className="lcd-page work-page" role="region" aria-label="Work details">
-        <section className="work-section" aria-labelledby="work-experience-heading">
-          <h2 id="work-experience-heading">Experience</h2>
-          {resumeContent.experience.map((entry) => (
-            <article className="work-entry" key={`${entry.employer}-${entry.role}`}>
-              <p className="work-kicker">
-                {entry.startYear}-{entry.endYear}
-              </p>
-              <h3>
-                {entry.role} / {entry.employer}
-              </h3>
-              <p>{entry.summary}</p>
-              <ul>
-                {entry.highlights.slice(0, 3).map((highlight) => (
-                  <li key={highlight}>{highlight}</li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </section>
-
-        <section className="work-section" aria-labelledby="work-skills-heading">
-          <h2 id="work-skills-heading">Technical Kit</h2>
-          <div className="skill-list">
-            {resumeContent.skills.map((skill) => (
-              <p key={skill.name}>
-                <strong>{skill.name}</strong>: {skill.summary}
-              </p>
-            ))}
-          </div>
-        </section>
-
-        <section className="work-section" aria-labelledby="work-soft-heading">
-          <h2 id="work-soft-heading">Team Moves</h2>
-          <ul>
-            {resumeContent.softCompetencies.slice(0, 4).map((competency) => (
-              <li key={competency}>{competency}</li>
-            ))}
-          </ul>
-        </section>
-
-        <section className="work-section" aria-labelledby="work-education-heading">
-          <h2 id="work-education-heading">Education</h2>
-          {resumeContent.education.map((entry) => (
-            <p key={`${entry.school}-${entry.degree}`}>
-              {entry.degree} / {entry.school} / {entry.startYear}-{entry.endYear}
-            </p>
-          ))}
-        </section>
-      </div>
+      <WorkDetails />
     </LcdPage>
   )
 }
@@ -177,6 +134,66 @@ function PlaceholderPage({ title }: PlaceholderPageProps) {
         <p>{placeholderPageContent[title]}</p>
       </div>
     </LcdPage>
+  )
+}
+
+function WorkDetails() {
+  return (
+    <div className="lcd-page work-page" role="region" aria-label="Work details">
+      <WorkSection headingId="work-experience-heading" title="Experience">
+        {resumeContent.experience.map((entry) => (
+          <article className="work-entry" key={`${entry.employer}-${entry.role}`}>
+            <p className="work-kicker">
+              {entry.startYear}-{entry.endYear}
+            </p>
+            <h3>
+              {entry.role} / {entry.employer}
+            </h3>
+            <p>{entry.summary}</p>
+            <ul>
+              {entry.highlights.slice(0, workExperienceHighlightLimit).map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </WorkSection>
+
+      <WorkSection headingId="work-skills-heading" title="Technical Kit">
+        <div className="work-skill-list">
+          {resumeContent.skills.map((skill) => (
+            <p key={skill.name}>
+              <strong>{skill.name}</strong>: {skill.summary}
+            </p>
+          ))}
+        </div>
+      </WorkSection>
+
+      <WorkSection headingId="work-soft-heading" title="Team Moves">
+        <ul>
+          {resumeContent.softCompetencies.slice(0, workSoftCompetencyLimit).map((competency) => (
+            <li key={competency}>{competency}</li>
+          ))}
+        </ul>
+      </WorkSection>
+
+      <WorkSection headingId="work-education-heading" title="Education">
+        {resumeContent.education.map((entry) => (
+          <p key={`${entry.school}-${entry.degree}`}>
+            {entry.degree} / {entry.school} / {entry.startYear}-{entry.endYear}
+          </p>
+        ))}
+      </WorkSection>
+    </div>
+  )
+}
+
+function WorkSection({ headingId, title, children }: WorkSectionProps) {
+  return (
+    <section className="work-section" aria-labelledby={headingId}>
+      <h2 id={headingId}>{title}</h2>
+      {children}
+    </section>
   )
 }
 
