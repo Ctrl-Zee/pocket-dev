@@ -64,12 +64,12 @@ Locked synthwave grid:
 
 ### Sizing inside the LCD
 The LCD is a fixed pixel canvas. Stick to this scale:
-- Headers (page name): `11px`
-- Menu items / labels: `9px`
-- Body text: `9px`
-- Supporting body text: `8px`
-- Secondary detail text: `7px`
-- Detail text: `7px`
+- Headers (page name): `12px`
+- Menu items / labels: `10px`
+- Body text: `10px`
+- Supporting body text: `9px`
+- Secondary detail text: `8px`
+- Detail text: `8px`
 
 Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep glyphs legible.
 

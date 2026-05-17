@@ -9,11 +9,11 @@
   --lcd-hi: #dbe8c8;
   --lcd-mid: #4d6a3a;
   --lcd-ink: #1f2d18;
-  --lcd-title-text: 11px;
-  --lcd-body-text: 9px;
-  --lcd-menu-text: 9px;
-  --lcd-supporting-text: 8px;
-  --lcd-detail-text: 7px;
+  --lcd-title-text: 12px;
+  --lcd-body-text: 10px;
+  --lcd-menu-text: 10px;
+  --lcd-supporting-text: 9px;
+  --lcd-detail-text: 8px;
   --wordmark-text: 16px;
   --wordmark-mobile-text: 13px;
   --font-pixel: 'Press Start 2P', monospace;
