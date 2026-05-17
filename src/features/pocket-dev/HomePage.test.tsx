@@ -10,12 +10,25 @@ import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
-const expectedRoutedPages = [
+const expectedPlaceholderRoutedPages = [
   { path: '/about', heading: /about/i, content: /andrew smith/i },
-  { path: '/work', heading: /work/i, content: /experience/i },
   { path: '/projects', heading: /projects/i, content: /selected projects/i },
   { path: '/resume', heading: /resume/i, content: /formal resume/i },
   { path: '/contact', heading: /contact/i, content: /contact links/i },
+] as const
+const expectedWorkContent = [
+  /senior consultant/i,
+  /moser consulting/i,
+  /department of local government finance/i,
+  /react/i,
+  /angular/i,
+  /javascript/i,
+  /responsive web design/i,
+  /\.net/i,
+  /azure/i,
+  /cross-functional teams/i,
+  /bs computer science/i,
+  /iupui/i,
 ] as const
 const hardwareLabels = [
   /pocket dev wordmark/i,
@@ -68,7 +81,7 @@ describe('Home route', () => {
     expect(device).not.toContainElement(controlHint)
   })
 
-  it.each(expectedRoutedPages)(
+  it.each(expectedPlaceholderRoutedPages)(
     'renders the $path LCD Page inside the constant Pocket Dev Device',
     async ({ path, heading, content }) => {
       renderRoute(path)
@@ -84,4 +97,18 @@ describe('Home route', () => {
       })
     },
   )
+
+  it('renders factual Work content inside a scrollable LCD Page', async () => {
+    renderRoute('/work')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    expect(within(lcd).getByRole('heading', { name: /work/i })).toBeInTheDocument()
+
+    const workPane = within(lcd).getByRole('region', { name: /work details/i })
+    expectedWorkContent.forEach((content) => {
+      expect(within(workPane).getAllByText(content).length).toBeGreaterThan(0)
+    })
+  })
 })

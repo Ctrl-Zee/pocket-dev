@@ -1,5 +1,6 @@
 import './pocket-dev.css'
 import type { ReactNode } from 'react'
+import { resumeContent } from '@/features/resume-content/resumeContent'
 
 const homeMenuItems = [
   { label: 'About', href: '/about' },
@@ -80,7 +81,60 @@ export function AboutPage() {
 }
 
 export function WorkPage() {
-  return <PlaceholderPage title="Work" />
+  return (
+    <LcdPage title="Work">
+      <div className="lcd-page work-page" role="region" aria-label="Work details">
+        <section className="work-section" aria-labelledby="work-experience-heading">
+          <h2 id="work-experience-heading">Experience</h2>
+          {resumeContent.experience.map((entry) => (
+            <article className="work-entry" key={`${entry.employer}-${entry.role}`}>
+              <p className="work-kicker">
+                {entry.startYear}-{entry.endYear}
+              </p>
+              <h3>
+                {entry.role} / {entry.employer}
+              </h3>
+              <p>{entry.summary}</p>
+              <ul>
+                {entry.highlights.slice(0, 3).map((highlight) => (
+                  <li key={highlight}>{highlight}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </section>
+
+        <section className="work-section" aria-labelledby="work-skills-heading">
+          <h2 id="work-skills-heading">Technical Kit</h2>
+          <div className="skill-list">
+            {resumeContent.skills.map((skill) => (
+              <p key={skill.name}>
+                <strong>{skill.name}</strong>: {skill.summary}
+              </p>
+            ))}
+          </div>
+        </section>
+
+        <section className="work-section" aria-labelledby="work-soft-heading">
+          <h2 id="work-soft-heading">Team Moves</h2>
+          <ul>
+            {resumeContent.softCompetencies.slice(0, 4).map((competency) => (
+              <li key={competency}>{competency}</li>
+            ))}
+          </ul>
+        </section>
+
+        <section className="work-section" aria-labelledby="work-education-heading">
+          <h2 id="work-education-heading">Education</h2>
+          {resumeContent.education.map((entry) => (
+            <p key={`${entry.school}-${entry.degree}`}>
+              {entry.degree} / {entry.school} / {entry.startYear}-{entry.endYear}
+            </p>
+          ))}
+        </section>
+      </div>
+    </LcdPage>
+  )
 }
 
 export function ProjectsPage() {

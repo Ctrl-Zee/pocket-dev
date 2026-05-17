@@ -191,10 +191,61 @@ body::before {
   padding-right: 4px;
 }
 
-.lcd-page p {
+.lcd-page p,
+.lcd-page li {
   margin: 0;
   font-size: 8px;
   line-height: 1.8;
+}
+
+.work-page {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  scrollbar-width: none;
+}
+
+.work-page::-webkit-scrollbar {
+  display: none;
+}
+
+.work-section {
+  display: grid;
+  gap: 6px;
+}
+
+.work-section h2,
+.work-entry h3 {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.work-entry {
+  display: grid;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(219, 232, 200, 0.44);
+}
+
+.work-entry + .work-entry {
+  margin-top: 5px;
+}
+
+.work-kicker {
+  color: var(--lcd-mid);
+}
+
+.work-section ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding-left: 12px;
+}
+
+.skill-list {
+  display: grid;
+  gap: 5px;
 }
 
 .home-wordmark {
