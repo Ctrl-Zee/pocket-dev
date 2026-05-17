@@ -65,6 +65,15 @@ function getCssRule(selector: string) {
   return rule ?? ''
 }
 
+function getCssRules(selector: string) {
+  const escapedSelector = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
+  return Array.from(
+    pocketDevCss.matchAll(new RegExp(`${escapedSelector}\\s*{[^}]*}`, 'gs')),
+    ([rule]) => rule,
+  )
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const router = createRouter({
@@ -333,6 +342,8 @@ describe('Pocket Dev responsive styles', () => {
   })
 
   it('renders A and B Device buttons at the same size across viewports', () => {
+    const faceButtonRules = [...getCssRules('.button-a'), ...getCssRules('.button-b')]
+
     expect(pocketDevCss).toContain('--face-button-size: 56px;')
     expect(pocketDevCss).toMatch(
       /\.button-a,\s*\.button-b\s*{[^}]*width:\s*var\(--face-button-size\);[^}]*height:\s*var\(--face-button-size\);/s,
@@ -340,8 +351,11 @@ describe('Pocket Dev responsive styles', () => {
     expect(pocketDevCss).toMatch(
       /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*--face-button-size:\s*54px;/s,
     )
-    expect(getCssRule('.button-a')).not.toMatch(/(?:width|height):\s*\d+px;/)
-    expect(getCssRule('.button-b')).not.toMatch(/(?:width|height):\s*\d+px;/)
+
+    expect(faceButtonRules.length).toBeGreaterThan(0)
+    faceButtonRules.forEach((rule) => {
+      expect(rule).not.toMatch(/(?:width|height):\s*\d+px;/)
+    })
   })
 
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
