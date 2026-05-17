@@ -20,6 +20,7 @@ type HomeSelectionDelta = -1 | 1
 const workExperienceHighlightLimit = 3
 const workSoftCompetencyLimit = 4
 const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
+const mobileLandscapeQuery = '(max-width: 900px) and (orientation: landscape)'
 const resumePreviewSkillRows = [
   resumeContent.skills.slice(0, 3).map((skill) => skill.name),
   resumeContent.skills.slice(3, 6).map((skill) => skill.name),
@@ -71,6 +72,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [selectedHomeIndex, setSelectedHomeIndex] = useState(firstHomeMenuIndex)
+  const isMobileLandscape = useMobileLandscape()
 
   const isHomeRoute = location.pathname === '/'
 
@@ -141,7 +143,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
       <DeviceNavigationContext.Provider value={deviceNavigation}>
         <main className="pocket-dev-device" aria-label="Pocket Dev Device">
           <div className="device-surface">
-            <DeviceScreen>{children}</DeviceScreen>
+            <DeviceScreen>{isMobileLandscape ? <RotatePage /> : children}</DeviceScreen>
             <DeviceBrandRow />
             <DeviceControls
               onActivate={activateHomeSelection}
@@ -289,6 +291,20 @@ export function ResumePage() {
 
 export function ContactPage() {
   return <PlaceholderPage title="Contact" />
+}
+
+function RotatePage() {
+  return (
+    <LcdPage title="Rotate">
+      <div className="rotate-page">
+        <p className="rotate-icon" aria-hidden="true">
+          ↻
+        </p>
+        <p>Please rotate your device.</p>
+        <p>Portrait mode keeps the Pocket Dev controls usable.</p>
+      </div>
+    </LcdPage>
+  )
 }
 
 function DeviceScreen({ children }: ChildrenProps) {
@@ -447,6 +463,34 @@ function useDeviceNavigation() {
   }
 
   return deviceNavigation
+}
+
+function useMobileLandscape() {
+  const [isMobileLandscape, setIsMobileLandscape] = useState(() => getMobileLandscapeMatch())
+
+  useEffect(() => {
+    if (!window.matchMedia) return
+
+    const mediaQuery = window.matchMedia(mobileLandscapeQuery)
+    if (!mediaQuery) return
+
+    const handleChange = () => setIsMobileLandscape(mediaQuery.matches)
+
+    handleChange()
+    mediaQuery.addEventListener('change', handleChange)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleChange)
+    }
+  }, [])
+
+  return isMobileLandscape
+}
+
+function getMobileLandscapeMatch() {
+  if (typeof window === 'undefined' || !window.matchMedia) return false
+
+  return Boolean(window.matchMedia(mobileLandscapeQuery)?.matches)
 }
 
 function DeviceSystemControls() {

@@ -23,11 +23,13 @@
 html,
 body,
 #root {
+  height: 100%;
   min-height: 100%;
 }
 
 body {
   margin: 0;
+  overflow: hidden;
   font-family: var(--font-ui);
   background:
     radial-gradient(circle at 50% 28%, rgba(255, 80, 200, 0.28), transparent 31%),
@@ -51,7 +53,8 @@ body::before {
 .pocket-dev-stage {
   position: relative;
   display: grid;
-  min-height: 100dvh;
+  height: 100dvh;
+  overflow: hidden;
   place-items: center;
   padding: 16px 12px 34px;
 }
@@ -390,6 +393,27 @@ body::before {
   color: var(--lcd-ink);
 }
 
+.rotate-page {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 10px;
+  min-height: 100%;
+  text-align: center;
+}
+
+.rotate-page p {
+  max-width: 25ch;
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.8;
+}
+
+.rotate-page .rotate-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
 .home-wordmark {
   margin: 0;
   font-size: 13px;
@@ -701,12 +725,89 @@ body::before {
   }
 }
 
+@media (max-width: 480px) and (orientation: portrait) {
+  :root {
+    --dpad-size: 96px;
+    --dpad-arm-size: 34px;
+    --dpad-arm-offset: 31px;
+  }
+
+  .pocket-dev-stage {
+    padding: 10px 8px 34px;
+  }
+
+  .pocket-dev-device {
+    width: min(94vw, 360px);
+    min-height: 0;
+    height: calc(100dvh - 54px);
+    padding: clamp(14px, 4vw, 18px);
+  }
+
+  .device-surface {
+    grid-template-rows: minmax(205px, 1fr) 52px 108px 28px;
+    gap: 8px;
+  }
+
+  .lcd-bezel {
+    padding: 12px;
+  }
+
+  .lcd-screen {
+    padding: 9px;
+  }
+
+  .volume-wheel {
+    width: 22px;
+    height: 46px;
+  }
+
+  .wordmark {
+    margin-right: 2px;
+    font-size: 11px;
+  }
+
+  .face-buttons {
+    height: 100px;
+  }
+
+  .button-a {
+    right: 7px;
+    top: 20px;
+    width: 54px;
+    height: 54px;
+  }
+
+  .button-b {
+    right: 70px;
+    top: 44px;
+    width: 46px;
+    height: 46px;
+  }
+
+  .pill {
+    width: 48px;
+    height: 14px;
+  }
+
+  .speaker-grill {
+    gap: 6px;
+    padding-right: 8px;
+  }
+
+  .speaker-grill span {
+    width: 5px;
+    height: 39px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 1ms !important;
-    animation-iteration-count: 1 !important;
+  .power-led,
+  .lcd-screen::after,
+  .home-menu a.is-selected::before {
+    animation: none;
+  }
+
+  html {
     scroll-behavior: auto !important;
   }
 }

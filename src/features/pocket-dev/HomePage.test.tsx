@@ -1,8 +1,10 @@
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/features/resume-content/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
@@ -34,6 +36,28 @@ const hardwareLabels = [
   /select and start buttons/i,
   /speaker grill/i,
 ]
+const pocketDevCss = readFileSync(
+  join(process.cwd(), 'src/features/pocket-dev/pocket-dev.css'),
+  'utf8',
+)
+
+function mockMobileLandscape(matches: boolean) {
+  const mediaQueryList = {
+    matches,
+    media: '(max-width: 900px) and (orientation: landscape)',
+    onchange: null,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }
+
+  Object.defineProperty(window, 'matchMedia', {
+    configurable: true,
+    value: vi.fn().mockReturnValue(mediaQueryList),
+  })
+}
 
 function renderRoute(path: string) {
   const user = userEvent.setup()
@@ -55,6 +79,10 @@ function renderRoute(path: string) {
 
   return { router, user, ...view }
 }
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('Home route', () => {
   it('renders the Home Page inside the Pocket Dev experience at /', async () => {
@@ -138,6 +166,19 @@ describe('Home route', () => {
     expect(router.state.location.pathname).toBe('/projects')
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  })
+
+  it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
+    mockMobileLandscape(true)
+
+    renderRoute('/work')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    expect(within(lcd).getByRole('heading', { name: /rotate/i })).toBeInTheDocument()
+    expect(within(lcd).getByText(/please rotate your device/i)).toBeInTheDocument()
+    expect(within(lcd).queryByRole('region', { name: /work details/i })).not.toBeInTheDocument()
   })
 })
 
@@ -224,5 +265,17 @@ describe('Resume route', () => {
     expect(openPdfLink).toHaveAttribute('target', '_blank')
     expect(openPdfLink).toHaveAttribute('rel', 'noreferrer')
     expect(openPdfLink).not.toHaveAttribute('download')
+  })
+})
+
+describe('Pocket Dev responsive styles', () => {
+  it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
+    expect(pocketDevCss).toMatch(/body\s*{[^}]*overflow:\s*hidden;/s)
+    expect(pocketDevCss).toMatch(
+      /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*\.pocket-dev-device\s*{[^}]*min-height:\s*0;[^}]*height:\s*calc\(100dvh - 54px\);/s,
+    )
+    expect(pocketDevCss).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*{[\s\S]*\.power-led,\s*\.lcd-screen::after,\s*\.home-menu a\.is-selected::before\s*{[^}]*animation:\s*none;/s,
+    )
   })
 })
