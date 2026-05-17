@@ -35,13 +35,15 @@ export type EducationEntry = {
   endYear: string
 }
 
+export type ResumeIdentity = {
+  name: string
+  publicTitle: string
+  location: string
+  summary: string
+}
+
 export type ResumeContent = {
-  identity: {
-    name: string
-    publicTitle: string
-    location: string
-    summary: string
-  }
+  identity: ResumeIdentity
   highlights: string[]
   softCompetencies: string[]
   skills: Skill[]

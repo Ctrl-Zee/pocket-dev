@@ -1,10 +1,32 @@
 import { resumeContent } from './resumeContent'
 
-const searchableResumeContent = () => JSON.stringify(resumeContent).toLowerCase()
+const expectedSkillNames = [
+  'React',
+  'Angular',
+  'JavaScript',
+  'Responsive Web Design',
+  '.NET',
+  'Azure',
+]
+
+const expectedProjectNames = [
+  'Benesys',
+  'Family and Social Services Administration / PEBT',
+  'Schwarz Partners',
+  'Venture Logistics',
+]
+
+const placeholderProjectNames = [
+  'project one',
+  'project two',
+  'project three',
+  'placeholder',
+  'todo',
+]
 
 describe('resumeContent', () => {
   it('exports curated factual resume data for Pocket Dev pages', () => {
-    const content = searchableResumeContent()
+    const searchableContent = JSON.stringify(resumeContent).toLowerCase()
 
     expect(resumeContent.identity.name).toBe('Andrew Smith')
     expect(resumeContent.identity.publicTitle).toBe('Software Engineer')
@@ -26,34 +48,22 @@ describe('resumeContent', () => {
       ]),
     )
 
-    for (const skill of [
-      'React',
-      'Angular',
-      'JavaScript',
-      'Responsive Web Design',
-      '.NET',
-      'Azure',
-    ]) {
+    for (const skill of expectedSkillNames) {
       expect(resumeContent.skills).toContainEqual(
         expect.objectContaining({ name: skill }),
       )
     }
 
-    expect(content).toContain('moser consulting')
-    expect(content).toContain('senior consultant')
-    expect(content).toContain('department of local government finance')
+    expect(searchableContent).toContain('moser consulting')
+    expect(searchableContent).toContain('senior consultant')
+    expect(searchableContent).toContain('department of local government finance')
 
     expect(resumeContent.projects.map((project) => project.name)).toEqual(
-      expect.arrayContaining([
-        'Benesys',
-        'Family and Social Services Administration / PEBT',
-        'Schwarz Partners',
-        'Venture Logistics',
-      ]),
+      expect.arrayContaining(expectedProjectNames),
     )
 
-    expect(content).toContain('bs computer science')
-    expect(content).toContain('iupui')
+    expect(searchableContent).toContain('bs computer science')
+    expect(searchableContent).toContain('iupui')
     expect(resumeContent.activities).toEqual([
       'Board Games',
       'Biking',
@@ -67,13 +77,7 @@ describe('resumeContent', () => {
     )
 
     expect(projectNames).not.toEqual(
-      expect.arrayContaining([
-        'project one',
-        'project two',
-        'project three',
-        'placeholder',
-        'todo',
-      ]),
+      expect.arrayContaining(placeholderProjectNames),
     )
   })
 })
