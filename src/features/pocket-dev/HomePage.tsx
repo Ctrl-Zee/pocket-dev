@@ -16,7 +16,7 @@ const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
 const firstHomeMenuIndex = 0
 const lastHomeMenuIndex = homeMenuItems.length - 1
-type HomeSelectionDelta = -1 | 1
+type SelectionDelta = -1 | 1
 const firstContactTargetIndex = 0
 const lastContactTargetIndex = resumeContent.contactTargets.length - 1
 const workExperienceHighlightLimit = 3
@@ -33,6 +33,25 @@ const dpadButtons = [
   { label: 'Left', className: 'dpad-button-left', delta: -1 },
   { label: 'Right', className: 'dpad-button-right', delta: 1 },
 ] as const
+
+function getWrappedSelectionIndex(
+  currentIndex: number,
+  delta: SelectionDelta,
+  firstIndex: number,
+  lastIndex: number,
+) {
+  if (currentIndex === firstIndex && delta < 0) return lastIndex
+  if (currentIndex === lastIndex && delta > 0) return firstIndex
+  return currentIndex + delta
+}
+
+function opensContactTargetInCurrentTab(href: string) {
+  return href.startsWith('mailto:') || href.startsWith('tel:')
+}
+
+function getContactTargetWindowTarget(href: string) {
+  return opensContactTargetInCurrentTab(href) ? '_self' : '_blank'
+}
 
 interface ChildrenProps {
   children: ReactNode
@@ -70,21 +89,23 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   const isContactRoute = location.pathname === '/contact'
 
   const moveSelection = useCallback(
-    (delta: HomeSelectionDelta) => {
+    (delta: SelectionDelta) => {
       if (isHomeRoute) {
-        setSelectedHomeIndex((currentIndex) => {
-          if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
-          if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
-          return currentIndex + delta
-        })
+        setSelectedHomeIndex((currentIndex) =>
+          getWrappedSelectionIndex(currentIndex, delta, firstHomeMenuIndex, lastHomeMenuIndex),
+        )
+        return
       }
 
       if (isContactRoute) {
-        setSelectedContactIndex((currentIndex) => {
-          if (currentIndex === firstContactTargetIndex && delta < 0) return lastContactTargetIndex
-          if (currentIndex === lastContactTargetIndex && delta > 0) return firstContactTargetIndex
-          return currentIndex + delta
-        })
+        setSelectedContactIndex((currentIndex) =>
+          getWrappedSelectionIndex(
+            currentIndex,
+            delta,
+            firstContactTargetIndex,
+            lastContactTargetIndex,
+          ),
+        )
       }
     },
     [isContactRoute, isHomeRoute],
@@ -99,13 +120,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
     if (isContactRoute) {
       const contactTarget = resumeContent.contactTargets[selectedContactIndex]
 
-      window.open(
-        contactTarget.href,
-        contactTarget.href.startsWith('mailto:') || contactTarget.href.startsWith('tel:')
-          ? '_self'
-          : '_blank',
-        'noreferrer',
-      )
+      window.open(contactTarget.href, getContactTargetWindowTarget(contactTarget.href), 'noreferrer')
     }
   }, [isContactRoute, isHomeRoute, navigate, selectedContactIndex, selectedHomeIndex])
 
@@ -319,8 +334,7 @@ export function ContactPage() {
         <nav className="contact-list" aria-label="Contact links">
           {resumeContent.contactTargets.map((contactTarget, contactTargetIndex) => {
             const isSelected = contactTargetIndex === selectedContactIndex
-            const opensInCurrentTab =
-              contactTarget.href.startsWith('mailto:') || contactTarget.href.startsWith('tel:')
+            const opensInCurrentTab = opensContactTargetInCurrentTab(contactTarget.href)
 
             return (
               <a
@@ -451,7 +465,7 @@ function DeviceBrandRow() {
 
 interface DeviceControlsProps {
   onActivate: () => void
-  onMove: (delta: HomeSelectionDelta) => void
+  onMove: (delta: SelectionDelta) => void
   onReturnHome: () => void
 }
 

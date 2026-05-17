@@ -2,7 +2,7 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/features/resume-content/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
@@ -32,6 +32,10 @@ const hardwareLabels = [
   /speaker grill/i,
 ]
 
+function getExpectedContactWindowTarget(href: string) {
+  return href.startsWith('mailto:') || href.startsWith('tel:') ? '_self' : '_blank'
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const queryClient = new QueryClient({
@@ -52,6 +56,10 @@ function renderRoute(path: string) {
 
   return { router, user, ...view }
 }
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('Home route', () => {
   it('renders the Home Page inside the Pocket Dev experience at /', async () => {
@@ -145,11 +153,9 @@ describe('Contact route', () => {
 
     expect(openSpy).toHaveBeenCalledWith(
       resumeContent.contactTargets[1].href,
-      resumeContent.contactTargets[1].href?.startsWith('mailto:') ? '_self' : '_blank',
+      getExpectedContactWindowTarget(resumeContent.contactTargets[1].href),
       'noreferrer',
     )
-
-    openSpy.mockRestore()
   })
 })
 
