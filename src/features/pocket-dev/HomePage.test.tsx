@@ -502,6 +502,45 @@ describe('Home route', () => {
     expect(within(lcd).queryByRole('button', { name: 'SNAKE' })).not.toBeInTheDocument()
   })
 
+  it('runs the hidden SNAKE shell controls inside the LCD without moving Home selection', async () => {
+    const { router, user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    await enterKonamiSequence(user)
+    await user.click(screen.getByRole('button', { name: /^b$/i }))
+
+    let lcd = screen.getByRole('region', { name: /lcd screen/i })
+    const snakeMenuButton = within(lcd).getByRole('button', { name: 'SNAKE' })
+
+    await user.click(snakeMenuButton)
+
+    lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /^> snake$/i })).toBeInTheDocument()
+    expect(within(lcd).getByText(/ready/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+    expect(within(lcd).getByText(/running/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    expect(within(lcd).getByText(/dir down/i)).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/')
+
+    await user.click(screen.getByRole('button', { name: /start/i }))
+    expect(within(lcd).getByText(/paused/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+    expect(within(lcd).getByText(/running/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /^b$/i }))
+
+    lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+    expect(within(lcd).getByRole('button', { name: 'SNAKE' })).toHaveAttribute(
+      'data-selected',
+      'true',
+    )
+  })
+
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
     mockMobileLandscapeQuery(true)
 

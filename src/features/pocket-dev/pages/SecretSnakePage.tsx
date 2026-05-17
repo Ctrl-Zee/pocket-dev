@@ -1,6 +1,14 @@
 import { LcdPage } from '@/components/lcd'
+import type { DeviceMoveDirection } from '@/components/device/types'
 
-export function SecretSnakePage() {
+type SnakeShellStatus = 'ready' | 'running' | 'paused'
+
+interface SecretSnakePageProps {
+  direction: DeviceMoveDirection
+  status: SnakeShellStatus
+}
+
+export function SecretSnakePage({ direction, status }: SecretSnakePageProps) {
   return (
     <LcdPage title="Snake">
       <div className="snake-game-page" aria-label="SNAKE game">
@@ -10,7 +18,11 @@ export function SecretSnakePage() {
           <span className="snake-game-segment" />
           <span className="snake-game-food" />
         </div>
-        <p>Score 000</p>
+        <div className="snake-game-status" aria-label="SNAKE shell status">
+          <p>State {status.toUpperCase()}</p>
+          <p>Dir {direction.toUpperCase()}</p>
+          <p>Score 000</p>
+        </div>
       </div>
     </LcdPage>
   )

@@ -21,6 +21,7 @@ interface PocketDevDeviceProps {
 }
 
 type KonamiInput = DeviceMoveDirection | 'a' | 'b'
+type SnakeShellStatus = 'ready' | 'running' | 'paused'
 
 const konamiSequence = [
   'up',
@@ -45,6 +46,8 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const [isSnakeUnlocked, setIsSnakeUnlocked] = useState(false)
   const [isShowingSnake, setIsShowingSnake] = useState(false)
   const [isShowingSnakeUnlock, setIsShowingSnakeUnlock] = useState(false)
+  const [snakeDirection, setSnakeDirection] = useState<DeviceMoveDirection>('right')
+  const [snakeStatus, setSnakeStatus] = useState<SnakeShellStatus>('ready')
   const visibleHomeItemCount = isSnakeUnlocked ? pageCatalog.length + 1 : pageCatalog.length
   const homeSelection = useLcdSelection(visibleHomeItemCount)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
@@ -72,6 +75,12 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
   const moveSelection = useCallback(
     (delta: SelectionDelta, direction: DeviceMoveDirection) => {
+      if (isShowingSnake) {
+        setSnakeDirection(direction)
+        playDeviceSfx('blip')
+        return
+      }
+
       trackKonamiInput(direction)
 
       if (isHomeRoute) {
@@ -88,10 +97,28 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
       playDeviceSfx('error')
     },
-    [contactSelection, homeSelection, isContactRoute, isHomeRoute, playDeviceSfx, trackKonamiInput],
+    [
+      contactSelection,
+      homeSelection,
+      isContactRoute,
+      isHomeRoute,
+      isShowingSnake,
+      playDeviceSfx,
+      trackKonamiInput,
+    ],
   )
 
+  const toggleSnakeStatus = useCallback(() => {
+    setSnakeStatus((currentStatus) => (currentStatus === 'running' ? 'paused' : 'running'))
+  }, [])
+
   const activateSelection = useCallback(() => {
+    if (isShowingSnake) {
+      toggleSnakeStatus()
+      playDeviceSfx('confirm')
+      return
+    }
+
     if (trackKonamiInput('a')) return
 
     if (isHomeRoute) {
@@ -123,24 +150,37 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     homeSelection.selectedIndex,
     isContactRoute,
     isHomeRoute,
+    isShowingSnake,
     isSnakeUnlocked,
     navigate,
     playDeviceSfx,
     trackKonamiInput,
+    toggleSnakeStatus,
   ])
 
   const returnHome = useCallback(() => {
+    if (isShowingSnake) {
+      setIsShowingSnake(false)
+      setSnakeDirection('right')
+      setSnakeStatus('ready')
+      playDeviceSfx('back')
+      void navigate({ to: '/' })
+      return
+    }
+
     trackKonamiInput('b')
     setIsShowingSnake(false)
     setIsShowingSnakeUnlock(false)
     playDeviceSfx('back')
     void navigate({ to: '/' })
-  }, [navigate, playDeviceSfx, trackKonamiInput])
+  }, [isShowingSnake, navigate, playDeviceSfx, trackKonamiInput])
 
   const openSnake = useCallback(() => {
     if (!isSnakeUnlocked) return
 
     setIsShowingSnakeUnlock(false)
+    setSnakeDirection('right')
+    setSnakeStatus('ready')
     setIsShowingSnake(true)
   }, [isSnakeUnlocked])
 
@@ -150,8 +190,14 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }, [playDeviceSfx, toggleMute])
 
   const handleStart = useCallback(() => {
+    if (isShowingSnake) {
+      toggleSnakeStatus()
+      playDeviceSfx('start')
+      return
+    }
+
     playDeviceSfx('start')
-  }, [playDeviceSfx])
+  }, [isShowingSnake, playDeviceSfx, toggleSnakeStatus])
 
   useDeviceKeyboardControls({ activateSelection, moveSelection, returnHome })
 
@@ -172,7 +218,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }
 
   if (isShowingSnake) {
-    lcdContent = <SecretSnakePage />
+    lcdContent = <SecretSnakePage direction={snakeDirection} status={snakeStatus} />
   }
 
   if (shouldShowRotatePrompt) {
