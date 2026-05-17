@@ -195,7 +195,7 @@ Every interaction has SFX. No background music.
 | About    | Pixel avatar (16×16) + 3-line identity + scrollable bio + skills         |
 | Projects | 4 framed project cards, each with name / stack / blurb                   |
 | Resume   | Pixel "scan" of the PDF, scrollable, with a real Download button         |
-| Contact  | 3 framed link rows: GitHub, LinkedIn, Email, each with a sprite          |
+| Contact  | Framed Email and LinkedIn link rows                                      |
 | Rotate   | Mobile-only landscape alert ("PLEASE ROTATE YOUR DEVICE")                |
 | Secret   | Konami payoff: hot-pink palette + +30 lives message                      |
 

@@ -46,25 +46,17 @@ describe('resumeContent', () => {
     expect(resumeContent.identity.publicTitle).toBe('Software Engineer')
     expect(resumeContent.identity.location).toContain('Indianapolis')
 
-    expect(resumeContent.contactTargets).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          label: 'Email',
-          href: 'mailto:andrew.smith.indy@gmail.com',
-        }),
-        expect.objectContaining({
-          label: 'LinkedIn',
-        }),
-        expect.objectContaining({
-          label: 'Website',
-          href: expect.stringContaining('andrewsmith.bio'),
-        }),
-        expect.objectContaining({
-          label: 'Phone',
-          href: 'tel:+13172608411',
-        }),
-      ]),
-    )
+    expect(resumeContent.contactTargets).toEqual([
+      expect.objectContaining({
+        label: 'Email',
+        href: 'mailto:andrew.smith.indy@gmail.com',
+      }),
+      {
+        label: 'LinkedIn',
+        value: 'andrew-smith-aa763164',
+        href: 'https://www.linkedin.com/in/andrew-smith-aa763164/',
+      },
+    ])
 
     for (const skill of requiredSkillNames) {
       expect(resumeContent.skills).toContainEqual(
