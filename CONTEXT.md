@@ -73,8 +73,8 @@ A real URL path that opens a corresponding Page inside the Device.
 _Avoid_: Hash-only navigation, route content outside the LCD
 
 **Secret**:
-A deferred easter-egg Page or state triggered by a hidden interaction such as the Konami code.
-_Avoid_: Core v1 content, visible navigation item
+A deferred easter-egg Page or state triggered by a hidden interaction such as the Konami code. The agreed Konami payoff is a tiny unlock moment for a hidden SNAKE LCD game.
+_Avoid_: Core v1 content, public route, pre-unlock visible navigation item
 
 **Audience**:
 The mixed set of people who may view the site: recruiters, hiring managers, friends, family, teammates, other developers, and Andrew himself.
@@ -102,6 +102,7 @@ _Avoid_: Recruiters as the only audience
 - The B control returns from any top-level **Page** to Home instead of replaying browser history.
 - **Sound** supports the handheld feel but is never required to use **Pocket Dev**.
 - **Secret** is aligned with the playful product direction but is not required for the first complete version.
+- When unlocked by the Konami code, **Secret** uses a tiny payoff, unlocks SNAKE for the current mounted **Pocket Dev** session, and adds SNAKE as a sixth Home menu item until refresh/unmount.
 - Home lists top-level **Pages** in this order: About, Work, Projects, Resume, Contact.
 - Home and **About** introduce Andrew as a **Software Engineer**.
 - **Senior Consultant** appears in Work history where job titles are shown.

@@ -197,7 +197,7 @@ Every interaction has SFX. No background music.
 | Resume   | Pixel "scan" of the PDF, scrollable, with a real Download button         |
 | Contact  | Framed Email and LinkedIn link rows                                      |
 | Rotate   | Mobile-only landscape alert ("PLEASE ROTATE YOUR DEVICE")                |
-| Secret   | Konami payoff: hot-pink palette + +30 lives message                      |
+| Secret   | Konami payoff that unlocks the hidden SNAKE LCD game                     |
 
 ### Rules
 - Every page renders into the same LCD area. No modals, no overlays inside the device.
@@ -211,11 +211,22 @@ Every interaction has SFX. No background music.
 Konami sequence: `↑ ↑ ↓ ↓ ← → ← → B A`
 
 When matched:
-1. Palette flips to Konami palette (LCD content stays, colors invert)
+1. Palette flips to Konami palette for the secret payoff
 2. Pixel confetti rains for ~3.2s
-3. Screen swaps to the secret message ("YOU FOUND THE CHEAT CODE / +30 LIVES")
+3. Screen swaps to a tiny payoff message that unlocks the hidden SNAKE game
 4. `konami` SFX plays
-5. A or B returns home
+5. The current mounted Pocket Dev session remembers that SNAKE is unlocked
+6. Home gains SNAKE as a sixth menu item for the rest of the mounted session
+
+SNAKE behavior:
+- SNAKE is a hidden secret state, not a public top-level Route.
+- First successful Konami entry shows the tiny payoff before entering or offering SNAKE.
+- Selecting SNAKE from Home after unlock starts the game directly; the payoff does not repeat.
+- SNAKE uses the Konami LCD palette.
+- D-pad controls in-game direction/input.
+- A starts, pauses, and resumes.
+- B quits to Home.
+- Start may mirror pause if supported by the controls layer.
 
 Don't reveal the code anywhere on the site. It's an easter egg. People who know, know.
 
