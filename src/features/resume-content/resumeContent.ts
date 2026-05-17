@@ -170,6 +170,7 @@ export const resumeContent = {
         'Led front-end development.',
         'Implemented design-team deliverables.',
         'Established state management with NgRx Component Store.',
+        'Served 20K families.',
       ],
     },
     {
