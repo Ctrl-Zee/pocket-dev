@@ -99,6 +99,11 @@ describe('resumeContent', () => {
     )
   })
 
+  it('keeps Software Engineer as the public identity copy', () => {
+    expect(resumeContent.identity.publicTitle).toBe('Software Engineer')
+    expect(resumeContent.identity.summary).toMatch(/^Software Engineer\b/)
+  })
+
   it('keeps the public-sector PEBT scale fact with the project entry', () => {
     const pebtProject = getProjectByName(
       'Family and Social Services Administration / PEBT',

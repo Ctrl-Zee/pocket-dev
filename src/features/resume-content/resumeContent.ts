@@ -60,7 +60,7 @@ export const resumeContent = {
     publicTitle: 'Software Engineer',
     location: 'Indianapolis, Indiana',
     summary:
-      'Senior Consultant and software engineer with 10+ years of software design experience.',
+      'Software Engineer and Senior Consultant with 10+ years of software design experience.',
   },
   highlights: [
     'Architected and developed an enterprise SaaS React solution supporting 100+ clients.',
