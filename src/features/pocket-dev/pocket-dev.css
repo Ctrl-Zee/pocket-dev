@@ -1,5 +1,5 @@
 :root {
-  --shell-1: #c5a7e6;
+  --shell-1: #b493d8;
   --shell-2: #9b7fc4;
   --shell-3: #6a4f95;
   --shell-deep: #3a2a5a;
@@ -78,7 +78,7 @@ body::before {
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 28px 28px 56px 28px;
   background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(160deg, rgba(222, 206, 255, 0.16), transparent 34%),
     linear-gradient(180deg, var(--shell-1) 0%, var(--shell-2) 48%, var(--shell-3) 100%);
   box-shadow:
     inset 0 2px 14px rgba(255, 255, 255, 0.32),
@@ -104,7 +104,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   content: '';
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent 48%);
+  background: linear-gradient(180deg, rgba(222, 206, 255, 0.14), transparent 48%);
 }
 
 .device-surface {
