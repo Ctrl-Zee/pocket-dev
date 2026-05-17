@@ -1,4 +1,4 @@
-import { LcdPage } from './LCD'
+import { LcdPage } from '@/components/lcd'
 
 export function RotatePage() {
   return (

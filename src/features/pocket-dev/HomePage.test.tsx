@@ -57,7 +57,7 @@ const expectedLcdFontSizeRules = [
   ['.pixel-list li', '--lcd-detail-text'],
   ['.project-card p', '--lcd-supporting-text'],
   ['.contact-list a strong', '--lcd-supporting-text'],
-  ['.resume-open-pdf', '--lcd-detail-text'],
+  ['.lcd-action-link', '--lcd-detail-text'],
 ] as const
 
 function mockMobileLandscapeQuery(matches: boolean) {
