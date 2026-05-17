@@ -17,6 +17,8 @@ const speakerSlotCount = 5
 const firstHomeMenuIndex = 0
 const lastHomeMenuIndex = homeMenuItems.length - 1
 type HomeSelectionDelta = -1 | 1
+const workExperienceHighlightLimit = 3
+const workSoftCompetencyLimit = 4
 
 const dpadButtons = [
   { label: 'Up', className: 'dpad-button-up', delta: -1 },
@@ -26,7 +28,6 @@ const dpadButtons = [
 ] as const
 
 const placeholderPageContent = {
-  Work: 'Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and professional history.',
   Projects:
     'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
   Resume: 'Formal resume placeholder for Resume Page. This LCD Page will link to the PDF artifact.',
@@ -55,6 +56,11 @@ interface DeviceNavigationValue {
 
 const DeviceNavigationContext = createContext<DeviceNavigationValue | null>(null)
 
+interface WorkSectionProps extends ChildrenProps {
+  headingId: string
+  title: string
+}
+
 export function PocketDevDevice({ children }: ChildrenProps) {
   const navigate = useNavigate()
   const location = useLocation()
@@ -62,15 +68,18 @@ export function PocketDevDevice({ children }: ChildrenProps) {
 
   const isHomeRoute = location.pathname === '/'
 
-  const moveHomeSelection = useCallback((delta: HomeSelectionDelta) => {
-    if (!isHomeRoute) return
+  const moveHomeSelection = useCallback(
+    (delta: HomeSelectionDelta) => {
+      if (!isHomeRoute) return
 
-    setSelectedHomeIndex((currentIndex) => {
-      if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
-      if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
-      return currentIndex + delta
-    })
-  }, [isHomeRoute])
+      setSelectedHomeIndex((currentIndex) => {
+        if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
+        if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
+        return currentIndex + delta
+      })
+    },
+    [isHomeRoute],
+  )
 
   const activateHomeSelection = useCallback(() => {
     if (!isHomeRoute) return
@@ -210,7 +219,11 @@ export function AboutPage() {
 }
 
 export function WorkPage() {
-  return <PlaceholderPage title="Work" />
+  return (
+    <LcdPage title="Work">
+      <WorkDetails />
+    </LcdPage>
+  )
 }
 
 export function ProjectsPage() {
@@ -256,6 +269,66 @@ function PlaceholderPage({ title }: PlaceholderPageProps) {
   )
 }
 
+function WorkDetails() {
+  return (
+    <div className="lcd-page work-page" role="region" aria-label="Work details">
+      <WorkSection headingId="work-experience-heading" title="Experience">
+        {resumeContent.experience.map((entry) => (
+          <article className="work-entry" key={`${entry.employer}-${entry.role}`}>
+            <p className="work-kicker">
+              {entry.startYear}-{entry.endYear}
+            </p>
+            <h3>
+              {entry.role} / {entry.employer}
+            </h3>
+            <p>{entry.summary}</p>
+            <ul>
+              {entry.highlights.slice(0, workExperienceHighlightLimit).map((highlight) => (
+                <li key={highlight}>{highlight}</li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </WorkSection>
+
+      <WorkSection headingId="work-skills-heading" title="Technical Kit">
+        <div className="work-skill-list">
+          {resumeContent.skills.map((skill) => (
+            <p key={skill.name}>
+              <strong>{skill.name}</strong>: {skill.summary}
+            </p>
+          ))}
+        </div>
+      </WorkSection>
+
+      <WorkSection headingId="work-soft-heading" title="Team Moves">
+        <ul>
+          {resumeContent.softCompetencies.slice(0, workSoftCompetencyLimit).map((competency) => (
+            <li key={competency}>{competency}</li>
+          ))}
+        </ul>
+      </WorkSection>
+
+      <WorkSection headingId="work-education-heading" title="Education">
+        {resumeContent.education.map((entry) => (
+          <p key={`${entry.school}-${entry.degree}`}>
+            {entry.degree} / {entry.school} / {entry.startYear}-{entry.endYear}
+          </p>
+        ))}
+      </WorkSection>
+    </div>
+  )
+}
+
+function WorkSection({ headingId, title, children }: WorkSectionProps) {
+  return (
+    <section className="work-section" aria-labelledby={headingId}>
+      <h2 id={headingId}>{title}</h2>
+      {children}
+    </section>
+  )
+}
+
 function DeviceBrandRow() {
   return (
     <section className="device-brand-row" aria-label="Device hardware top controls">
@@ -275,11 +348,7 @@ interface DeviceControlsProps {
   onReturnHome: () => void
 }
 
-function DeviceControls({
-  onActivate,
-  onMove,
-  onReturnHome,
-}: DeviceControlsProps) {
+function DeviceControls({ onActivate, onMove, onReturnHome }: DeviceControlsProps) {
   return (
     <section className="controls-row" aria-label="Device controls">
       <div className="dpad" aria-label="D-pad">
