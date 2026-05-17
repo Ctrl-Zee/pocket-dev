@@ -1,17 +1,12 @@
 import { render, screen, within } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {
-  RouterProvider,
-  createMemoryHistory,
-  createRouter,
-} from '@tanstack/react-router'
+import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { describe, expect, it } from 'vitest'
 import { routeTree } from '@/routeTree.gen'
 
 const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
 const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
 const expectedRoutedPages = [
-  { path: '/about', heading: /about/i, content: /andrew smith/i },
   { path: '/work', heading: /work/i, content: /experience/i },
   { path: '/projects', heading: /projects/i, content: /selected projects/i },
   { path: '/resume', heading: /resume/i, content: /formal resume/i },
@@ -84,4 +79,28 @@ describe('Home route', () => {
       })
     },
   )
+})
+
+describe('About route', () => {
+  it('renders factual identity, location, bio, and personal details inside the LCD', async () => {
+    renderRoute('/about')
+
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    const lcd = within(device).getByRole('region', { name: /lcd screen/i })
+
+    expect(within(lcd).getByRole('heading', { name: /about/i })).toBeInTheDocument()
+    expect(
+      within(lcd).getByRole('heading', {
+        name: /andrew smith \/ software engineer/i,
+      }),
+    ).toBeInTheDocument()
+    expect(within(lcd).getByText(/indianapolis, indiana/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^software engineer and senior consultant/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/board games/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/biking/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/reading/i)).toBeInTheDocument()
+    expect(
+      within(lcd).queryByText(/department of local government finance/i),
+    ).not.toBeInTheDocument()
+  })
 })

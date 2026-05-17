@@ -197,6 +197,48 @@ body::before {
   line-height: 1.8;
 }
 
+.about-page {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.about-hero {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background: var(--lcd-hi);
+}
+
+.about-hero h2,
+.about-page h3 {
+  margin: 0;
+  font-size: 8px;
+  line-height: 1.6;
+}
+
+.about-hero p {
+  color: var(--lcd-mid);
+  font-size: 6px;
+  line-height: 1.6;
+}
+
+.pixel-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0;
+  margin: 5px 0 0;
+  list-style: none;
+}
+
+.pixel-list li {
+  padding: 4px 5px;
+  background: rgba(219, 232, 200, 0.58);
+  font-size: 6px;
+  line-height: 1.5;
+}
+
 .home-wordmark {
   margin: 0;
   font-size: 13px;

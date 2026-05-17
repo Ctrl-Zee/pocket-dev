@@ -1,5 +1,6 @@
 import './pocket-dev.css'
 import type { ReactNode } from 'react'
+import { resumeContent } from '@/features/resume-content/resumeContent'
 
 const homeMenuItems = [
   { label: 'About', href: '/about' },
@@ -76,7 +77,36 @@ export function HomePage() {
 }
 
 export function AboutPage() {
-  return <PlaceholderPage title="About" />
+  const { identity, activities } = resumeContent
+
+  return (
+    <LcdPage title="About">
+      <article className="lcd-page about-page">
+        <header className="about-hero">
+          <h2>
+            {identity.name} / {identity.publicTitle}
+          </h2>
+          <p>{identity.location}</p>
+        </header>
+
+        <p>{identity.summary}</p>
+        <p>
+          Andrew builds practical web applications across front-end, back-end, and delivery work. He
+          likes clear interfaces, maintainable code, and teams that can keep improving a product
+          after launch.
+        </p>
+
+        <section aria-labelledby="about-activities">
+          <h3 id="about-activities">After hours</h3>
+          <ul className="pixel-list">
+            {activities.map((activity) => (
+              <li key={activity}>{activity}</li>
+            ))}
+          </ul>
+        </section>
+      </article>
+    </LcdPage>
+  )
 }
 
 export function WorkPage() {
