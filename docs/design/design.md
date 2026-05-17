@@ -97,7 +97,7 @@ Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep gly
 ### Don't
 - No gradients on the chassis surface beyond the layered base + sheen — no rainbow, no metallic.
 - No physical reflections (specular highlights), no skeuomorphic light sources beyond the implied top-left.
-- No charging port, link cable port, headphone jack, or wrist strap. Two extras only: power LED + volume wheel.
+- No charging port, link cable port, headphone jack, wrist strap, or volume wheel. Keep the hardware extras limited to the power LED and core controls.
 
 ---
 
@@ -107,8 +107,6 @@ Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep gly
 | ---              | ---                | ---                                                       |
 | LCD              | Upper section      | Flex-grow within remaining vertical space                 |
 | Power LED        | Top-left of LCD bezel | Pulses softly (2.6s ease)                              |
-| Mute toggle      | Below volume wheel | Tiny flat icon                                            |
-| Volume wheel     | Left edge          | Ridged plastic, decorative                                |
 | Rainbow wordmark | Below LCD, right-aligned over A/B | "POCKET DEV" in 6-color sequence       |
 | D-pad            | Bottom-left        | Cross with sharp edges, dark plastic, four arms           |
 | A / B buttons    | Bottom-right       | Round red rubber, tilted -18°, A bigger than B            |

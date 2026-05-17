@@ -19,7 +19,6 @@ interface DeviceControlsProps {
 export function DeviceBrandRow() {
   return (
     <section className="device-brand-row" aria-label="Device hardware top controls">
-      <div className="volume-wheel" aria-label="Volume wheel" />
       <p className="wordmark" aria-label="Pocket Dev wordmark">
         {deviceWordmarkSegments.map((segment) => (
           <span key={segment}>{segment}</span>

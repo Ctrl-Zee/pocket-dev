@@ -26,7 +26,6 @@ const expectedWorkContent = [
 const hardwareLabels = [
   /pocket dev wordmark/i,
   /power led/i,
-  /volume wheel/i,
   /d-pad/i,
   /a and b buttons/i,
   /select and start buttons/i,
@@ -92,6 +91,7 @@ describe('Home route', () => {
     hardwareLabels.forEach((label) => {
       expect(screen.getByLabelText(label)).toBeInTheDocument()
     })
+    expect(screen.queryByLabelText(/volume wheel/i)).not.toBeInTheDocument()
 
     const controlHint = screen.getByText(/arrows move \/ enter a \/ esc b/i)
     expect(controlHint).toBeInTheDocument()
