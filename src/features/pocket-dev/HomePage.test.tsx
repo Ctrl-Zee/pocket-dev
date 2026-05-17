@@ -105,16 +105,16 @@ const oscillatorStartSpy = vi.fn()
 const oscillatorStopSpy = vi.fn()
 const oscillatorConnectSpy = vi.fn()
 const gainConnectSpy = vi.fn()
-const gainSetValueSpy = vi.fn()
-const gainRampSpy = vi.fn()
+const audioParamSetValueSpy = vi.fn()
+const audioParamRampSpy = vi.fn()
 const audioDestination = {}
 const audioContextInstances: MockAudioContext[] = []
 
 class MockAudioParam {
   value = 0
 
-  setValueAtTime = gainSetValueSpy
-  exponentialRampToValueAtTime = gainRampSpy
+  setValueAtTime = audioParamSetValueSpy
+  exponentialRampToValueAtTime = audioParamRampSpy
 }
 
 class MockOscillator {

@@ -1,7 +1,5 @@
-type SystemButtonLabel = 'Select' | 'Start'
-
 interface SystemButtonProps {
-  label: SystemButtonLabel
+  ariaLabel: string
   isPressed?: boolean
   onPress: () => void
 }
@@ -15,16 +13,20 @@ interface SystemButtonsProps {
 export function SystemButtons({ isMuted, onSelect, onStart }: SystemButtonsProps) {
   return (
     <div className="system-buttons" aria-label="Select and Start buttons">
-      <SystemButton isPressed={isMuted} label="Select" onPress={onSelect} />
-      <SystemButton label="Start" onPress={onStart} />
+      <SystemButton
+        ariaLabel="Select mute sound"
+        isPressed={isMuted}
+        onPress={onSelect}
+      />
+      <SystemButton ariaLabel="Start" onPress={onStart} />
     </div>
   )
 }
 
-export function SystemButton({ isPressed, label, onPress }: SystemButtonProps) {
+export function SystemButton({ ariaLabel, isPressed, onPress }: SystemButtonProps) {
   return (
     <button
-      aria-label={label === 'Select' ? `${label} mute sound` : label}
+      aria-label={ariaLabel}
       aria-pressed={isPressed}
       className="system-button"
       type="button"

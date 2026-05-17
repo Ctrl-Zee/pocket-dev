@@ -1,7 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
 
-export type DeviceSfxName = 'back' | 'blip' | 'confirm' | 'error' | 'konami' | 'select' | 'start'
-
 type AudioContextConstructor = typeof AudioContext
 
 interface WindowWithWebkitAudio extends Window {
@@ -17,7 +15,9 @@ interface ToneStep {
 
 const muteStorageKey = 'pocket-dev-device-muted'
 const quietSystemGain = 0.018
-const soundSteps: Record<DeviceSfxName, ToneStep[]> = {
+const toneGapSeconds = 0.012
+const silentGainFloor = 0.001
+const soundSteps = {
   back: [{ duration: 0.055, frequency: 260, gain: 0.035, type: 'triangle' }],
   blip: [{ duration: 0.035, frequency: 620, gain: 0.032, type: 'square' }],
   confirm: [{ duration: 0.06, frequency: 880, gain: 0.038, type: 'square' }],
@@ -32,7 +32,9 @@ const soundSteps: Record<DeviceSfxName, ToneStep[]> = {
   ],
   select: [{ duration: 0.035, frequency: 420, gain: quietSystemGain, type: 'triangle' }],
   start: [{ duration: 0.05, frequency: 520, gain: quietSystemGain, type: 'triangle' }],
-}
+} satisfies Record<string, ToneStep[]>
+
+export type DeviceSfxName = keyof typeof soundSteps
 
 export function useDeviceSfx() {
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -41,8 +43,7 @@ export function useDeviceSfx() {
   const getAudioContext = useCallback(() => {
     if (audioContextRef.current) return audioContextRef.current
 
-    const AudioContextClass =
-      window.AudioContext ?? (window as WindowWithWebkitAudio).webkitAudioContext
+    const AudioContextClass = getAudioContextClass()
 
     if (!AudioContextClass) return null
 
@@ -65,7 +66,7 @@ export function useDeviceSfx() {
 
       for (const toneStep of soundSteps[soundName]) {
         playToneStep(audioContext, toneStep, startTime)
-        startTime += toneStep.duration + 0.012
+        startTime += toneStep.duration + toneGapSeconds
       }
     },
     [getAudioContext, isMuted],
@@ -95,12 +96,16 @@ function playToneStep(audioContext: AudioContext, toneStep: ToneStep, startTime:
   oscillator.type = toneStep.type ?? 'square'
   oscillator.frequency.setValueAtTime(toneStep.frequency, startTime)
   gainNode.gain.setValueAtTime(toneStep.gain, startTime)
-  gainNode.gain.exponentialRampToValueAtTime(0.001, endTime)
+  gainNode.gain.exponentialRampToValueAtTime(silentGainFloor, endTime)
 
   oscillator.connect(gainNode)
   gainNode.connect(audioContext.destination)
   oscillator.start(startTime)
   oscillator.stop(endTime)
+}
+
+function getAudioContextClass() {
+  return window.AudioContext ?? (window as WindowWithWebkitAudio).webkitAudioContext ?? null
 }
 
 function readStoredMutePreference() {
