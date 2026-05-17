@@ -86,11 +86,15 @@ export function PocketDevDevice({ children }: ChildrenProps) {
           return
         case 'Enter':
         case ' ':
+        case 'a':
+        case 'A':
           event.preventDefault()
           activateSelection()
           return
         case 'Escape':
         case 'Backspace':
+        case 'b':
+        case 'B':
           event.preventDefault()
           returnHome()
       }
