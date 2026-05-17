@@ -228,13 +228,13 @@ body::before {
   text-decoration: none;
 }
 
-.home-menu a:first-child,
+.home-menu a.is-selected,
 .home-menu a:focus-visible,
 .home-menu a:hover {
   background: var(--lcd-hi);
 }
 
-.home-menu a:first-child::before {
+.home-menu a.is-selected::before {
   position: absolute;
   left: 6px;
   content: '>';
@@ -331,6 +331,51 @@ body::before {
   height: var(--dpad-size);
 }
 
+.dpad-button {
+  position: absolute;
+  z-index: 1;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dpad-button-up,
+.dpad-button-down {
+  left: var(--dpad-arm-offset);
+  width: var(--dpad-arm-size);
+  height: var(--dpad-arm-size);
+}
+
+.dpad-button-left,
+.dpad-button-right {
+  top: var(--dpad-arm-offset);
+  width: var(--dpad-arm-size);
+  height: var(--dpad-arm-size);
+}
+
+.dpad-button-up {
+  top: 0;
+}
+
+.dpad-button-down {
+  bottom: 0;
+}
+
+.dpad-button-left {
+  left: 0;
+}
+
+.dpad-button-right {
+  right: 0;
+}
+
+.dpad:has(.dpad-button:active)::before,
+.dpad:has(.dpad-button:active)::after,
+.dpad:has(.dpad-button:focus-visible)::before,
+.dpad:has(.dpad-button:focus-visible)::after {
+  background: #31253f;
+}
+
 .face-buttons {
   position: relative;
   height: 112px;
@@ -342,9 +387,11 @@ body::before {
   position: absolute;
   display: grid;
   place-items: center;
+  border: 0;
   border-radius: 999px;
   background: #922144;
   color: rgba(255, 255, 255, 0.82);
+  cursor: pointer;
   font: 700 12px var(--font-ui);
   box-shadow: inset 0 5px 8px rgba(255, 255, 255, 0.18), 0 8px 0 #5f1731;
 }
@@ -361,6 +408,15 @@ body::before {
   top: 47px;
   width: 48px;
   height: 48px;
+}
+
+.button-a:active,
+.button-b:active,
+.button-a:focus-visible,
+.button-b:focus-visible {
+  background: #b62b57;
+  transform: translateY(4px);
+  box-shadow: inset 0 5px 8px rgba(255, 255, 255, 0.18), 0 4px 0 #5f1731;
 }
 
 .system-row {

@@ -1,4 +1,6 @@
 import './pocket-dev.css'
+import { Link, useLocation, useNavigate } from '@tanstack/react-router'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 
 const homeMenuItems = [
@@ -11,6 +13,8 @@ const homeMenuItems = [
 
 const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
+const firstHomeMenuIndex = 0
+const lastHomeMenuIndex = homeMenuItems.length - 1
 
 const placeholderPageContent = {
   About:
@@ -37,17 +41,99 @@ interface PlaceholderPageProps {
   title: PlaceholderPageTitle
 }
 
+interface DeviceNavigationValue {
+  selectedHomeIndex: number
+  setSelectedHomeIndex: (index: number) => void
+}
+
+const DeviceNavigationContext = createContext<DeviceNavigationValue | null>(null)
+
 export function PocketDevDevice({ children }: ChildrenProps) {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [selectedHomeIndex, setSelectedHomeIndex] = useState(firstHomeMenuIndex)
+
+  const isHomeRoute = location.pathname === '/'
+
+  function moveHomeSelection(delta: -1 | 1) {
+    if (!isHomeRoute) return
+
+    setSelectedHomeIndex((currentIndex) => {
+      if (currentIndex === firstHomeMenuIndex && delta < 0) return lastHomeMenuIndex
+      if (currentIndex === lastHomeMenuIndex && delta > 0) return firstHomeMenuIndex
+      return currentIndex + delta
+    })
+  }
+
+  function activateHomeSelection() {
+    if (!isHomeRoute) return
+
+    void navigate({ to: homeMenuItems[selectedHomeIndex].href })
+  }
+
+  function returnHome() {
+    void navigate({ to: '/' })
+  }
+
+  useEffect(() => {
+    function handleKeyboardControls(event: KeyboardEvent) {
+      if (event.altKey || event.ctrlKey || event.metaKey) return
+
+      if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+        event.preventDefault()
+        moveHomeSelection(-1)
+        return
+      }
+
+      if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+        event.preventDefault()
+        moveHomeSelection(1)
+        return
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        activateHomeSelection()
+        return
+      }
+
+      if (event.key === 'Escape' || event.key === 'Backspace') {
+        event.preventDefault()
+        returnHome()
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyboardControls)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyboardControls)
+    }
+  })
+
+  const deviceNavigation = useMemo(
+    () => ({ selectedHomeIndex, setSelectedHomeIndex }),
+    [selectedHomeIndex],
+  )
+
   return (
     <div className="pocket-dev-stage">
-      <main className="pocket-dev-device" aria-label="Pocket Dev Device">
-        <div className="device-surface">
-          <DeviceScreen>{children}</DeviceScreen>
-          <DeviceBrandRow />
-          <DeviceControls />
-          <DeviceSystemControls />
-        </div>
-      </main>
+      <DeviceNavigationContext.Provider value={deviceNavigation}>
+        <main className="pocket-dev-device" aria-label="Pocket Dev Device">
+          <div className="device-surface">
+            <DeviceScreen>{children}</DeviceScreen>
+            <DeviceBrandRow />
+            <DeviceControls
+              onActivate={activateHomeSelection}
+              onMoveDown={() => moveHomeSelection(1)}
+              onMoveLeft={() => moveHomeSelection(-1)}
+              onMoveRight={() => moveHomeSelection(1)}
+              onMoveUp={() => moveHomeSelection(-1)}
+              onReturnHome={returnHome}
+            />
+            <DeviceSystemControls />
+          </div>
+        </main>
+      </DeviceNavigationContext.Provider>
 
       <p className="control-hint">ARROWS MOVE / ENTER A / ESC B</p>
     </div>
@@ -55,6 +141,8 @@ export function PocketDevDevice({ children }: ChildrenProps) {
 }
 
 export function HomePage() {
+  const { selectedHomeIndex, setSelectedHomeIndex } = useDeviceNavigation()
+
   return (
     <LcdPage title="Home">
       <div className="home-screen">
@@ -64,10 +152,16 @@ export function HomePage() {
         </div>
 
         <nav className="home-menu" aria-label="Home menu">
-          {homeMenuItems.map((item) => (
-            <a key={item.href} href={item.href}>
+          {homeMenuItems.map((item, itemIndex) => (
+            <Link
+              className={itemIndex === selectedHomeIndex ? 'is-selected' : undefined}
+              data-selected={itemIndex === selectedHomeIndex ? 'true' : undefined}
+              key={item.href}
+              onFocus={() => setSelectedHomeIndex(itemIndex)}
+              to={item.href}
+            >
               {item.label}
-            </a>
+            </Link>
           ))}
         </nav>
       </div>
@@ -139,16 +233,71 @@ function DeviceBrandRow() {
   )
 }
 
-function DeviceControls() {
+interface DeviceControlsProps {
+  onActivate: () => void
+  onMoveDown: () => void
+  onMoveLeft: () => void
+  onMoveRight: () => void
+  onMoveUp: () => void
+  onReturnHome: () => void
+}
+
+function DeviceControls({
+  onActivate,
+  onMoveDown,
+  onMoveLeft,
+  onMoveRight,
+  onMoveUp,
+  onReturnHome,
+}: DeviceControlsProps) {
   return (
     <section className="controls-row" aria-label="Device controls">
-      <div className="dpad" aria-label="D-pad" />
+      <div className="dpad" aria-label="D-pad">
+        <button
+          aria-label="Up"
+          className="dpad-button dpad-button-up"
+          type="button"
+          onClick={onMoveUp}
+        />
+        <button
+          aria-label="Down"
+          className="dpad-button dpad-button-down"
+          type="button"
+          onClick={onMoveDown}
+        />
+        <button
+          aria-label="Left"
+          className="dpad-button dpad-button-left"
+          type="button"
+          onClick={onMoveLeft}
+        />
+        <button
+          aria-label="Right"
+          className="dpad-button dpad-button-right"
+          type="button"
+          onClick={onMoveRight}
+        />
+      </div>
       <div className="face-buttons" aria-label="A and B buttons">
-        <span className="button-b">B</span>
-        <span className="button-a">A</span>
+        <button className="button-b" type="button" onClick={onReturnHome}>
+          B
+        </button>
+        <button className="button-a" type="button" onClick={onActivate}>
+          A
+        </button>
       </div>
     </section>
   )
+}
+
+function useDeviceNavigation() {
+  const deviceNavigation = useContext(DeviceNavigationContext)
+
+  if (!deviceNavigation) {
+    throw new Error('Home Page must render inside the Pocket Dev Device')
+  }
+
+  return deviceNavigation
 }
 
 function DeviceSystemControls() {

@@ -1,4 +1,5 @@
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import {
   RouterProvider,
@@ -28,6 +29,7 @@ const hardwareLabels = [
 ]
 
 function renderRoute(path: string) {
+  const user = userEvent.setup()
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
@@ -38,11 +40,13 @@ function renderRoute(path: string) {
     defaultPreloadStaleTime: 0,
   })
 
-  return render(
+  const view = render(
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} />
     </QueryClientProvider>,
   )
+
+  return { router, user, ...view }
 }
 
 describe('Home route', () => {
@@ -84,4 +88,48 @@ describe('Home route', () => {
       })
     },
   )
+
+  it('navigates to the selected LCD Page when a Home menu row is clicked', async () => {
+    const { router, user } = renderRoute('/')
+
+    await user.click(await screen.findByRole('link', { name: 'Projects' }))
+
+    expect(router.state.location.pathname).toBe('/projects')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  })
+
+  it('returns from a top-level LCD Page to Home when B is pressed', async () => {
+    const { router, user } = renderRoute('/work')
+
+    await user.click(await screen.findByRole('button', { name: /b/i }))
+
+    expect(router.state.location.pathname).toBe('/')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
+  })
+
+  it('moves the Home selection with keyboard controls and activates it with Enter', async () => {
+    const { router, user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    await user.keyboard('{ArrowDown}{Enter}')
+
+    expect(router.state.location.pathname).toBe('/work')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /work/i })).toBeInTheDocument()
+  })
+
+  it('moves the Home selection with the D-pad and activates it with A', async () => {
+    const { router, user } = renderRoute('/')
+
+    await screen.findByRole('heading', { name: /home/i })
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(screen.getByRole('button', { name: /down/i }))
+    await user.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(router.state.location.pathname).toBe('/projects')
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    expect(within(lcd).getByRole('heading', { name: /projects/i })).toBeInTheDocument()
+  })
 })
