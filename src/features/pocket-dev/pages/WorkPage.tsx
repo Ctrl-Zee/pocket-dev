@@ -1,15 +1,9 @@
-import type { ReactNode } from 'react'
-import { LcdPage, LcdPanel, LcdScrollableArea } from '@/components/lcd'
+import { LcdPage, LcdScrollableArea } from '@/components/lcd'
 import { resumeContent } from '@/content/resume/resumeContent'
+import { LcdContentSection, LcdEntryPanel } from './presentation'
 
 const workExperienceHighlightLimit = 3
 const workSoftCompetencyLimit = 4
-
-interface WorkSectionProps {
-  children: ReactNode
-  headingId: string
-  title: string
-}
 
 export function WorkPage() {
   return (
@@ -22,26 +16,26 @@ export function WorkPage() {
 function WorkDetails() {
   return (
     <LcdScrollableArea className="work-page" role="region" aria-label="Work details">
-      <WorkSection headingId="work-experience-heading" title="Experience">
+      <LcdContentSection headingId="work-experience-heading" title="Experience">
         {resumeContent.experience.map((entry) => (
-          <LcdPanel as="article" className="work-entry" key={`${entry.employer}-${entry.role}`}>
-            <p className="work-kicker">
-              {entry.startYear}-{entry.endYear}
-            </p>
-            <h3>
-              {entry.role} / {entry.employer}
-            </h3>
-            <p>{entry.summary}</p>
+          <LcdEntryPanel
+            className="work-entry"
+            key={`${entry.employer}-${entry.role}`}
+            kicker={`${entry.startYear}-${entry.endYear}`}
+            summary={entry.summary}
+            title={`${entry.role} / ${entry.employer}`}
+            titleLevel={3}
+          >
             <ul>
               {entry.highlights.slice(0, workExperienceHighlightLimit).map((highlight) => (
                 <li key={highlight}>{highlight}</li>
               ))}
             </ul>
-          </LcdPanel>
+          </LcdEntryPanel>
         ))}
-      </WorkSection>
+      </LcdContentSection>
 
-      <WorkSection headingId="work-skills-heading" title="Technical Kit">
+      <LcdContentSection headingId="work-skills-heading" title="Technical Kit">
         <div className="work-skill-list">
           {resumeContent.skills.map((skill) => (
             <p key={skill.name}>
@@ -49,32 +43,23 @@ function WorkDetails() {
             </p>
           ))}
         </div>
-      </WorkSection>
+      </LcdContentSection>
 
-      <WorkSection headingId="work-soft-heading" title="Team Moves">
+      <LcdContentSection headingId="work-soft-heading" title="Team Moves">
         <ul>
           {resumeContent.softCompetencies.slice(0, workSoftCompetencyLimit).map((competency) => (
             <li key={competency}>{competency}</li>
           ))}
         </ul>
-      </WorkSection>
+      </LcdContentSection>
 
-      <WorkSection headingId="work-education-heading" title="Education">
+      <LcdContentSection headingId="work-education-heading" title="Education">
         {resumeContent.education.map((entry) => (
           <p key={`${entry.school}-${entry.degree}`}>
             {entry.degree} / {entry.school} / {entry.startYear}-{entry.endYear}
           </p>
         ))}
-      </WorkSection>
+      </LcdContentSection>
     </LcdScrollableArea>
-  )
-}
-
-function WorkSection({ headingId, title, children }: WorkSectionProps) {
-  return (
-    <section className="work-section" aria-labelledby={headingId}>
-      <h2 id={headingId}>{title}</h2>
-      {children}
-    </section>
   )
 }

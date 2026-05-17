@@ -1,7 +1,8 @@
-import { LcdPage, LcdScrollableArea, LcdSelectableLink, LcdSelectableList } from '@/components/lcd'
+import { LcdPage, LcdScrollableArea, LcdSelectableList } from '@/components/lcd'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { opensContactTargetInCurrentTab } from '../contact/contactTargets'
 import { useDeviceNavigation } from '../orchestration/DeviceNavigationContext'
+import { LcdActionRowLink } from './presentation'
 
 export function ContactPage() {
   const { contactSelection } = useDeviceNavigation()
@@ -17,17 +18,16 @@ export function ContactPage() {
             const opensInCurrentTab = opensContactTargetInCurrentTab(contactTarget.href)
 
             return (
-              <LcdSelectableLink
+              <LcdActionRowLink
                 href={contactTarget.href}
                 isSelected={isSelected}
                 key={contactTarget.label}
+                label={contactTarget.label}
                 onFocus={() => contactSelection.setSelectedIndex(contactTargetIndex)}
                 rel={opensInCurrentTab ? undefined : 'noreferrer'}
                 target={opensInCurrentTab ? undefined : '_blank'}
-              >
-                <span>{contactTarget.label}</span>
-                <strong>{contactTarget.value}</strong>
-              </LcdSelectableLink>
+                value={contactTarget.value}
+              />
             )
           })}
         </LcdSelectableList>

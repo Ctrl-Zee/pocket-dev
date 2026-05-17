@@ -66,4 +66,44 @@ describe('Pocket Dev Page modules', () => {
       '@/features/pocket-dev/orchestration/PocketDevDevice',
     )
   })
+
+  it('keeps repeated LCD Page content presentation in small reusable modules', () => {
+    const presentationPath = join(pocketDevPath, 'pages/presentation')
+    const expectedPresentationModules = [
+      'LcdContentSection.tsx',
+      'LcdEntryPanel.tsx',
+      'LcdLabeledBlock.tsx',
+      'LcdActionRowLink.tsx',
+      'index.ts',
+    ] as const
+
+    for (const modulePath of expectedPresentationModules) {
+      expect(existsSync(join(presentationPath, modulePath))).toBe(true)
+    }
+
+    const forbiddenDumpModules = [
+      'PageContent.tsx',
+      'Presentation.tsx',
+      'contentPresentation.tsx',
+    ] as const
+
+    for (const modulePath of forbiddenDumpModules) {
+      expect(existsSync(join(presentationPath, modulePath))).toBe(false)
+    }
+
+    const workPageModule = readFileSync(join(pageModulesPath, 'WorkPage.tsx'), 'utf8')
+    const projectsPageModule = readFileSync(join(pageModulesPath, 'ProjectsPage.tsx'), 'utf8')
+    const resumePageModule = readFileSync(join(pageModulesPath, 'ResumePage.tsx'), 'utf8')
+    const contactPageModule = readFileSync(join(pageModulesPath, 'ContactPage.tsx'), 'utf8')
+
+    expect(workPageModule).toContain('./presentation')
+    expect(workPageModule).not.toContain('function WorkSection')
+    expect(workPageModule).not.toContain('<LcdPanel as="article" className="work-entry"')
+    expect(projectsPageModule).toContain('./presentation')
+    expect(projectsPageModule).not.toContain('function ProjectCard')
+    expect(resumePageModule).toContain('./presentation')
+    expect(resumePageModule).not.toContain('className="resume-preview-section"')
+    expect(contactPageModule).toContain('./presentation')
+    expect(contactPageModule).not.toContain('<span>{contactTarget.label}</span>')
+  })
 })

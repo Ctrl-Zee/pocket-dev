@@ -1,5 +1,6 @@
 import { LcdActionLink, LcdPage, LcdPanel } from '@/components/lcd'
 import { resumeContent } from '@/content/resume/resumeContent'
+import { LcdLabeledBlock } from './presentation'
 
 const resumePdfHref = '/assets/Andrew_Smith_Resume.pdf'
 const resumePreviewSkillRows = [
@@ -20,22 +21,19 @@ export function ResumePage() {
             <p>{identity.location}</p>
           </div>
 
-          <div className="resume-preview-section">
-            <p className="resume-preview-label">SUMMARY</p>
+          <LcdLabeledBlock label="SUMMARY">
             <p>{identity.summary}</p>
-          </div>
+          </LcdLabeledBlock>
 
-          <div className="resume-preview-section">
-            <p className="resume-preview-label">TOOLS</p>
+          <LcdLabeledBlock label="TOOLS">
             {resumePreviewSkillRows.map((skillRow) => (
               <p key={skillRow.join('/')}>{skillRow.join(' / ')}</p>
             ))}
-          </div>
+          </LcdLabeledBlock>
 
-          <div className="resume-preview-section">
-            <p className="resume-preview-label">SIGNAL</p>
+          <LcdLabeledBlock label="SIGNAL">
             <p>{highlights[0]}</p>
-          </div>
+          </LcdLabeledBlock>
         </LcdPanel>
 
         <LcdActionLink

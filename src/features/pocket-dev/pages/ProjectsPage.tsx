@@ -1,9 +1,6 @@
-import { LcdPage, LcdPanel, LcdScrollableArea } from '@/components/lcd'
-import { resumeContent, type ProjectEntry } from '@/content/resume/resumeContent'
-
-interface ProjectCardProps {
-  project: ProjectEntry
-}
+import { LcdPage, LcdScrollableArea } from '@/components/lcd'
+import { resumeContent } from '@/content/resume/resumeContent'
+import { LcdEntryPanel } from './presentation'
 
 export function ProjectsPage() {
   return (
@@ -13,22 +10,19 @@ export function ProjectsPage() {
 
         <div className="project-card-list">
           {resumeContent.projects.map((project) => (
-            <ProjectCard key={project.name} project={project} />
+            <LcdEntryPanel
+              className="project-card"
+              key={project.name}
+              summary={project.summary}
+              title={project.name}
+            >
+              <p className="project-stack">
+                <span>Stack:</span> {project.stack.join(' / ')}
+              </p>
+            </LcdEntryPanel>
           ))}
         </div>
       </LcdScrollableArea>
     </LcdPage>
-  )
-}
-
-function ProjectCard({ project }: ProjectCardProps) {
-  return (
-    <LcdPanel as="article" className="project-card">
-      <h2>{project.name}</h2>
-      <p>{project.summary}</p>
-      <p className="project-stack">
-        <span>Stack:</span> {project.stack.join(' / ')}
-      </p>
-    </LcdPanel>
   )
 }
