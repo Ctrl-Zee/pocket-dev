@@ -84,4 +84,12 @@ describe('resumeContent', () => {
       expect.arrayContaining(placeholderProjectNames),
     )
   })
+
+  it('keeps the public-sector PEBT scale fact with the project entry', () => {
+    const pebtProject = resumeContent.projects.find((project) =>
+      project.name.includes('PEBT'),
+    )
+
+    expect(pebtProject?.highlights).toContain('Served 20K families.')
+  })
 })
