@@ -290,6 +290,11 @@ describe('Resume route', () => {
 })
 
 describe('Pocket Dev responsive styles', () => {
+  it('scales the desktop Device above the original handheld size while keeping viewport bounds', () => {
+    expect(pocketDevCss).toMatch(/\.pocket-dev-device\s*{[^}]*width:\s*min\(94vw,\s*500px\);/s)
+    expect(pocketDevCss).toMatch(/\.pocket-dev-device\s*{[^}]*height:\s*min\(96dvh,\s*780px\);/s)
+  })
+
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
     expect(pocketDevCss).toMatch(/body\s*{[^}]*overflow:\s*hidden;/s)
     expect(pocketDevCss).toMatch(

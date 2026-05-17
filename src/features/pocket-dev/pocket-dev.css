@@ -61,8 +61,8 @@ body::before {
 
 .pocket-dev-device {
   position: relative;
-  width: min(94vw, 420px);
-  height: min(96dvh, 720px);
+  width: min(94vw, 500px);
+  height: min(96dvh, 780px);
   min-height: 540px;
   padding: clamp(18px, 4vw, 28px);
   overflow: hidden;
