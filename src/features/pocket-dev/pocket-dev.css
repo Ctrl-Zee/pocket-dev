@@ -562,6 +562,19 @@ body::before {
   color: #ff7d3d;
 }
 
+.wordmark span:nth-child(7) {
+  margin-left: 0.55em;
+  color: #ff3da6;
+}
+
+.wordmark span:nth-child(8) {
+  color: #ffd83d;
+}
+
+.wordmark span:nth-child(9) {
+  color: #3dff7a;
+}
+
 .controls-row {
   display: grid;
   align-items: center;
