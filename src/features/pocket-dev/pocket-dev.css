@@ -9,6 +9,11 @@
   --lcd-hi: #dbe8c8;
   --lcd-mid: #4d6a3a;
   --lcd-ink: #1f2d18;
+  --lcd-title-text: 11px;
+  --lcd-body-text: 9px;
+  --lcd-menu-text: 9px;
+  --lcd-detail-text: 7px;
+  --lcd-footer-text: 7px;
   --font-pixel: 'Press Start 2P', monospace;
   --font-ui: Inter, system-ui, sans-serif;
   --dpad-size: 112px;
@@ -175,9 +180,9 @@ body::before {
 
 .lcd-title {
   margin: 0;
-  font-size: 10px;
+  font-size: var(--lcd-title-text);
   letter-spacing: 1px;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .home-screen {
@@ -193,8 +198,8 @@ body::before {
 .lcd-page p,
 .lcd-page li {
   margin: 0;
-  font-size: 8px;
-  line-height: 1.8;
+  font-size: var(--lcd-body-text);
+  line-height: 1.75;
 }
 
 .about-page {
@@ -213,13 +218,13 @@ body::before {
 .about-hero h2,
 .about-page h3 {
   margin: 0;
-  font-size: 8px;
+  font-size: var(--lcd-menu-text);
   line-height: 1.6;
 }
 
 .about-hero p {
   color: var(--lcd-mid);
-  font-size: 6px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.6;
 }
 
@@ -235,7 +240,7 @@ body::before {
 .pixel-list li {
   padding: 4px 5px;
   background: rgba(219, 232, 200, 0.58);
-  font-size: 6px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.5;
 }
 
@@ -258,7 +263,7 @@ body::before {
 .work-section h2,
 .work-entry h3 {
   margin: 0;
-  font-size: 8px;
+  font-size: var(--lcd-menu-text);
   line-height: 1.6;
 }
 
@@ -307,12 +312,12 @@ body::before {
 
 .project-card h2 {
   margin: 0 0 5px;
-  font-size: 8px;
+  font-size: var(--lcd-menu-text);
   line-height: 1.5;
 }
 
 .project-card p {
-  font-size: 7px;
+  font-size: 8px;
   line-height: 1.7;
 }
 
@@ -353,13 +358,13 @@ body::before {
 
 .contact-list a span {
   color: var(--lcd-mid);
-  font-size: 6px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.5;
 }
 
 .contact-list a strong {
   overflow-wrap: anywhere;
-  font-size: 7px;
+  font-size: 8px;
   font-weight: 400;
   line-height: 1.5;
 }
@@ -400,12 +405,12 @@ body::before {
 
 .resume-preview p {
   margin: 0;
-  font-size: 6px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.7;
 }
 
 .resume-preview .resume-preview-name {
-  font-size: 8px;
+  font-size: var(--lcd-menu-text);
   line-height: 1.6;
 }
 
@@ -432,7 +437,7 @@ body::before {
   border: 2px solid var(--lcd-ink);
   background: var(--lcd-ink);
   color: var(--lcd-hi);
-  font-size: 7px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.3;
   text-decoration: none;
 }
@@ -455,7 +460,7 @@ body::before {
 .rotate-page p {
   max-width: 25ch;
   margin: 0;
-  font-size: 8px;
+  font-size: var(--lcd-body-text);
   line-height: 1.8;
 }
 
@@ -473,7 +478,7 @@ body::before {
 .home-version {
   margin: 0;
   color: var(--lcd-mid);
-  font-size: 6px;
+  font-size: var(--lcd-detail-text);
   line-height: 1.6;
 }
 
@@ -490,7 +495,7 @@ body::before {
   min-height: 25px;
   padding: 7px 7px 7px 22px;
   color: var(--lcd-ink);
-  font-size: 8px;
+  font-size: var(--lcd-menu-text);
   line-height: 1.35;
   text-decoration: none;
 }
@@ -510,7 +515,7 @@ body::before {
 
 .lcd-footer {
   color: var(--lcd-mid);
-  font-size: 6px;
+  font-size: var(--lcd-footer-text);
   line-height: 1.5;
   text-align: center;
 }
