@@ -290,6 +290,22 @@ describe('Resume route', () => {
 })
 
 describe('Pocket Dev responsive styles', () => {
+  it('uses a larger readable LCD typography scale while preserving the pixel font', () => {
+    expect(pocketDevCss).toContain("--font-pixel: 'Press Start 2P', monospace;")
+    expect(pocketDevCss).toContain('--lcd-title-text: 11px;')
+    expect(pocketDevCss).toContain('--lcd-body-text: 9px;')
+    expect(pocketDevCss).toContain('--lcd-menu-text: 9px;')
+    expect(pocketDevCss).toContain('--lcd-supporting-text: 8px;')
+    expect(pocketDevCss).toContain('--lcd-footer-text: 7px;')
+
+    expect(pocketDevCss).toMatch(/\.lcd-screen\s*{[^}]*font-family:\s*var\(--font-pixel\);/s)
+    expect(pocketDevCss).toMatch(/\.lcd-title\s*{[^}]*font-size:\s*var\(--lcd-title-text\);/s)
+    expect(pocketDevCss).toMatch(/\.lcd-page p,\s*\.lcd-page li\s*{[^}]*font-size:\s*var\(--lcd-body-text\);/s)
+    expect(pocketDevCss).toMatch(/\.home-menu a\s*{[^}]*font-size:\s*var\(--lcd-menu-text\);/s)
+    expect(pocketDevCss).toMatch(/\.project-card p\s*{[^}]*font-size:\s*var\(--lcd-supporting-text\);/s)
+    expect(pocketDevCss).toMatch(/\.lcd-footer\s*{[^}]*font-size:\s*var\(--lcd-footer-text\);/s)
+  })
+
   it('scales the desktop Device above the original handheld size while keeping viewport bounds', () => {
     const desktopDeviceRule = pocketDevCss.match(/\.pocket-dev-device\s*{[^}]*}/s)?.[0]
 

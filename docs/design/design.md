@@ -64,10 +64,12 @@ Locked synthwave grid:
 
 ### Sizing inside the LCD
 The LCD is a fixed pixel canvas. Stick to this scale:
-- Headers (page name): `10px`
-- Menu items / labels: `8px`
-- Body text: `7px`
-- Hint/footer text: `6px`
+- Headers (page name): `11px`
+- Menu items / labels: `9px`
+- Body text: `9px`
+- Supporting body text: `8px`
+- Secondary detail text: `7px`
+- Hint/footer text: `7px`
 
 Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep glyphs legible.
 
@@ -132,9 +134,9 @@ Letter-spacing 0.5–2px depending on weight; bigger on smaller text to keep gly
 
 ### Content layout inside the LCD
 - 10px outer padding.
-- Page header: `> PAGENAME` in 10px ink, top-aligned.
+- Page header: `> PAGENAME` in 11px ink, top-aligned.
 - Body content fills the middle with `lcd-scroll` (hidden scrollbars).
-- Footer hint row: input legend in 6px mid-tone, centered.
+- Footer hint row: input legend in 7px mid-tone, centered.
 
 ### Cursor
 - Pointing-hand pixel sprite, 8×11, blinks 1s steps.
