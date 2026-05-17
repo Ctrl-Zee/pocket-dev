@@ -36,15 +36,16 @@ const hardwareLabels = [
   /select and start buttons/i,
   /speaker grill/i,
 ]
+const mobileLandscapeQuery = '(max-width: 900px) and (orientation: landscape)'
 const pocketDevCss = readFileSync(
   join(process.cwd(), 'src/features/pocket-dev/pocket-dev.css'),
   'utf8',
 )
 
-function mockMobileLandscape(matches: boolean) {
+function mockMobileLandscapeQuery(matches: boolean) {
   const mediaQueryList = {
     matches,
-    media: '(max-width: 900px) and (orientation: landscape)',
+    media: mobileLandscapeQuery,
     onchange: null,
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
@@ -53,10 +54,7 @@ function mockMobileLandscape(matches: boolean) {
     dispatchEvent: vi.fn(),
   }
 
-  Object.defineProperty(window, 'matchMedia', {
-    configurable: true,
-    value: vi.fn().mockReturnValue(mediaQueryList),
-  })
+  vi.stubGlobal('matchMedia', vi.fn().mockReturnValue(mediaQueryList))
 }
 
 function renderRoute(path: string) {
@@ -81,6 +79,7 @@ function renderRoute(path: string) {
 }
 
 afterEach(() => {
+  vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
 
@@ -169,7 +168,7 @@ describe('Home route', () => {
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {
-    mockMobileLandscape(true)
+    mockMobileLandscapeQuery(true)
 
     renderRoute('/work')
 

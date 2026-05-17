@@ -72,7 +72,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   const navigate = useNavigate()
   const location = useLocation()
   const [selectedHomeIndex, setSelectedHomeIndex] = useState(firstHomeMenuIndex)
-  const isMobileLandscape = useMobileLandscape()
+  const shouldShowRotatePrompt = useMobileLandscape()
 
   const isHomeRoute = location.pathname === '/'
 
@@ -143,7 +143,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
       <DeviceNavigationContext.Provider value={deviceNavigation}>
         <main className="pocket-dev-device" aria-label="Pocket Dev Device">
           <div className="device-surface">
-            <DeviceScreen>{isMobileLandscape ? <RotatePage /> : children}</DeviceScreen>
+            <DeviceScreen>{shouldShowRotatePrompt ? <RotatePage /> : children}</DeviceScreen>
             <DeviceBrandRow />
             <DeviceControls
               onActivate={activateHomeSelection}
