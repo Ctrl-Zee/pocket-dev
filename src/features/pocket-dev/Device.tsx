@@ -73,7 +73,9 @@ export function PocketDevDevice({ children }: ChildrenProps) {
     function handleKeyboardControls(event: KeyboardEvent) {
       if (event.altKey || event.ctrlKey || event.metaKey) return
 
-      switch (event.key) {
+      const key = event.key.length === 1 ? event.key.toLowerCase() : event.key
+
+      switch (key) {
         case 'ArrowUp':
         case 'ArrowLeft':
           event.preventDefault()
@@ -87,14 +89,12 @@ export function PocketDevDevice({ children }: ChildrenProps) {
         case 'Enter':
         case ' ':
         case 'a':
-        case 'A':
           event.preventDefault()
           activateSelection()
           return
         case 'Escape':
         case 'Backspace':
         case 'b':
-        case 'B':
           event.preventDefault()
           returnHome()
       }
