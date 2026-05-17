@@ -110,7 +110,7 @@ body::before {
   z-index: 1;
   display: grid;
   height: 100%;
-  grid-template-rows: minmax(250px, 1fr) 74px 132px 36px;
+  grid-template-rows: minmax(250px, 1fr) 74px 132px 60px;
   gap: clamp(12px, 2.2dvh, 18px);
 }
 
@@ -687,14 +687,13 @@ body::before {
 
 .system-row {
   position: relative;
-  display: grid;
-  align-items: start;
-  grid-template-columns: 1fr 1fr;
+  display: block;
 }
 
 .pills {
   display: flex;
-  gap: 14px;
+  width: 100%;
+  gap: 24px;
   justify-content: center;
   transform: rotate(-18deg);
 }
@@ -710,10 +709,12 @@ body::before {
 }
 
 .speaker-grill {
+  position: absolute;
+  right: 13px;
+  bottom: 0;
   display: flex;
   gap: 7px;
   justify-content: end;
-  padding-right: 13px;
   transform: rotate(-22deg);
 }
 
@@ -788,7 +789,7 @@ body::before {
   }
 
   .device-surface {
-    grid-template-rows: minmax(205px, 1fr) 52px 108px 28px;
+    grid-template-rows: minmax(205px, 1fr) 52px 108px 54px;
     gap: 8px;
   }
 
@@ -825,8 +826,8 @@ body::before {
   }
 
   .speaker-grill {
+    right: 8px;
     gap: 6px;
-    padding-right: 8px;
   }
 
   .speaker-grill span {

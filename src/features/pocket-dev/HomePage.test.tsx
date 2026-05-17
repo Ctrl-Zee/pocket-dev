@@ -358,6 +358,24 @@ describe('Pocket Dev responsive styles', () => {
     })
   })
 
+  it('centers Select and Start below the primary controls and anchors the speaker separately', () => {
+    const systemRowRule = getCssRule('.system-row')
+    const pillsRule = getCssRule('.pills')
+    const speakerRule = getCssRule('.speaker-grill')
+
+    expect(systemRowRule).toContain('position: relative;')
+    expect(systemRowRule).not.toContain('grid-template-columns: 1fr 1fr;')
+
+    expect(pillsRule).toContain('width: 100%;')
+    expect(pillsRule).toContain('justify-content: center;')
+    expect(pillsRule).toContain('gap: 24px;')
+    expect(pillsRule).toContain('transform: rotate(-18deg);')
+
+    expect(speakerRule).toContain('position: absolute;')
+    expect(speakerRule).toContain('right: 13px;')
+    expect(speakerRule).toContain('bottom: 0;')
+  })
+
   it('keeps mobile portrait in the viewport and removes decorative motion when requested', () => {
     expect(pocketDevCss).toMatch(/body\s*{[^}]*overflow:\s*hidden;/s)
     expect(pocketDevCss).toMatch(
