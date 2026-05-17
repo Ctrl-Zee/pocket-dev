@@ -30,9 +30,8 @@ describe('Home route', () => {
   it('renders the Home Page inside the Pocket Dev experience at /', async () => {
     renderRoute('/')
 
-    expect(
-      await screen.findByRole('main', { name: /pocket dev device/i }),
-    ).toBeInTheDocument()
+    const device = await screen.findByRole('main', { name: /pocket dev device/i })
+    expect(device).toBeInTheDocument()
 
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
@@ -41,9 +40,15 @@ describe('Home route', () => {
     expect(menuItems).toEqual(['About', 'Work', 'Projects', 'Resume', 'Contact'])
 
     expect(screen.getByLabelText(/pocket dev wordmark/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/power led/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/volume wheel/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/d-pad/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/a and b buttons/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/select and start buttons/i)).toBeInTheDocument()
     expect(screen.getByLabelText(/speaker grill/i)).toBeInTheDocument()
+
+    const controlHint = screen.getByText(/arrows move \/ enter a \/ esc b/i)
+    expect(controlHint).toBeInTheDocument()
+    expect(device).not.toContainElement(controlHint)
   })
 })
