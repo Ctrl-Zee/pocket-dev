@@ -1,6 +1,6 @@
 import { resumeContent, type ProjectEntry } from './resumeContent'
 
-const expectedSkillNames = [
+const requiredSkillNames = [
   'React',
   'Angular',
   'JavaScript',
@@ -9,14 +9,14 @@ const expectedSkillNames = [
   'Azure',
 ]
 
-const expectedProjectNames = [
+const requiredProjectNames = [
   'Benesys',
   'Family and Social Services Administration / PEBT',
   'Schwarz Partners',
   'Venture Logistics',
 ]
 
-const placeholderProjectNames = [
+const forbiddenPlaceholderProjectNames = [
   'project one',
   'project two',
   'project three',
@@ -66,7 +66,7 @@ describe('resumeContent', () => {
       ]),
     )
 
-    for (const skill of expectedSkillNames) {
+    for (const skill of requiredSkillNames) {
       expect(resumeContent.skills).toContainEqual(
         expect.objectContaining({ name: skill }),
       )
@@ -77,7 +77,7 @@ describe('resumeContent', () => {
     expect(searchableContent).toContain('department of local government finance')
 
     expect(resumeContent.projects.map((project) => project.name)).toEqual(
-      expect.arrayContaining(expectedProjectNames),
+      expect.arrayContaining(requiredProjectNames),
     )
 
     expect(searchableContent).toContain('bs computer science')
@@ -95,7 +95,7 @@ describe('resumeContent', () => {
     )
 
     expect(projectNames).not.toEqual(
-      expect.arrayContaining(placeholderProjectNames),
+      expect.arrayContaining(forbiddenPlaceholderProjectNames),
     )
   })
 
