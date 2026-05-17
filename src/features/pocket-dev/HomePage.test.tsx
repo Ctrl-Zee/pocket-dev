@@ -7,8 +7,38 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { routeTree } from '@/routeTree.gen'
 
-const expectedHomeMenuItems = ['About', 'Work', 'Projects', 'Resume', 'Contact']
-const expectedHomeMenuHrefs = ['/about', '/work', '/projects', '/resume', '/contact']
+const expectedHomeMenuPages = [
+  { label: 'About', href: '/about' },
+  { label: 'Work', href: '/work' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'Resume', href: '/resume' },
+  { label: 'Contact', href: '/contact' },
+] as const
+const expectedHomeMenuItems = expectedHomeMenuPages.map(({ label }) => label)
+const expectedHomeMenuHrefs = expectedHomeMenuPages.map(({ href }) => href)
+type TestUser = ReturnType<typeof userEvent.setup>
+
+const returnHomeControls = [
+  {
+    controlName: 'B button',
+    press: async (user: TestUser) => {
+      await user.click(await screen.findByRole('button', { name: /b/i }))
+    },
+  },
+  {
+    controlName: 'keyboard B key',
+    press: async (user: TestUser) => {
+      await user.keyboard('b')
+    },
+  },
+]
+const homeSelectionReturnCases = expectedHomeMenuPages.flatMap((page) =>
+  returnHomeControls.map((control) => ({
+    controlName: control.controlName,
+    page,
+    pressReturnHome: control.press,
+  })),
+)
 const expectedWordmarkLetters = ['P', 'O', 'C', 'K', 'E', 'T', 'D', 'E', 'V']
 const homeMenuLinkSelector = '.home-menu a'
 const selectedHomeMenuLinkSelector = [
@@ -116,6 +146,12 @@ function getCssRules(selector: string) {
   )
 }
 
+function expectSelectedHomeMenuLink(label: string) {
+  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+
+  expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
+}
+
 function renderRoute(path: string) {
   const user = userEvent.setup()
   const router = createRouter({
@@ -147,6 +183,7 @@ describe('Home route', () => {
     const menuLinks = within(lcd).getAllByRole('link')
     expect(menuLinks.map((link) => link.textContent)).toEqual(expectedHomeMenuItems)
     expect(menuLinks.map((link) => link.getAttribute('href'))).toEqual(expectedHomeMenuHrefs)
+    expectSelectedHomeMenuLink('About')
 
     hardwareLabels.forEach((label) => {
       expect(screen.getByLabelText(label)).toBeInTheDocument()
@@ -206,6 +243,19 @@ describe('Home route', () => {
     const lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /home/i })).toBeInTheDocument()
   })
+
+  it.each(homeSelectionReturnCases)(
+    'remembers the selected Home row for $page.label when returning with $controlName',
+    async ({ page, pressReturnHome }) => {
+      const { router, user } = renderRoute('/')
+
+      await user.click(await screen.findByRole('link', { name: page.label }))
+      await pressReturnHome(user)
+
+      expect(router.state.location.pathname).toBe('/')
+      expectSelectedHomeMenuLink(page.label)
+    },
+  )
 
   it('returns from a top-level LCD Page to Home when the keyboard B key is pressed', async () => {
     const { router, user } = renderRoute('/work')

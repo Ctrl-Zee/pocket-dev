@@ -24,9 +24,7 @@ export function PocketDevDevice({ children }: ChildrenProps) {
   const isHomeRoute = location.pathname === '/'
   const isContactRoute = location.pathname === '/contact'
   const shouldShowRotatePrompt = useMobileLandscape()
-  const homeSelection = useLcdSelection(pageCatalog.length, {
-    resetKey: isHomeRoute ? location.pathname : undefined,
-  })
+  const homeSelection = useLcdSelection(pageCatalog.length)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
     resetKey: isContactRoute ? location.pathname : undefined,
   })
