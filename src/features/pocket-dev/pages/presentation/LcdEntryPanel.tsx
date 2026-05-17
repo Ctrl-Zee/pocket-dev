@@ -22,9 +22,9 @@ export function LcdEntryPanel({
 
   return (
     <LcdPanel as="article" className={className}>
-      {kicker ? <p className="work-kicker">{kicker}</p> : null}
+      {kicker !== undefined ? <p className="work-kicker">{kicker}</p> : null}
       <Heading>{title}</Heading>
-      {summary ? <p>{summary}</p> : null}
+      {summary !== undefined ? <p>{summary}</p> : null}
       {children}
     </LcdPanel>
   )

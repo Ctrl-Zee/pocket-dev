@@ -1,7 +1,10 @@
 import type { ComponentPropsWithoutRef } from 'react'
 import { LcdSelectableLink } from '@/components/lcd'
 
-interface LcdActionRowLinkProps extends ComponentPropsWithoutRef<'a'> {
+type LcdActionRowLinkProps = Omit<
+  ComponentPropsWithoutRef<typeof LcdSelectableLink>,
+  'children' | 'isSelected'
+> & {
   isSelected: boolean
   label: string
   value: string
