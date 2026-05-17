@@ -92,4 +92,12 @@ describe('resumeContent', () => {
 
     expect(pebtProject?.highlights).toContain('Served 20K families.')
   })
+
+  it('keeps the Benesys enterprise scale fact with the project entry', () => {
+    const benesysProject = resumeContent.projects.find(
+      (project) => project.name === 'Benesys',
+    )
+
+    expect(benesysProject?.highlights).toContain('Supported 100+ clients.')
+  })
 })

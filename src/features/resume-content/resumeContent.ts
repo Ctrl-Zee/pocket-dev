@@ -156,6 +156,7 @@ export const resumeContent = {
         'Enterprise benefits portal for trade workers, built as a scalable React front end.',
       highlights: [
         'Led front-end development.',
+        'Supported 100+ clients.',
         'Implemented responsive web design with Tailwind.',
         'Onboarded client developers for project transition.',
       ],
