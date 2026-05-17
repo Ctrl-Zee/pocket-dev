@@ -6,6 +6,7 @@ import {
   LcdPanel,
   LcdPixelList,
   LcdScrollableArea,
+  LcdSelectableButton,
   LcdSelectableLink,
   LcdSelectableList,
 } from './index'
@@ -26,6 +27,7 @@ describe('shared LCD components', () => {
               Work
             </LcdSelectableLink>
             <LcdSelectableLink href="/projects">Projects</LcdSelectableLink>
+            <LcdSelectableButton isSelected>Snake</LcdSelectableButton>
           </LcdSelectableList>
         </LcdScrollableArea>
 
@@ -50,10 +52,14 @@ describe('shared LCD components', () => {
 
     const actionList = screen.getByRole('navigation', { name: /status actions/i })
     const selectedAction = within(actionList).getByRole('link', { name: 'Work' })
+    const selectedButton = within(actionList).getByRole('button', { name: 'Snake' })
 
     expect(actionList).toHaveClass('lcd-selectable-list')
     expect(selectedAction).toHaveClass('is-selected')
     expect(selectedAction).toHaveAttribute('data-selected', 'true')
+    expect(selectedButton).toHaveClass('is-selected')
+    expect(selectedButton).toHaveAttribute('data-selected', 'true')
+    expect(selectedButton).toHaveAttribute('type', 'button')
     expect(screen.getByRole('link', { name: /open pdf/i })).toHaveClass('lcd-action-link')
   })
 })

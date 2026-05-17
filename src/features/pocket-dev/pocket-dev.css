@@ -629,7 +629,7 @@ body::before {
   margin-top: 4px;
 }
 
-.home-menu a {
+.home-menu :is(a, button) {
   position: relative;
   display: block;
   min-height: 25px;
@@ -641,42 +641,20 @@ body::before {
   text-decoration: none;
 }
 
-.home-menu a.is-selected,
-.home-menu a:focus-visible,
-.home-menu a:hover {
-  background: var(--lcd-ink);
-  color: var(--lcd-hi);
-}
-
-.home-menu a.is-selected::before {
-  position: absolute;
-  left: 6px;
-  content: '>';
-  animation: cursor-blink 1s steps(2, start) infinite;
-}
-
 .home-menu button {
-  position: relative;
-  display: block;
-  min-height: 25px;
-  padding: 7px 7px 7px 22px;
   border: 0;
-  background: rgba(219, 232, 200, 0.5);
-  color: var(--lcd-ink);
   font-family: inherit;
-  font-size: var(--lcd-home-menu-text);
-  line-height: 1.45;
   text-align: left;
 }
 
-.home-menu button.is-selected,
-.home-menu button:focus-visible,
-.home-menu button:hover {
+.home-menu :is(a, button).is-selected,
+.home-menu :is(a, button):focus-visible,
+.home-menu :is(a, button):hover {
   background: var(--lcd-ink);
   color: var(--lcd-hi);
 }
 
-.home-menu button.is-selected::before {
+.home-menu :is(a, button).is-selected::before {
   position: absolute;
   left: 6px;
   content: '>';

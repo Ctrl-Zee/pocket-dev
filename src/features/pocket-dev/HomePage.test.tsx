@@ -40,11 +40,11 @@ const homeSelectionReturnCases = expectedHomeMenuPages.flatMap((page) =>
   })),
 )
 const expectedWordmarkLetters = ['P', 'O', 'C', 'K', 'E', 'T', 'D', 'E', 'V']
-const homeMenuLinkSelector = '.home-menu a'
-const selectedHomeMenuLinkSelector = [
-  '.home-menu a.is-selected',
-  '.home-menu a:focus-visible',
-  '.home-menu a:hover',
+const homeMenuItemSelector = '.home-menu :is(a, button)'
+const selectedHomeMenuItemSelector = [
+  '.home-menu :is(a, button).is-selected',
+  '.home-menu :is(a, button):focus-visible',
+  '.home-menu :is(a, button):hover',
 ].join(',\n')
 const expectedWorkContent = [
   /senior consultant/i,
@@ -84,7 +84,7 @@ const expectedLcdTypeScale = {
 const expectedLcdFontSizeRules = [
   ['.lcd-title', '--lcd-title-text'],
   ['.lcd-page p, .lcd-page li', '--lcd-body-text'],
-  [homeMenuLinkSelector, '--lcd-home-menu-text'],
+  [homeMenuItemSelector, '--lcd-home-menu-text'],
   ['.pixel-list li', '--lcd-detail-text'],
   ['.project-card p', '--lcd-supporting-text'],
   ['.contact-list a strong', '--lcd-supporting-text'],
@@ -741,9 +741,9 @@ describe('Pocket Dev responsive styles', () => {
     )
   })
 
-  it('makes Home menu links larger and higher contrast while keeping selection distinct', () => {
-    const homeMenuRule = getCssRule(homeMenuLinkSelector)
-    const selectedHomeMenuRule = getCssRule(selectedHomeMenuLinkSelector)
+  it('makes Home menu items larger and higher contrast while keeping selection distinct', () => {
+    const homeMenuRule = getCssRule(homeMenuItemSelector)
+    const selectedHomeMenuRule = getCssRule(selectedHomeMenuItemSelector)
 
     expect(pocketDevCss).toContain('--lcd-home-menu-text: 11px;')
     expect(homeMenuRule).toContain('background: rgba(219, 232, 200, 0.5);')
