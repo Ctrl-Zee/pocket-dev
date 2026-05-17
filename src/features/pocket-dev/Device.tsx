@@ -1,7 +1,7 @@
 import './pocket-dev.css'
 import { useLocation, useNavigate } from '@tanstack/react-router'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { resumeContent } from '@/features/resume-content/resumeContent'
+import { resumeContent } from '@/content/resume/resumeContent'
 import { DeviceBrandRow, DeviceControls, DeviceSystemControls } from './DeviceControls'
 import { DeviceScreen } from './LCD'
 import { RotatePage } from './RotatePage'

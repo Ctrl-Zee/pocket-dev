@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { resumeContent, type ProjectEntry } from '@/features/resume-content/resumeContent'
+import { resumeContent, type ProjectEntry } from '@/content/resume/resumeContent'
 import { LcdPage, LcdSection } from './LCD'
 import { opensContactTargetInCurrentTab } from './contactTargets'
 import { pageCatalog } from './pageCatalog'

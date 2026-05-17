@@ -1,4 +1,4 @@
-import { resumeContent, type ProjectEntry } from './resumeContent'
+import { resumeContent, type ProjectEntry, type ResumeContent } from './resumeContent'
 
 const requiredSkillNames = [
   'React',
@@ -50,6 +50,15 @@ function getProjectByName(projectName: string): ProjectEntry {
 
   return project
 }
+
+describe('resumeContent module', () => {
+  it('exports curated resume content from the content tree', () => {
+    const curatedResumeContent: ResumeContent = resumeContent
+
+    expect(curatedResumeContent.identity.name).toBe('Andrew Smith')
+    expect(curatedResumeContent.projects.length).toBeGreaterThan(0)
+  })
+})
 
 describe('resumeContent', () => {
   it('exports curated factual resume data for Pocket Dev pages', () => {
