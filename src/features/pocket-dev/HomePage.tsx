@@ -14,8 +14,6 @@ const deviceWordmarkSegments = ['P', 'O', 'C', 'K', 'E', 'T DEV'] as const
 const speakerSlotCount = 5
 
 const placeholderPageContent = {
-  About:
-    'Andrew Smith is a Software Engineer. Placeholder About Page content will introduce the person inside this LCD.',
   Work: 'Experience placeholder for Work Page. This LCD Page will summarize roles, skills, and professional history.',
   Projects:
     'Selected projects placeholder for Projects Page. This LCD Page will list factual project cards.',
