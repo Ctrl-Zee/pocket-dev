@@ -4,6 +4,8 @@
   --shell-3: #6a4f95;
   --shell-deep: #3a2a5a;
   --shell-glass: rgba(170, 140, 210, 0.55);
+  --shell-highlight: rgba(222, 206, 255, 0.16);
+  --shell-top-sheen: rgba(222, 206, 255, 0.14);
   --lcd-bg: #bcd6a6;
   --lcd-bg-dark: #7a9568;
   --lcd-hi: #dbe8c8;
@@ -78,7 +80,7 @@ body::before {
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 28px 28px 56px 28px;
   background:
-    linear-gradient(160deg, rgba(222, 206, 255, 0.16), transparent 34%),
+    linear-gradient(160deg, var(--shell-highlight), transparent 34%),
     linear-gradient(180deg, var(--shell-1) 0%, var(--shell-2) 48%, var(--shell-3) 100%);
   box-shadow:
     inset 0 2px 14px rgba(255, 255, 255, 0.32),
@@ -104,7 +106,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   content: '';
-  background: linear-gradient(180deg, rgba(222, 206, 255, 0.14), transparent 48%);
+  background: linear-gradient(180deg, var(--shell-top-sheen), transparent 48%);
 }
 
 .device-surface {

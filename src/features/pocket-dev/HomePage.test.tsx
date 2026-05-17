@@ -458,11 +458,15 @@ describe('Pocket Dev responsive styles', () => {
     const topSheenRule = getCssRule('.pocket-dev-device::after')
 
     expect(pocketDevCss).toContain('--shell-1: #b493d8;')
-    expect(deviceRule).toContain('rgba(222, 206, 255, 0.16)')
+    expect(pocketDevCss).toContain('--shell-highlight: rgba(222, 206, 255, 0.16);')
+    expect(pocketDevCss).toContain('--shell-top-sheen: rgba(222, 206, 255, 0.14);')
+    expect(deviceRule).toContain('linear-gradient(160deg, var(--shell-highlight), transparent 34%)')
     expect(deviceRule).toContain(
       'linear-gradient(180deg, var(--shell-1) 0%, var(--shell-2) 48%, var(--shell-3) 100%)',
     )
-    expect(topSheenRule).toContain('rgba(222, 206, 255, 0.14)')
+    expect(topSheenRule).toContain(
+      'linear-gradient(180deg, var(--shell-top-sheen), transparent 48%)',
+    )
     expect(deviceRule).not.toContain('rgba(255, 255, 255, 0.28)')
     expect(topSheenRule).not.toContain('rgba(255, 255, 255, 0.28)')
   })
