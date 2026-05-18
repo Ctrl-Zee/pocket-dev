@@ -18,7 +18,7 @@ import {
   advanceSnake,
   changeSnakeDirection,
   createSnakeStartState,
-  snakeTickMs,
+  getSnakeTickMs,
   startSnakeGame,
 } from '../snake/snakeGame'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
@@ -53,6 +53,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const [isShowingSnake, setIsShowingSnake] = useState(false)
   const [isShowingSnakeUnlock, setIsShowingSnakeUnlock] = useState(false)
   const [snakeGame, setSnakeGame] = useState(createSnakeStartState)
+  const snakeMovementTickMs = getSnakeTickMs(snakeGame)
   const visibleHomeItemCount = isSnakeUnlocked ? pageCatalog.length + 1 : pageCatalog.length
   const homeSelection = useLcdSelection(visibleHomeItemCount)
   const contactSelection = useLcdSelection(resumeContent.contactTargets.length, {
@@ -213,12 +214,12 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
     const tickId = window.setInterval(() => {
       setSnakeGame(advanceSnake)
-    }, snakeTickMs)
+    }, snakeMovementTickMs)
 
     return () => {
       window.clearInterval(tickId)
     }
-  }, [isShowingSnake, snakeGame.status])
+  }, [isShowingSnake, snakeGame.status, snakeMovementTickMs])
 
   const deviceNavigation = useMemo(
     () => ({

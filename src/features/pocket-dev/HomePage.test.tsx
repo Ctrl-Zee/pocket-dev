@@ -6,7 +6,12 @@ import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/rea
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { routeTree } from '@/routeTree.gen'
-import { snakeTickMs } from './snake/snakeGame'
+import {
+  createSnakeStartState,
+  getSnakeTickMs,
+  snakeTickMs,
+  startSnakeGame,
+} from './snake/snakeGame'
 
 const expectedHomeMenuPages = [
   { label: 'About', href: '/about' },
@@ -611,6 +616,59 @@ describe('Home route', () => {
     fireEvent.click(screen.getByRole('button', { name: /left/i }))
     advanceSnakeMovementTick()
     expectSnakeHead(4, 5)
+  })
+
+  it('collects hidden SNAKE food and uses the faster post-score movement tick', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    const getBoard = () => within(lcd).getByRole('grid', { name: /snake board/i })
+    const expectSnakeHead = (row: number, column: number) => {
+      expect(
+        within(getBoard()).getByRole('gridcell', {
+          name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
+        }),
+      ).toBeInTheDocument()
+    }
+    const getFoodCells = () => within(getBoard()).getAllByRole('gridcell', { name: /food row/i })
+    const oneFoodTickMs = getSnakeTickMs({
+      ...startSnakeGame(createSnakeStartState()),
+      score: 1,
+      snake: [
+        { row: 5, column: 8 },
+        { row: 4, column: 8 },
+        { row: 3, column: 8 },
+        { row: 3, column: 7 },
+      ],
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    advanceSnakeMovementTick()
+    advanceSnakeMovementTick()
+    advanceSnakeMovementTick()
+    fireEvent.keyDown(window, { key: 'ArrowDown' })
+    advanceSnakeMovementTick()
+    advanceSnakeMovementTick()
+
+    expectSnakeHead(5, 8)
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+    expect(within(getBoard()).getAllByRole('gridcell', { name: /snake/i })).toHaveLength(4)
+    expect(getFoodCells()).toHaveLength(1)
+    expect(getFoodCells()[0]).toHaveAccessibleName(/food row 5 column 9/i)
+
+    fireEvent.keyDown(window, { key: 'ArrowRight' })
+
+    act(() => {
+      vi.advanceTimersByTime(oneFoodTickMs)
+    })
+
+    expectSnakeHead(5, 9)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

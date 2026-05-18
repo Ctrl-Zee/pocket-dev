@@ -32,6 +32,8 @@ export const snakeBoardCells = Array.from(
 )
 
 export const snakeTickMs = 400
+const snakeSpeedStepMs = 20
+const snakeMinTickMs = 200
 
 const initialSnake: SnakeCell[] = [
   { row: 3, column: 5 },
@@ -77,10 +79,23 @@ export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
     return { ...currentGame, status: 'game-over' }
   }
 
-  return {
+  const hasCollectedFood = isSameSnakeCell(nextHead, currentGame.food)
+  const nextSnake = hasCollectedFood
+    ? [nextHead, ...currentGame.snake]
+    : [nextHead, ...currentGame.snake.slice(0, -1)]
+
+  const nextGame = {
     ...currentGame,
     lastDirection: currentGame.direction,
-    snake: [nextHead, ...currentGame.snake.slice(0, -1)],
+    snake: nextSnake,
+  }
+
+  if (!hasCollectedFood) return nextGame
+
+  return {
+    ...nextGame,
+    food: getNextFoodCell(currentGame.board, nextSnake, currentGame.food),
+    score: currentGame.score + 1,
   }
 }
 
@@ -98,6 +113,12 @@ export function changeSnakeDirection(
   return { ...currentGame, direction: nextDirection }
 }
 
+export function getSnakeTickMs(currentGame: SnakeGameState) {
+  const growthSteps = Math.max(currentGame.score, currentGame.snake.length - initialSnake.length, 0)
+
+  return Math.max(snakeMinTickMs, snakeTickMs - growthSteps * snakeSpeedStepMs)
+}
+
 export function getSnakeCellKey(cell: SnakeCell) {
   return `${cell.row}:${cell.column}`
 }
@@ -111,6 +132,30 @@ function getCellFromIndex(index: number): SnakeCell {
     row: Math.floor(index / snakeBoard.columns) + 1,
     column: (index % snakeBoard.columns) + 1,
   }
+}
+
+function getBoardCellFromIndex(board: SnakeBoard, index: number): SnakeCell {
+  return {
+    row: Math.floor(index / board.columns) + 1,
+    column: (index % board.columns) + 1,
+  }
+}
+
+function getCellIndex(board: SnakeBoard, cell: SnakeCell) {
+  return (cell.row - 1) * board.columns + (cell.column - 1)
+}
+
+function getNextFoodCell(board: SnakeBoard, snake: SnakeCell[], previousFood: SnakeCell) {
+  const boardCellCount = board.rows * board.columns
+  const previousFoodIndex = getCellIndex(board, previousFood)
+
+  for (let offset = 1; offset <= boardCellCount; offset += 1) {
+    const candidate = getBoardCellFromIndex(board, (previousFoodIndex + offset) % boardCellCount)
+
+    if (!snake.some((segment) => isSameSnakeCell(segment, candidate))) return candidate
+  }
+
+  return previousFood
 }
 
 function getNextHead(head: SnakeCell, direction: SnakeDirection): SnakeCell {
