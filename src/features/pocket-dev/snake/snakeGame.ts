@@ -1,4 +1,6 @@
-export type SnakeGameStatus = 'start'
+import type { DeviceMoveDirection } from '@/components/device/types'
+
+export type SnakeGameStatus = 'start' | 'running' | 'game-over'
 
 export interface SnakeCell {
   row: number
@@ -13,6 +15,8 @@ export interface SnakeBoard {
 export interface SnakeGameState {
   status: SnakeGameStatus
   board: SnakeBoard
+  direction: DeviceMoveDirection
+  lastDirection: DeviceMoveDirection
   snake: SnakeCell[]
   food: SnakeCell
   score: number
@@ -28,21 +32,65 @@ export const snakeBoardCells = Array.from(
   (_, index) => getCellFromIndex(index),
 )
 
+export const snakeTickMs = 400
+
 const initialSnake: SnakeCell[] = [
   { row: 3, column: 5 },
   { row: 3, column: 4 },
   { row: 3, column: 3 },
 ]
 const initialFood: SnakeCell = { row: 5, column: 8 }
+const initialDirection: DeviceMoveDirection = 'right'
 
 export function createSnakeStartState(): SnakeGameState {
   return {
     status: 'start',
     board: { ...snakeBoard },
+    direction: initialDirection,
+    lastDirection: initialDirection,
     snake: initialSnake.map((cell) => ({ ...cell })),
     food: { ...initialFood },
     score: 0,
   }
+}
+
+export function startSnakeGame(currentGame: SnakeGameState): SnakeGameState {
+  if (currentGame.status === 'running') return currentGame
+  if (currentGame.status === 'game-over') {
+    return { ...createSnakeStartState(), status: 'running' }
+  }
+
+  return { ...currentGame, status: 'running', score: 0 }
+}
+
+export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
+  if (currentGame.status !== 'running') return currentGame
+
+  const nextHead = getNextHead(currentGame.snake[0], currentGame.direction)
+
+  if (!isInsideBoard(nextHead, currentGame.board)) {
+    return { ...currentGame, status: 'game-over' }
+  }
+
+  return {
+    ...currentGame,
+    lastDirection: currentGame.direction,
+    snake: [nextHead, ...currentGame.snake.slice(0, -1)],
+  }
+}
+
+export function changeSnakeDirection(
+  currentGame: SnakeGameState,
+  nextDirection: DeviceMoveDirection,
+): SnakeGameState {
+  if (
+    currentGame.snake.length > 1 &&
+    areOppositeDirections(currentGame.lastDirection, nextDirection)
+  ) {
+    return currentGame
+  }
+
+  return { ...currentGame, direction: nextDirection }
 }
 
 export function getSnakeCellKey(cell: SnakeCell) {
@@ -58,4 +106,35 @@ function getCellFromIndex(index: number): SnakeCell {
     row: Math.floor(index / snakeBoard.columns) + 1,
     column: (index % snakeBoard.columns) + 1,
   }
+}
+
+function getNextHead(head: SnakeCell, direction: DeviceMoveDirection): SnakeCell {
+  switch (direction) {
+    case 'up':
+      return { row: head.row - 1, column: head.column }
+    case 'down':
+      return { row: head.row + 1, column: head.column }
+    case 'left':
+      return { row: head.row, column: head.column - 1 }
+    case 'right':
+      return { row: head.row, column: head.column + 1 }
+  }
+}
+
+function areOppositeDirections(
+  firstDirection: DeviceMoveDirection,
+  secondDirection: DeviceMoveDirection,
+) {
+  return (
+    (firstDirection === 'up' && secondDirection === 'down') ||
+    (firstDirection === 'down' && secondDirection === 'up') ||
+    (firstDirection === 'left' && secondDirection === 'right') ||
+    (firstDirection === 'right' && secondDirection === 'left')
+  )
+}
+
+function isInsideBoard(cell: SnakeCell, board: SnakeBoard) {
+  return (
+    cell.row >= 1 && cell.row <= board.rows && cell.column >= 1 && cell.column <= board.columns
+  )
 }

@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { RouterProvider, createMemoryHistory, createRouter } from '@tanstack/react-router'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { resumeContent } from '@/content/resume/resumeContent'
 import { routeTree } from '@/routeTree.gen'
+import { snakeTickMs } from './snake/snakeGame'
 
 const expectedHomeMenuPages = [
   { label: 'About', href: '/about' },
@@ -214,6 +215,15 @@ async function enterKonamiSequence(user: TestUser) {
   await pressControl(/right/i)
   await pressControl(/^b$/i)
   await pressControl(/^a$/i)
+}
+
+async function openSnakeFromHome(user: TestUser) {
+  await screen.findByRole('heading', { name: /home/i })
+  await enterKonamiSequence(user)
+  await user.click(screen.getByRole('button', { name: /^b$/i }))
+
+  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+  await user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
 }
 
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
@@ -502,7 +512,7 @@ describe('Home route', () => {
     expect(within(lcd).queryByRole('button', { name: 'SNAKE' })).not.toBeInTheDocument()
   })
 
-  it('opens hidden SNAKE to a clean LCD Start state without running old gameplay', async () => {
+  it('opens hidden SNAKE to a clean LCD Start state before play begins', async () => {
     const { router, user } = renderRoute('/')
 
     await screen.findByRole('heading', { name: /home/i })
@@ -530,11 +540,6 @@ describe('Home route', () => {
     ).toBeInTheDocument()
     expect(within(board).getByRole('gridcell', { name: /food row 5 column 8/i })).toBeInTheDocument()
 
-    await user.click(screen.getByRole('button', { name: /down/i }))
-    await user.click(screen.getByRole('button', { name: /^a$/i }))
-    await user.click(screen.getByRole('button', { name: /start/i }))
-
-    expect(within(lcd).queryByText(/running/i)).not.toBeInTheDocument()
     expect(
       within(board).getByRole('gridcell', { name: /snake head row 3 column 5/i }),
     ).toBeInTheDocument()
@@ -549,6 +554,71 @@ describe('Home route', () => {
       'data-selected',
       'true',
     )
+  })
+
+  it('starts hidden SNAKE, moves continuously, and turns with desktop and Device controls', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    const lcd = screen.getByRole('region', { name: /lcd screen/i })
+    const getBoard = () => within(lcd).getByRole('grid', { name: /snake board/i })
+    const expectSnakeHead = (row: number, column: number) => {
+      expect(
+        within(getBoard()).getByRole('gridcell', {
+          name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
+        }),
+      ).toBeInTheDocument()
+    }
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(within(lcd).getByText(/^running$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(3, 6)
+
+    fireEvent.keyDown(window, { key: 'ArrowDown' })
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(4, 6)
+
+    fireEvent.keyDown(window, { key: 'a' })
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(4, 5)
+
+    fireEvent.keyDown(window, { key: 'w' })
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(3, 5)
+
+    fireEvent.keyDown(window, { key: 'd' })
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(3, 6)
+
+    fireEvent.keyDown(window, { key: 's' })
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(4, 6)
+
+    fireEvent.click(screen.getByRole('button', { name: /left/i }))
+    act(() => {
+      vi.advanceTimersByTime(snakeTickMs)
+    })
+    expectSnakeHead(4, 5)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

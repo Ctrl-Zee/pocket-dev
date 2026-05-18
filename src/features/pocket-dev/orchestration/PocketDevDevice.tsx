@@ -1,6 +1,6 @@
 import '../pocket-dev.css'
 import { useLocation, useNavigate } from '@tanstack/react-router'
-import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { PocketDevDevice as DeviceHardware } from '@/components/device'
 import type { DeviceMoveDirection } from '@/components/device/types'
 import { resumeContent } from '@/content/resume/resumeContent'
@@ -14,7 +14,13 @@ import { RotatePage } from '../pages/RotatePage'
 import { SecretSnakePage } from '../pages/SecretSnakePage'
 import { SecretSnakeUnlockPage } from '../pages/SecretSnakeUnlockPage'
 import { useDeviceSfx } from '../sfx/deviceSfx'
-import { createSnakeStartState } from '../snake/snakeGame'
+import {
+  advanceSnake,
+  changeSnakeDirection,
+  createSnakeStartState,
+  snakeTickMs,
+  startSnakeGame,
+} from '../snake/snakeGame'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
 
 interface PocketDevDeviceProps {
@@ -75,6 +81,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const moveSelection = useCallback(
     (delta: SelectionDelta, direction: DeviceMoveDirection) => {
       if (isShowingSnake) {
+        setSnakeGame((currentGame) => changeSnakeDirection(currentGame, direction))
         playDeviceSfx('blip')
         return
       }
@@ -110,8 +117,13 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     setSnakeGame(createSnakeStartState())
   }, [])
 
+  const startSnake = useCallback(() => {
+    setSnakeGame(startSnakeGame)
+  }, [])
+
   const activateSelection = useCallback(() => {
     if (isShowingSnake) {
+      startSnake()
       playDeviceSfx('confirm')
       return
     }
@@ -151,6 +163,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     isSnakeUnlocked,
     navigate,
     playDeviceSfx,
+    startSnake,
     trackKonamiInput,
   ])
 
@@ -184,10 +197,33 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }, [playDeviceSfx, toggleMute])
 
   const handleStart = useCallback(() => {
-    playDeviceSfx('start')
-  }, [playDeviceSfx])
+    if (isShowingSnake) {
+      startSnake()
+      playDeviceSfx('start')
+      return
+    }
 
-  useDeviceKeyboardControls({ activateSelection, moveSelection, returnHome })
+    playDeviceSfx('start')
+  }, [isShowingSnake, playDeviceSfx, startSnake])
+
+  useDeviceKeyboardControls({
+    activateSelection,
+    moveSelection,
+    returnHome,
+    useWasdMovement: isShowingSnake,
+  })
+
+  useEffect(() => {
+    if (!isShowingSnake || snakeGame.status !== 'running') return
+
+    const tickId = window.setInterval(() => {
+      setSnakeGame(advanceSnake)
+    }, snakeTickMs)
+
+    return () => {
+      window.clearInterval(tickId)
+    }
+  }, [isShowingSnake, snakeGame.status])
 
   const deviceNavigation = useMemo(
     () => ({

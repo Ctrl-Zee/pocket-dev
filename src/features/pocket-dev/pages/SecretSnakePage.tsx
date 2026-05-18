@@ -72,5 +72,5 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 }
 
 function getSnakeStatusLabel(status: SnakeGameState['status']) {
-  return status.toUpperCase()
+  return status.replace('-', ' ').toUpperCase()
 }
