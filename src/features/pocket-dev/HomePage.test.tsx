@@ -600,7 +600,8 @@ describe('Home route', () => {
     lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /^> snake$/i })).toBeInTheDocument()
     expect(within(lcd).getByText(/^start$/i)).toBeInTheDocument()
-    expect(within(lcd).getByText(/d-pad\/swipe turn/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/arrows\/wasd turn/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/d-pad turn \/ swipe touch/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/a \/ start begin/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
 
@@ -627,6 +628,44 @@ describe('Home route', () => {
       'data-selected',
       'true',
     )
+  })
+
+  it('shows accessible SNAKE status and controls for keyboard, Device, and touch input', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    const lcd = getLcd()
+    const status = within(lcd).getByRole('status', { name: /snake status and controls/i })
+
+    expect(status).toHaveTextContent(/start/i)
+    expect(status).toHaveTextContent(/score 0/i)
+    expect(status).toHaveTextContent(/arrows\/wasd turn/i)
+    expect(status).toHaveTextContent(/d-pad turn/i)
+    expect(status).toHaveTextContent(/swipe touch/i)
+    expect(status).toHaveTextContent(/a \/ start begin/i)
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(status).toHaveTextContent(/running/i)
+    expect(status).toHaveTextContent(/p\/start pause/i)
+
+    fireEvent.keyDown(window, { key: 'p' })
+
+    expect(status).toHaveTextContent(/paused/i)
+    expect(status).toHaveTextContent(/p\/start resume/i)
+    expect(status).toHaveTextContent(/a restart/i)
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    fireEvent.keyDown(window, { key: 'ArrowUp' })
+    advanceSnakeMovementTicks(3)
+
+    expect(status).toHaveTextContent(/game over/i)
+    expect(status).toHaveTextContent(/final score 0/i)
+    expect(status).toHaveTextContent(/a \/ start restart/i)
   })
 
   it('starts hidden SNAKE, moves continuously, and turns with desktop and Device controls', async () => {
@@ -1090,6 +1129,45 @@ describe('Pocket Dev responsive styles', () => {
 
     expect(selectedHomeMenuRule).toContain('background: var(--lcd-ink);')
     expect(selectedHomeMenuRule).toContain('color: var(--lcd-hi);')
+  })
+
+  it('uses high-contrast responsive SNAKE LCD styling', () => {
+    const snakePageRule = getCssRule('.snake-game-page')
+    const snakeGridRule = getCssRule('.snake-game-grid')
+    const snakeCellRule = getCssRule('.snake-game-cell')
+    const snakeHeadRule = getCssRule('.snake-game-head::before')
+    const snakeHeadEyeRule = getCssRule('.snake-game-head::after')
+    const snakeFoodRule = getCssRule('.snake-game-food::before')
+    const snakeStatusRule = getCssRule('.snake-game-status')
+    const snakeStatusLabelRule = getCssRule('.snake-game-status p:first-child')
+
+    expect(pocketDevCss).toContain('--snake-cell-size: 13px;')
+    expect(snakePageRule).toContain('overflow: hidden;')
+    expect(snakePageRule).toContain('background-size: var(--snake-cell-size) var(--snake-cell-size);')
+
+    expect(snakeGridRule).toContain('width: calc(var(--snake-cell-size) * 10);')
+    expect(snakeGridRule).toContain('height: calc(var(--snake-cell-size) * 6);')
+    expect(snakeGridRule).toContain('grid-template-columns: repeat(10, var(--snake-cell-size));')
+    expect(snakeGridRule).toContain('border: 2px solid var(--lcd-ink);')
+    expect(snakeGridRule).toContain('background: rgba(188, 214, 166, 0.72);')
+
+    expect(snakeCellRule).toContain('width: var(--snake-cell-size);')
+    expect(snakeCellRule).toContain('height: var(--snake-cell-size);')
+    expect(snakeHeadRule).toContain('box-shadow: inset 0 0 0 2px var(--lcd-hi);')
+    expect(snakeHeadEyeRule).toContain('box-shadow: -4px 0 0 var(--lcd-hi);')
+    expect(snakeFoodRule).toContain('box-shadow: inset 0 0 0 2px var(--lcd-ink);')
+
+    expect(snakeStatusRule).toContain('background: rgba(219, 232, 200, 0.62);')
+    expect(snakeStatusRule).toContain('box-shadow: inset 0 0 0 1px var(--lcd-mid);')
+    expect(snakeStatusLabelRule).toContain('background: var(--lcd-ink);')
+    expect(snakeStatusLabelRule).toContain('color: var(--lcd-hi);')
+
+    expect(pocketDevCss).toMatch(
+      /@media\s*\(max-width:\s*480px\)\s*and\s*\(orientation:\s*portrait\)\s*{[\s\S]*--snake-cell-size:\s*11px;/s,
+    )
+    expect(pocketDevCss).toMatch(
+      /@media\s*\(prefers-reduced-motion:\s*reduce\)\s*{[\s\S]*\.snake-game-food::before\s*{[^}]*animation:\s*none;/s,
+    )
   })
 
   it('renders A and B Device buttons at the same size across viewports', () => {

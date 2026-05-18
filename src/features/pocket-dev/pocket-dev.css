@@ -17,6 +17,8 @@
   --lcd-home-menu-text: 11px;
   --lcd-supporting-text: 9px;
   --lcd-detail-text: 8px;
+  --snake-cell-size: 13px;
+  --snake-sprite-size: calc(var(--snake-cell-size) - 2px);
   --wordmark-text: 16px;
   --wordmark-mobile-text: 13px;
   --font-pixel: 'Press Start 2P', monospace;
@@ -552,13 +554,14 @@ body::before {
   min-height: 100%;
   align-content: center;
   justify-items: center;
-  gap: 10px;
-  padding: 8px;
+  gap: 8px;
+  overflow: hidden;
+  padding: 6px;
   background:
     linear-gradient(90deg, rgba(31, 45, 24, 0.16) 1px, transparent 1px),
     linear-gradient(rgba(31, 45, 24, 0.16) 1px, transparent 1px),
     #dbe8c8;
-  background-size: 12px 12px;
+  background-size: var(--snake-cell-size) var(--snake-cell-size);
   box-shadow: inset 0 0 0 2px var(--lcd-ink);
   text-align: center;
   overscroll-behavior: contain;
@@ -567,38 +570,53 @@ body::before {
 
 .snake-game-page p {
   margin: 0;
-  color: var(--lcd-mid);
+  color: var(--lcd-ink);
   font-size: var(--lcd-detail-text);
-  line-height: 1.6;
+  line-height: 1.45;
 }
 
 .snake-game-status {
   display: grid;
-  gap: 4px;
+  width: min(100%, 28ch);
+  gap: 3px;
+  padding: 5px;
+  background: rgba(219, 232, 200, 0.62);
+  box-shadow: inset 0 0 0 1px var(--lcd-mid);
+}
+
+.snake-game-status p:first-child {
+  padding: 3px 4px;
+  background: var(--lcd-ink);
+  color: var(--lcd-hi);
 }
 
 .snake-game-grid {
   display: grid;
-  width: 120px;
-  height: 72px;
-  grid-template-columns: repeat(10, 12px);
-  grid-template-rows: repeat(6, 12px);
-  box-shadow: inset 0 0 0 2px var(--lcd-ink);
+  width: calc(var(--snake-cell-size) * 10);
+  height: calc(var(--snake-cell-size) * 6);
+  border: 2px solid var(--lcd-ink);
+  background: rgba(188, 214, 166, 0.72);
+  grid-template-columns: repeat(10, var(--snake-cell-size));
+  grid-template-rows: repeat(6, var(--snake-cell-size));
+  box-shadow: inset 0 0 0 1px rgba(31, 45, 24, 0.24);
   touch-action: none;
 }
 
 .snake-game-cell {
   position: relative;
   display: grid;
-  width: 12px;
-  height: 12px;
+  width: var(--snake-cell-size);
+  height: var(--snake-cell-size);
+  box-shadow:
+    inset 1px 0 0 rgba(31, 45, 24, 0.16),
+    inset 0 1px 0 rgba(31, 45, 24, 0.16);
   place-items: center;
 }
 
 .snake-game-cell::before {
   display: block;
-  width: 10px;
-  height: 10px;
+  width: var(--snake-sprite-size);
+  height: var(--snake-sprite-size);
   content: '';
 }
 
@@ -606,18 +624,24 @@ body::before {
   background: var(--lcd-ink);
 }
 
+.snake-game-head::before {
+  box-shadow: inset 0 0 0 2px var(--lcd-hi);
+}
+
 .snake-game-head::after {
   position: absolute;
   top: 3px;
-  left: 7px;
+  right: 3px;
   width: 2px;
   height: 2px;
   content: '';
   background: var(--lcd-hi);
+  box-shadow: -4px 0 0 var(--lcd-hi);
 }
 
 .snake-game-food::before {
   background: var(--lcd-mid);
+  box-shadow: inset 0 0 0 2px var(--lcd-ink);
   animation: cursor-blink 0.7s steps(2, start) infinite;
 }
 
@@ -955,6 +979,7 @@ body::before {
     --dpad-arm-size: 34px;
     --dpad-arm-offset: 31px;
     --face-button-size: 54px;
+    --snake-cell-size: 11px;
   }
 
   .pocket-dev-stage {
@@ -1019,6 +1044,10 @@ body::before {
   .power-led,
   .lcd-screen::after,
   .home-menu a.is-selected::before {
+    animation: none;
+  }
+
+  .snake-game-food::before {
     animation: none;
   }
 

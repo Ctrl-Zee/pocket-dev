@@ -28,6 +28,7 @@ const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
   paused: 'PAUSED',
   'game-over': 'GAME OVER',
 }
+const snakeTurnControlLines = ['ARROWS/WASD TURN', 'D-PAD TURN / SWIPE TOUCH'] as const
 const snakeSwipeMinimumDistancePx = 24
 
 export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps) {
@@ -66,6 +67,7 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
       >
         <div
           aria-colcount={game.board.columns}
+          aria-describedby="snake-game-status"
           aria-label="SNAKE board"
           aria-rowcount={game.board.rows}
           className="snake-game-grid"
@@ -91,7 +93,13 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
             )
           })}
         </div>
-        <div className="snake-game-status" aria-label="SNAKE shell status">
+        <div
+          aria-label="SNAKE status and controls"
+          aria-live="polite"
+          className="snake-game-status"
+          id="snake-game-status"
+          role="status"
+        >
           {snakeStatusLines.map((line) => (
             <p key={line}>{line}</p>
           ))}
@@ -134,16 +142,16 @@ function getSnakeStatusLines(game: SnakeGameState) {
     case 'running':
       return [
         statusLabel,
-        'D-PAD/SWIPE TURN',
-        'P/START PAUSE',
         `Score ${game.score}`,
+        ...snakeTurnControlLines,
+        'P/START PAUSE',
       ]
     case 'start':
       return [
         statusLabel,
-        'D-PAD/SWIPE TURN',
-        'A / START BEGIN',
         `Score ${game.score}`,
+        ...snakeTurnControlLines,
+        'A / START BEGIN',
       ]
   }
 }
