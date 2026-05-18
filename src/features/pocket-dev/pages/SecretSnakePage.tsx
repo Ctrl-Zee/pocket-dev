@@ -15,25 +15,22 @@ interface SecretSnakePageProps {
   onSwipeDirection: (direction: SnakeDirection) => void
 }
 
-interface SnakeSwipePoint {
+interface SwipePoint {
   x: number
   y: number
 }
 
-interface SnakeTouchPoint {
-  clientX: number
-  clientY: number
-}
+type SwipeTouch = Pick<Touch, 'clientX' | 'clientY'>
 
 const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
   start: 'START',
   running: 'RUNNING',
   'game-over': 'GAME OVER',
 }
-const snakeSwipeMinDistance = 24
+const snakeSwipeMinimumDistancePx = 24
 
 export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps) {
-  const swipeStartPointRef = useRef<SnakeSwipePoint | null>(null)
+  const swipeStartPointRef = useRef<SwipePoint | null>(null)
 
   function handleTouchStart(event: TouchEvent<HTMLDivElement>) {
     swipeStartPointRef.current = getTouchPoint(event.touches[0])
@@ -124,7 +121,7 @@ function getSnakeStatusLabel(status: SnakeGameState['status']) {
   return snakeStatusLabels[status]
 }
 
-function getTouchPoint(touch: SnakeTouchPoint | undefined): SnakeSwipePoint | null {
+function getTouchPoint(touch: SwipeTouch | undefined): SwipePoint | null {
   if (!touch) return null
 
   return {
@@ -134,17 +131,24 @@ function getTouchPoint(touch: SnakeTouchPoint | undefined): SnakeSwipePoint | nu
 }
 
 function getSnakeSwipeDirection(
-  startPoint: SnakeSwipePoint,
-  endPoint: SnakeSwipePoint,
+  startPoint: SwipePoint,
+  endPoint: SwipePoint,
 ): SnakeDirection | null {
   const deltaX = endPoint.x - startPoint.x
   const deltaY = endPoint.y - startPoint.y
-  const absoluteDeltaX = Math.abs(deltaX)
-  const absoluteDeltaY = Math.abs(deltaY)
-  const largestDelta = Math.max(absoluteDeltaX, absoluteDeltaY)
+  const horizontalDistance = Math.abs(deltaX)
+  const verticalDistance = Math.abs(deltaY)
+  const largestDistance = Math.max(horizontalDistance, verticalDistance)
 
-  if (largestDelta < snakeSwipeMinDistance || absoluteDeltaX === absoluteDeltaY) return null
-  if (absoluteDeltaX > absoluteDeltaY) return deltaX > 0 ? 'right' : 'left'
+  if (largestDistance < snakeSwipeMinimumDistancePx || horizontalDistance === verticalDistance) {
+    return null
+  }
 
-  return deltaY > 0 ? 'down' : 'up'
+  if (horizontalDistance > verticalDistance) {
+    if (deltaX > 0) return 'right'
+    return 'left'
+  }
+
+  if (deltaY > 0) return 'down'
+  return 'up'
 }
