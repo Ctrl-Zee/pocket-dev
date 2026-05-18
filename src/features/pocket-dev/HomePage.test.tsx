@@ -261,7 +261,13 @@ function advanceSnakeMovementTick() {
   advanceSnakeMovementBy(snakeTickMs)
 }
 
-function getOneFoodSnakeTickMs() {
+function advanceSnakeMovementTicks(tickCount: number) {
+  for (let tickIndex = 0; tickIndex < tickCount; tickIndex += 1) {
+    advanceSnakeMovementTick()
+  }
+}
+
+function getPostInitialFoodSnakeTickMs() {
   return getSnakeTickMs({
     ...startSnakeGame(createSnakeStartState()),
     score: 1,
@@ -275,12 +281,9 @@ function getOneFoodSnakeTickMs() {
 }
 
 function collectInitialSnakeFood() {
-  advanceSnakeMovementTick()
-  advanceSnakeMovementTick()
-  advanceSnakeMovementTick()
+  advanceSnakeMovementTicks(3)
   fireEvent.keyDown(window, { key: 'ArrowDown' })
-  advanceSnakeMovementTick()
-  advanceSnakeMovementTick()
+  advanceSnakeMovementTicks(2)
 }
 
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
@@ -665,7 +668,7 @@ describe('Home route', () => {
     vi.useFakeTimers()
 
     const lcd = getLcd()
-    const oneFoodTickMs = getOneFoodSnakeTickMs()
+    const postInitialFoodTickMs = getPostInitialFoodSnakeTickMs()
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
 
@@ -681,7 +684,7 @@ describe('Home route', () => {
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
 
-    advanceSnakeMovementBy(oneFoodTickMs)
+    advanceSnakeMovementBy(postInitialFoodTickMs)
 
     expectSnakeHead(5, 9)
   })
@@ -695,7 +698,7 @@ describe('Home route', () => {
     vi.useFakeTimers()
 
     const lcd = getLcd()
-    const oneFoodTickMs = getOneFoodSnakeTickMs()
+    const postInitialFoodTickMs = getPostInitialFoodSnakeTickMs()
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
 
@@ -703,8 +706,8 @@ describe('Home route', () => {
 
     expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
 
-    advanceSnakeMovementBy(oneFoodTickMs)
-    advanceSnakeMovementBy(oneFoodTickMs)
+    advanceSnakeMovementBy(postInitialFoodTickMs)
+    advanceSnakeMovementBy(postInitialFoodTickMs)
 
     expect(within(lcd).getByText(/^game over$/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/^final score 1$/i)).toBeInTheDocument()
@@ -719,10 +722,10 @@ describe('Home route', () => {
       within(getSnakeBoard()).getByRole('gridcell', { name: /food row 5 column 8/i }),
     ).toBeInTheDocument()
 
-    advanceSnakeMovementBy(oneFoodTickMs)
+    advanceSnakeMovementBy(postInitialFoodTickMs)
     expectSnakeHead(3, 5)
 
-    advanceSnakeMovementBy(snakeTickMs - oneFoodTickMs)
+    advanceSnakeMovementBy(snakeTickMs - postInitialFoodTickMs)
     expectSnakeHead(3, 6)
   })
 

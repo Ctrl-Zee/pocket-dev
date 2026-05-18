@@ -78,14 +78,12 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
   return `Empty row ${cell.row} column ${cell.column}`
 }
 
-function getSnakeStatusLabel(status: SnakeGameState['status']) {
-  return snakeStatusLabels[status]
-}
-
 function getSnakeStatusLines(game: SnakeGameState) {
-  if (game.status === 'game-over') {
-    return [getSnakeStatusLabel(game.status), `Final Score ${game.score}`, 'A / START RESTART']
+  switch (game.status) {
+    case 'game-over':
+      return [snakeStatusLabels[game.status], `Final Score ${game.score}`, 'A / START RESTART']
+    case 'start':
+    case 'running':
+      return [snakeStatusLabels[game.status], 'D-PAD TURN', 'A / START BEGIN', `Score ${game.score}`]
   }
-
-  return [getSnakeStatusLabel(game.status), 'D-PAD TURN', 'A / START BEGIN', `Score ${game.score}`]
 }

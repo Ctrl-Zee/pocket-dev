@@ -80,14 +80,13 @@ export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
   }
 
   const hasCollectedFood = isSameSnakeCell(nextHead, currentGame.food)
-  const nextSnake = hasCollectedFood
-    ? [nextHead, ...currentGame.snake]
-    : [nextHead, ...currentGame.snake.slice(0, -1)]
+  const nextBody = hasCollectedFood ? currentGame.snake : currentGame.snake.slice(0, -1)
 
-  if (isSnakeCellOccupied(nextSnake.slice(1), nextHead)) {
+  if (isSnakeCellOccupied(nextBody, nextHead)) {
     return { ...currentGame, status: 'game-over' }
   }
 
+  const nextSnake = [nextHead, ...nextBody]
   const nextGame = {
     ...currentGame,
     lastDirection: currentGame.direction,
