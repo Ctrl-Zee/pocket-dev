@@ -199,8 +199,12 @@ function getCssRules(selector: string) {
   )
 }
 
+function getLcd() {
+  return screen.getByRole('region', { name: /lcd screen/i })
+}
+
 function expectSelectedHomeMenuLink(label: string) {
-  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+  const lcd = getLcd()
 
   expect(within(lcd).getByRole('link', { name: label })).toHaveAttribute('data-selected', 'true')
 }
@@ -227,14 +231,34 @@ async function openSnakeFromHome(user: TestUser) {
   await enterKonamiSequence(user)
   await user.click(screen.getByRole('button', { name: /^b$/i }))
 
-  const lcd = screen.getByRole('region', { name: /lcd screen/i })
+  const lcd = getLcd()
   await user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
 }
 
-function advanceSnakeMovementTick() {
+function getSnakeBoard() {
+  return within(getLcd()).getByRole('grid', { name: /snake board/i })
+}
+
+function getSnakeFoodCells() {
+  return within(getSnakeBoard()).getAllByRole('gridcell', { name: /food row/i })
+}
+
+function expectSnakeHead(row: number, column: number) {
+  expect(
+    within(getSnakeBoard()).getByRole('gridcell', {
+      name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
+    }),
+  ).toBeInTheDocument()
+}
+
+function advanceSnakeMovementBy(tickMs: number) {
   act(() => {
-    vi.advanceTimersByTime(snakeTickMs)
+    vi.advanceTimersByTime(tickMs)
   })
+}
+
+function advanceSnakeMovementTick() {
+  advanceSnakeMovementBy(snakeTickMs)
 }
 
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
@@ -575,15 +599,7 @@ describe('Home route', () => {
 
     vi.useFakeTimers()
 
-    const lcd = screen.getByRole('region', { name: /lcd screen/i })
-    const getBoard = () => within(lcd).getByRole('grid', { name: /snake board/i })
-    const expectSnakeHead = (row: number, column: number) => {
-      expect(
-        within(getBoard()).getByRole('gridcell', {
-          name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
-        }),
-      ).toBeInTheDocument()
-    }
+    const lcd = getLcd()
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
 
@@ -626,16 +642,7 @@ describe('Home route', () => {
 
     vi.useFakeTimers()
 
-    const lcd = screen.getByRole('region', { name: /lcd screen/i })
-    const getBoard = () => within(lcd).getByRole('grid', { name: /snake board/i })
-    const expectSnakeHead = (row: number, column: number) => {
-      expect(
-        within(getBoard()).getByRole('gridcell', {
-          name: new RegExp(`snake head row ${row} column ${column}`, 'i'),
-        }),
-      ).toBeInTheDocument()
-    }
-    const getFoodCells = () => within(getBoard()).getAllByRole('gridcell', { name: /food row/i })
+    const lcd = getLcd()
     const oneFoodTickMs = getSnakeTickMs({
       ...startSnakeGame(createSnakeStartState()),
       score: 1,
@@ -658,15 +665,15 @@ describe('Home route', () => {
 
     expectSnakeHead(5, 8)
     expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
-    expect(within(getBoard()).getAllByRole('gridcell', { name: /snake/i })).toHaveLength(4)
-    expect(getFoodCells()).toHaveLength(1)
-    expect(getFoodCells()[0]).toHaveAccessibleName(/food row 5 column 9/i)
+    expect(within(getSnakeBoard()).getAllByRole('gridcell', { name: /snake/i })).toHaveLength(4)
+    const foodCells = getSnakeFoodCells()
+
+    expect(foodCells).toHaveLength(1)
+    expect(foodCells[0]).toHaveAccessibleName(/food row 5 column 9/i)
 
     fireEvent.keyDown(window, { key: 'ArrowRight' })
 
-    act(() => {
-      vi.advanceTimersByTime(oneFoodTickMs)
-    })
+    advanceSnakeMovementBy(oneFoodTickMs)
 
     expectSnakeHead(5, 9)
   })

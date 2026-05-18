@@ -28,7 +28,7 @@ export const snakeBoard = {
 
 export const snakeBoardCells = Array.from(
   { length: snakeBoard.rows * snakeBoard.columns },
-  (_, index) => getCellFromIndex(index),
+  (_, index) => getBoardCellFromIndex(snakeBoard, index),
 )
 
 export const snakeTickMs = 400
@@ -114,9 +114,11 @@ export function changeSnakeDirection(
 }
 
 export function getSnakeTickMs(currentGame: SnakeGameState) {
-  const growthSteps = Math.max(currentGame.score, currentGame.snake.length - initialSnake.length, 0)
+  const scoreGrowthSteps = currentGame.score
+  const lengthGrowthSteps = currentGame.snake.length - initialSnake.length
+  const speedIncreaseSteps = Math.max(scoreGrowthSteps, lengthGrowthSteps, 0)
 
-  return Math.max(snakeMinTickMs, snakeTickMs - growthSteps * snakeSpeedStepMs)
+  return Math.max(snakeMinTickMs, snakeTickMs - speedIncreaseSteps * snakeSpeedStepMs)
 }
 
 export function getSnakeCellKey(cell: SnakeCell) {
@@ -125,13 +127,6 @@ export function getSnakeCellKey(cell: SnakeCell) {
 
 export function isSameSnakeCell(firstCell: SnakeCell, secondCell: SnakeCell) {
   return firstCell.row === secondCell.row && firstCell.column === secondCell.column
-}
-
-function getCellFromIndex(index: number): SnakeCell {
-  return {
-    row: Math.floor(index / snakeBoard.columns) + 1,
-    column: (index % snakeBoard.columns) + 1,
-  }
 }
 
 function getBoardCellFromIndex(board: SnakeBoard, index: number): SnakeCell {
@@ -152,10 +147,14 @@ function getNextFoodCell(board: SnakeBoard, snake: SnakeCell[], previousFood: Sn
   for (let offset = 1; offset <= boardCellCount; offset += 1) {
     const candidate = getBoardCellFromIndex(board, (previousFoodIndex + offset) % boardCellCount)
 
-    if (!snake.some((segment) => isSameSnakeCell(segment, candidate))) return candidate
+    if (!isSnakeCellOccupied(snake, candidate)) return candidate
   }
 
   return previousFood
+}
+
+function isSnakeCellOccupied(snake: SnakeCell[], cell: SnakeCell) {
+  return snake.some((segment) => isSameSnakeCell(segment, cell))
 }
 
 function getNextHead(head: SnakeCell, direction: SnakeDirection): SnakeCell {
