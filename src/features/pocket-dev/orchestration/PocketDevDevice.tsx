@@ -20,6 +20,7 @@ import {
   createSnakeStartState,
   getSnakeTickMs,
   startSnakeGame,
+  type SnakeDirection,
 } from '../snake/snakeGame'
 import { DeviceNavigationContext } from './DeviceNavigationContext'
 
@@ -121,6 +122,14 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   const startSnake = useCallback(() => {
     setSnakeGame(startSnakeGame)
   }, [])
+
+  const changeSnakeDirectionFromSwipe = useCallback(
+    (direction: SnakeDirection) => {
+      setSnakeGame((currentGame) => changeSnakeDirection(currentGame, direction))
+      playDeviceSfx('blip')
+    },
+    [playDeviceSfx],
+  )
 
   const activateSelection = useCallback(() => {
     if (isShowingSnake) {
@@ -238,7 +247,9 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }
 
   if (isShowingSnake) {
-    lcdContent = <SecretSnakePage game={snakeGame} />
+    lcdContent = (
+      <SecretSnakePage game={snakeGame} onSwipeDirection={changeSnakeDirectionFromSwipe} />
+    )
   }
 
   if (shouldShowRotatePrompt) {

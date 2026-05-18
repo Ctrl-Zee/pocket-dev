@@ -261,6 +261,19 @@ function advanceSnakeMovementTick() {
   advanceSnakeMovementBy(snakeTickMs)
 }
 
+interface TestTouchPoint {
+  clientX: number
+  clientY: number
+}
+
+function swipeSnakeBoard(startPoint: TestTouchPoint, endPoint: TestTouchPoint) {
+  const board = getSnakeBoard()
+
+  fireEvent.touchStart(board, { touches: [startPoint] })
+  fireEvent.touchMove(board, { touches: [endPoint] })
+  fireEvent.touchEnd(board, { changedTouches: [endPoint] })
+}
+
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
   const router = createRouter({
     routeTree,
@@ -562,7 +575,7 @@ describe('Home route', () => {
     lcd = screen.getByRole('region', { name: /lcd screen/i })
     expect(within(lcd).getByRole('heading', { name: /^> snake$/i })).toBeInTheDocument()
     expect(within(lcd).getByText(/^start$/i)).toBeInTheDocument()
-    expect(within(lcd).getByText(/d-pad turn/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/d-pad\/swipe turn/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/a \/ start begin/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
 
@@ -630,6 +643,46 @@ describe('Home route', () => {
     expectSnakeHead(4, 6)
 
     fireEvent.click(screen.getByRole('button', { name: /left/i }))
+    advanceSnakeMovementTick()
+    expectSnakeHead(4, 5)
+  })
+
+  it('turns hidden SNAKE with touch swipes while blocking gameplay scroll', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(getCssRule('.snake-game-page')).toContain('touch-action: none;')
+    expect(getCssRule('.snake-game-grid')).toContain('touch-action: none;')
+
+    swipeSnakeBoard({ clientX: 48, clientY: 24 }, { clientX: 48, clientY: 86 })
+    swipeSnakeBoard({ clientX: 86, clientY: 48 }, { clientX: 24, clientY: 48 })
+
+    advanceSnakeMovementTick()
+    expectSnakeHead(4, 5)
+
+    swipeSnakeBoard({ clientX: 48, clientY: 86 }, { clientX: 48, clientY: 24 })
+
+    advanceSnakeMovementTick()
+    expectSnakeHead(5, 5)
+
+    swipeSnakeBoard({ clientX: 24, clientY: 48 }, { clientX: 86, clientY: 48 })
+
+    advanceSnakeMovementTick()
+    expectSnakeHead(5, 6)
+
+    swipeSnakeBoard({ clientX: 48, clientY: 86 }, { clientX: 48, clientY: 24 })
+
+    advanceSnakeMovementTick()
+    expectSnakeHead(4, 6)
+
+    swipeSnakeBoard({ clientX: 86, clientY: 48 }, { clientX: 24, clientY: 48 })
+
     advanceSnakeMovementTick()
     expectSnakeHead(4, 5)
   })
