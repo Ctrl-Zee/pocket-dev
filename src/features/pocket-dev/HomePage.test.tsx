@@ -226,6 +226,12 @@ async function openSnakeFromHome(user: TestUser) {
   await user.click(within(lcd).getByRole('button', { name: 'SNAKE' }))
 }
 
+function advanceSnakeMovementTick() {
+  act(() => {
+    vi.advanceTimersByTime(snakeTickMs)
+  })
+}
+
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
   const router = createRouter({
     routeTree,
@@ -579,45 +585,31 @@ describe('Home route', () => {
     expect(within(lcd).getByText(/^running$/i)).toBeInTheDocument()
     expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
 
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(3, 6)
 
     fireEvent.keyDown(window, { key: 'ArrowDown' })
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(4, 6)
 
     fireEvent.keyDown(window, { key: 'a' })
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(4, 5)
 
     fireEvent.keyDown(window, { key: 'w' })
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(3, 5)
 
     fireEvent.keyDown(window, { key: 'd' })
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(3, 6)
 
     fireEvent.keyDown(window, { key: 's' })
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(4, 6)
 
     fireEvent.click(screen.getByRole('button', { name: /left/i }))
-    act(() => {
-      vi.advanceTimersByTime(snakeTickMs)
-    })
+    advanceSnakeMovementTick()
     expectSnakeHead(4, 5)
   })
 

@@ -197,12 +197,7 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }, [playDeviceSfx, toggleMute])
 
   const handleStart = useCallback(() => {
-    if (isShowingSnake) {
-      startSnake()
-      playDeviceSfx('start')
-      return
-    }
-
+    if (isShowingSnake) startSnake()
     playDeviceSfx('start')
   }, [isShowingSnake, playDeviceSfx, startSnake])
 

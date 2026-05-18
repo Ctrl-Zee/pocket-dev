@@ -12,6 +12,12 @@ interface SecretSnakePageProps {
   game: SnakeGameState
 }
 
+const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
+  start: 'START',
+  running: 'RUNNING',
+  'game-over': 'GAME OVER',
+}
+
 export function SecretSnakePage({ game }: SecretSnakePageProps) {
   return (
     <LcdPage title="Snake">
@@ -72,5 +78,5 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 }
 
 function getSnakeStatusLabel(status: SnakeGameState['status']) {
-  return status.replace('-', ' ').toUpperCase()
+  return snakeStatusLabels[status]
 }

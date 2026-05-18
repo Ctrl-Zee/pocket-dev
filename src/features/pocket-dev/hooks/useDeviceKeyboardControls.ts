@@ -9,6 +9,25 @@ interface DeviceKeyboardControls {
   useWasdMovement?: boolean
 }
 
+interface KeyboardMovementControl {
+  delta: SelectionDelta
+  direction: DeviceMoveDirection
+}
+
+const arrowKeyMovementControls: Readonly<Record<string, KeyboardMovementControl>> = {
+  ArrowUp: { delta: -1, direction: 'up' },
+  ArrowLeft: { delta: -1, direction: 'left' },
+  ArrowDown: { delta: 1, direction: 'down' },
+  ArrowRight: { delta: 1, direction: 'right' },
+}
+
+const wasdMovementControls: Readonly<Record<string, KeyboardMovementControl>> = {
+  w: { delta: -1, direction: 'up' },
+  a: { delta: -1, direction: 'left' },
+  s: { delta: 1, direction: 'down' },
+  d: { delta: 1, direction: 'right' },
+}
+
 export function useDeviceKeyboardControls({
   activateSelection,
   moveSelection,
@@ -21,44 +40,15 @@ export function useDeviceKeyboardControls({
 
       const key = event.key.length === 1 ? event.key.toLowerCase() : event.key
 
-      if (useWasdMovement) {
-        switch (key) {
-          case 'w':
-            event.preventDefault()
-            moveSelection(-1, 'up')
-            return
-          case 'a':
-            event.preventDefault()
-            moveSelection(-1, 'left')
-            return
-          case 's':
-            event.preventDefault()
-            moveSelection(1, 'down')
-            return
-          case 'd':
-            event.preventDefault()
-            moveSelection(1, 'right')
-            return
-        }
+      const movementControl = getKeyboardMovementControl(key, useWasdMovement)
+
+      if (movementControl) {
+        event.preventDefault()
+        moveSelection(movementControl.delta, movementControl.direction)
+        return
       }
 
       switch (key) {
-        case 'ArrowUp':
-          event.preventDefault()
-          moveSelection(-1, 'up')
-          return
-        case 'ArrowLeft':
-          event.preventDefault()
-          moveSelection(-1, 'left')
-          return
-        case 'ArrowDown':
-          event.preventDefault()
-          moveSelection(1, 'down')
-          return
-        case 'ArrowRight':
-          event.preventDefault()
-          moveSelection(1, 'right')
-          return
         case 'Enter':
         case ' ':
         case 'a':
@@ -79,4 +69,13 @@ export function useDeviceKeyboardControls({
       window.removeEventListener('keydown', handleKeyboardControls)
     }
   }, [activateSelection, moveSelection, returnHome, useWasdMovement])
+}
+
+function getKeyboardMovementControl(key: string, useWasdMovement: boolean) {
+  const arrowKeyControl = arrowKeyMovementControls[key]
+
+  if (arrowKeyControl) return arrowKeyControl
+  if (!useWasdMovement) return undefined
+
+  return wasdMovementControls[key]
 }

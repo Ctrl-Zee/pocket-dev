@@ -1,6 +1,5 @@
-import type { DeviceMoveDirection } from '@/components/device/types'
-
 export type SnakeGameStatus = 'start' | 'running' | 'game-over'
+export type SnakeDirection = 'up' | 'down' | 'left' | 'right'
 
 export interface SnakeCell {
   row: number
@@ -15,8 +14,8 @@ export interface SnakeBoard {
 export interface SnakeGameState {
   status: SnakeGameStatus
   board: SnakeBoard
-  direction: DeviceMoveDirection
-  lastDirection: DeviceMoveDirection
+  direction: SnakeDirection
+  lastDirection: SnakeDirection
   snake: SnakeCell[]
   food: SnakeCell
   score: number
@@ -40,7 +39,13 @@ const initialSnake: SnakeCell[] = [
   { row: 3, column: 3 },
 ]
 const initialFood: SnakeCell = { row: 5, column: 8 }
-const initialDirection: DeviceMoveDirection = 'right'
+const initialDirection: SnakeDirection = 'right'
+const oppositeSnakeDirections: Record<SnakeDirection, SnakeDirection> = {
+  up: 'down',
+  down: 'up',
+  left: 'right',
+  right: 'left',
+}
 
 export function createSnakeStartState(): SnakeGameState {
   return {
@@ -81,7 +86,7 @@ export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
 
 export function changeSnakeDirection(
   currentGame: SnakeGameState,
-  nextDirection: DeviceMoveDirection,
+  nextDirection: SnakeDirection,
 ): SnakeGameState {
   if (
     currentGame.snake.length > 1 &&
@@ -108,7 +113,7 @@ function getCellFromIndex(index: number): SnakeCell {
   }
 }
 
-function getNextHead(head: SnakeCell, direction: DeviceMoveDirection): SnakeCell {
+function getNextHead(head: SnakeCell, direction: SnakeDirection): SnakeCell {
   switch (direction) {
     case 'up':
       return { row: head.row - 1, column: head.column }
@@ -121,16 +126,8 @@ function getNextHead(head: SnakeCell, direction: DeviceMoveDirection): SnakeCell
   }
 }
 
-function areOppositeDirections(
-  firstDirection: DeviceMoveDirection,
-  secondDirection: DeviceMoveDirection,
-) {
-  return (
-    (firstDirection === 'up' && secondDirection === 'down') ||
-    (firstDirection === 'down' && secondDirection === 'up') ||
-    (firstDirection === 'left' && secondDirection === 'right') ||
-    (firstDirection === 'right' && secondDirection === 'left')
-  )
+function areOppositeDirections(firstDirection: SnakeDirection, secondDirection: SnakeDirection) {
+  return oppositeSnakeDirections[firstDirection] === secondDirection
 }
 
 function isInsideBoard(cell: SnakeCell, board: SnakeBoard) {
