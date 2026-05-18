@@ -239,6 +239,18 @@ function getSnakeBoard() {
   return within(getLcd()).getByRole('grid', { name: /snake board/i })
 }
 
+function getSnakeStatus() {
+  return within(getLcd()).getByRole('status', { name: /snake status and controls/i })
+}
+
+function expectSnakeStatusText(expectedText: readonly RegExp[]) {
+  const status = getSnakeStatus()
+
+  expectedText.forEach((text) => {
+    expect(status).toHaveTextContent(text)
+  })
+}
+
 function getSnakeFoodCells() {
   return within(getSnakeBoard()).getAllByRole('gridcell', { name: /food row/i })
 }
@@ -638,34 +650,28 @@ describe('Home route', () => {
 
     vi.useFakeTimers()
 
-    const lcd = getLcd()
-    const status = within(lcd).getByRole('status', { name: /snake status and controls/i })
-
-    expect(status).toHaveTextContent(/start/i)
-    expect(status).toHaveTextContent(/score 0/i)
-    expect(status).toHaveTextContent(/arrows\/wasd turn/i)
-    expect(status).toHaveTextContent(/d-pad turn/i)
-    expect(status).toHaveTextContent(/swipe touch/i)
-    expect(status).toHaveTextContent(/a \/ start begin/i)
+    expectSnakeStatusText([
+      /start/i,
+      /score 0/i,
+      /arrows\/wasd turn/i,
+      /d-pad turn/i,
+      /swipe touch/i,
+      /a \/ start begin/i,
+    ])
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
 
-    expect(status).toHaveTextContent(/running/i)
-    expect(status).toHaveTextContent(/p\/start pause/i)
+    expectSnakeStatusText([/running/i, /p\/start pause/i])
 
     fireEvent.keyDown(window, { key: 'p' })
 
-    expect(status).toHaveTextContent(/paused/i)
-    expect(status).toHaveTextContent(/p\/start resume/i)
-    expect(status).toHaveTextContent(/a restart/i)
+    expectSnakeStatusText([/paused/i, /p\/start resume/i, /a restart/i])
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
     fireEvent.keyDown(window, { key: 'ArrowUp' })
     advanceSnakeMovementTicks(3)
 
-    expect(status).toHaveTextContent(/game over/i)
-    expect(status).toHaveTextContent(/final score 0/i)
-    expect(status).toHaveTextContent(/a \/ start restart/i)
+    expectSnakeStatusText([/game over/i, /final score 0/i, /a \/ start restart/i])
   })
 
   it('starts hidden SNAKE, moves continuously, and turns with desktop and Device controls', async () => {

@@ -20,6 +20,12 @@ interface SwipePoint {
   y: number
 }
 
+interface SnakeCellState {
+  isFood: boolean
+  isSnakeHead: boolean
+  isSnakeSegment: boolean
+}
+
 type SwipeTouch = Pick<Touch, 'clientX' | 'clientY'>
 
 const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
@@ -28,7 +34,8 @@ const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
   paused: 'PAUSED',
   'game-over': 'GAME OVER',
 }
-const snakeTurnControlLines = ['ARROWS/WASD TURN', 'D-PAD TURN / SWIPE TOUCH'] as const
+const snakeStatusElementId = 'snake-game-status'
+const snakeTurnInstructionLines = ['ARROWS/WASD TURN', 'D-PAD TURN / SWIPE TOUCH'] as const
 const snakeSwipeMinimumDistancePx = 24
 
 export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps) {
@@ -67,7 +74,7 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
       >
         <div
           aria-colcount={game.board.columns}
-          aria-describedby="snake-game-status"
+          aria-describedby={snakeStatusElementId}
           aria-label="SNAKE board"
           aria-rowcount={game.board.rows}
           className="snake-game-grid"
@@ -86,7 +93,7 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
                 aria-colindex={cell.column}
                 aria-label={getSnakeCellLabel(cell, snakeSegmentIndex, isFood)}
                 aria-rowindex={cell.row}
-                className={getSnakeCellClassName(isSnakeSegment, isSnakeHead, isFood)}
+                className={getSnakeCellClassName({ isFood, isSnakeHead, isSnakeSegment })}
                 key={getSnakeCellKey(cell)}
                 role="gridcell"
               />
@@ -97,7 +104,7 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
           aria-label="SNAKE status and controls"
           aria-live="polite"
           className="snake-game-status"
-          id="snake-game-status"
+          id={snakeStatusElementId}
           role="status"
         >
           {snakeStatusLines.map((line) => (
@@ -109,7 +116,7 @@ export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps
   )
 }
 
-function getSnakeCellClassName(isSnakeSegment: boolean, isSnakeHead: boolean, isFood: boolean) {
+function getSnakeCellClassName({ isSnakeSegment, isSnakeHead, isFood }: SnakeCellState) {
   return clsx(
     'snake-game-cell',
     isSnakeSegment && 'snake-game-segment',
@@ -143,14 +150,14 @@ function getSnakeStatusLines(game: SnakeGameState) {
       return [
         statusLabel,
         `Score ${game.score}`,
-        ...snakeTurnControlLines,
+        ...snakeTurnInstructionLines,
         'P/START PAUSE',
       ]
     case 'start':
       return [
         statusLabel,
         `Score ${game.score}`,
-        ...snakeTurnControlLines,
+        ...snakeTurnInstructionLines,
         'A / START BEGIN',
       ]
   }
