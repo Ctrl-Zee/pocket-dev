@@ -1,3 +1,4 @@
+import { useRef, type TouchEvent } from 'react'
 import { clsx } from 'clsx'
 import { LcdPage } from '@/components/lcd'
 import {
@@ -5,25 +6,63 @@ import {
   isSameSnakeCell,
   snakeBoardCells,
   type SnakeCell,
+  type SnakeDirection,
   type SnakeGameState,
 } from '../snake/snakeGame'
 
 interface SecretSnakePageProps {
   game: SnakeGameState
+  onSwipeDirection: (direction: SnakeDirection) => void
 }
+
+interface SwipePoint {
+  x: number
+  y: number
+}
+
+type SwipeTouch = Pick<Touch, 'clientX' | 'clientY'>
 
 const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
   start: 'START',
   running: 'RUNNING',
   'game-over': 'GAME OVER',
 }
+const snakeSwipeMinimumDistancePx = 24
 
-export function SecretSnakePage({ game }: SecretSnakePageProps) {
+export function SecretSnakePage({ game, onSwipeDirection }: SecretSnakePageProps) {
+  const swipeStartPointRef = useRef<SwipePoint | null>(null)
   const snakeStatusLines = getSnakeStatusLines(game)
+
+  function handleTouchStart(event: TouchEvent<HTMLDivElement>) {
+    swipeStartPointRef.current = getTouchPoint(event.touches[0])
+  }
+
+  function handleTouchEnd(event: TouchEvent<HTMLDivElement>) {
+    const startPoint = swipeStartPointRef.current
+    const endPoint = getTouchPoint(event.changedTouches[0])
+
+    swipeStartPointRef.current = null
+
+    if (!startPoint || !endPoint) return
+
+    const swipeDirection = getSnakeSwipeDirection(startPoint, endPoint)
+
+    if (swipeDirection) onSwipeDirection(swipeDirection)
+  }
+
+  function handleTouchCancel() {
+    swipeStartPointRef.current = null
+  }
 
   return (
     <LcdPage title="Snake">
-      <div className="snake-game-page" aria-label="SNAKE game">
+      <div
+        className="snake-game-page"
+        aria-label="SNAKE game"
+        onTouchCancel={handleTouchCancel}
+        onTouchEnd={handleTouchEnd}
+        onTouchStart={handleTouchStart}
+      >
         <div
           aria-colcount={game.board.columns}
           aria-label="SNAKE board"
@@ -84,6 +123,43 @@ function getSnakeStatusLines(game: SnakeGameState) {
       return [snakeStatusLabels[game.status], `Final Score ${game.score}`, 'A / START RESTART']
     case 'start':
     case 'running':
-      return [snakeStatusLabels[game.status], 'D-PAD TURN', 'A / START BEGIN', `Score ${game.score}`]
+      return [
+        snakeStatusLabels[game.status],
+        'D-PAD/SWIPE TURN',
+        'A / START BEGIN',
+        `Score ${game.score}`,
+      ]
   }
+}
+
+function getTouchPoint(touch: SwipeTouch | undefined): SwipePoint | null {
+  if (!touch) return null
+
+  return {
+    x: touch.clientX,
+    y: touch.clientY,
+  }
+}
+
+function getSnakeSwipeDirection(
+  startPoint: SwipePoint,
+  endPoint: SwipePoint,
+): SnakeDirection | null {
+  const deltaX = endPoint.x - startPoint.x
+  const deltaY = endPoint.y - startPoint.y
+  const horizontalDistance = Math.abs(deltaX)
+  const verticalDistance = Math.abs(deltaY)
+  const largestDistance = Math.max(horizontalDistance, verticalDistance)
+
+  if (largestDistance < snakeSwipeMinimumDistancePx || horizontalDistance === verticalDistance) {
+    return null
+  }
+
+  if (horizontalDistance > verticalDistance) {
+    if (deltaX > 0) return 'right'
+    return 'left'
+  }
+
+  if (deltaY > 0) return 'down'
+  return 'up'
 }

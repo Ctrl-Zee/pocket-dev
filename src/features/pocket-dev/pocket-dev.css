@@ -561,6 +561,8 @@ body::before {
   background-size: 12px 12px;
   box-shadow: inset 0 0 0 2px var(--lcd-ink);
   text-align: center;
+  overscroll-behavior: contain;
+  touch-action: none;
 }
 
 .snake-game-page p {
@@ -582,6 +584,7 @@ body::before {
   grid-template-columns: repeat(10, 12px);
   grid-template-rows: repeat(6, 12px);
   box-shadow: inset 0 0 0 2px var(--lcd-ink);
+  touch-action: none;
 }
 
 .snake-game-cell {
