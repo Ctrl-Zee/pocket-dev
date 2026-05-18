@@ -25,6 +25,7 @@ type SwipeTouch = Pick<Touch, 'clientX' | 'clientY'>
 const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
   start: 'START',
   running: 'RUNNING',
+  paused: 'PAUSED',
   'game-over': 'GAME OVER',
 }
 const snakeSwipeMinimumDistancePx = 24
@@ -121,8 +122,21 @@ function getSnakeStatusLines(game: SnakeGameState) {
   switch (game.status) {
     case 'game-over':
       return [snakeStatusLabels[game.status], `Final Score ${game.score}`, 'A / START RESTART']
-    case 'start':
+    case 'paused':
+      return [
+        snakeStatusLabels[game.status],
+        'P/START RESUME',
+        'A RESTART',
+        `Score ${game.score}`,
+      ]
     case 'running':
+      return [
+        snakeStatusLabels[game.status],
+        'D-PAD/SWIPE TURN',
+        'P/START PAUSE',
+        `Score ${game.score}`,
+      ]
+    case 'start':
       return [
         snakeStatusLabels[game.status],
         'D-PAD/SWIPE TURN',

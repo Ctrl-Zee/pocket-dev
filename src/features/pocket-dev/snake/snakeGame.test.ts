@@ -6,6 +6,8 @@ import {
   getSnakeTickMs,
   getSnakeCellKey,
   isSameSnakeCell,
+  pauseSnakeGame,
+  resumeSnakeGame,
   snakeBoardCells,
   snakeTickMs,
   startSnakeGame,
@@ -69,6 +71,55 @@ describe('Snake game Start state', () => {
       { row: 3, column: 5 },
       { row: 3, column: 4 },
     ])
+  })
+
+  it('pauses a running snake and ignores movement ticks while preserving board and score', () => {
+    const runningGame = advanceSnake(startSnakeGame(createSnakeStartState()))
+    const pausedGame = pauseSnakeGame(runningGame)
+    const tickedPausedGame = advanceSnake(pausedGame)
+
+    expect(pausedGame).toMatchObject({
+      status: 'paused',
+      score: runningGame.score,
+      snake: runningGame.snake,
+      food: runningGame.food,
+    })
+    expect(tickedPausedGame).toEqual(pausedGame)
+  })
+
+  it('resumes a paused snake from the preserved board and score', () => {
+    const runningGame = advanceSnake(startSnakeGame(createSnakeStartState()))
+    const pausedGame = pauseSnakeGame(runningGame)
+    const resumedGame = resumeSnakeGame(pausedGame)
+    const nextGame = advanceSnake(resumedGame)
+
+    expect(resumedGame).toMatchObject({
+      status: 'running',
+      score: pausedGame.score,
+      snake: pausedGame.snake,
+      food: pausedGame.food,
+    })
+    expect(nextGame.score).toBe(pausedGame.score)
+    expect(nextGame.snake).toEqual([
+      { row: 3, column: 7 },
+      { row: 3, column: 6 },
+      { row: 3, column: 5 },
+    ])
+  })
+
+  it('restarts paused play from a clean running state', () => {
+    const pausedScoredGame = pauseSnakeGame({
+      ...advanceSnake(startSnakeGame(createSnakeStartState())),
+      score: 3,
+      food: { row: 2, column: 9 },
+    })
+
+    const restartedGame = startSnakeGame(pausedScoredGame)
+
+    expect(restartedGame).toEqual({
+      ...expectedSnakeStartState,
+      status: 'running',
+    })
   })
 
   it('changes movement direction before the next tick', () => {

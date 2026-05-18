@@ -6,6 +6,7 @@ interface DeviceKeyboardControls {
   activateSelection: () => void
   moveSelection: (delta: SelectionDelta, direction: DeviceMoveDirection) => void
   returnHome: () => void
+  startSystem?: () => void
   useWasdMovement?: boolean
 }
 
@@ -32,6 +33,7 @@ export function useDeviceKeyboardControls({
   activateSelection,
   moveSelection,
   returnHome,
+  startSystem,
   useWasdMovement = false,
 }: DeviceKeyboardControls) {
   useEffect(() => {
@@ -45,6 +47,12 @@ export function useDeviceKeyboardControls({
       if (movementControl) {
         event.preventDefault()
         moveSelection(movementControl.delta, movementControl.direction)
+        return
+      }
+
+      if (key === 'p' && useWasdMovement && startSystem) {
+        event.preventDefault()
+        startSystem()
         return
       }
 
@@ -68,7 +76,7 @@ export function useDeviceKeyboardControls({
     return () => {
       window.removeEventListener('keydown', handleKeyboardControls)
     }
-  }, [activateSelection, moveSelection, returnHome, useWasdMovement])
+  }, [activateSelection, moveSelection, returnHome, startSystem, useWasdMovement])
 }
 
 function getKeyboardMovementControl(key: string, useWasdMovement: boolean) {

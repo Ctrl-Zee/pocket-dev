@@ -1,4 +1,4 @@
-export type SnakeGameStatus = 'start' | 'running' | 'game-over'
+export type SnakeGameStatus = 'start' | 'running' | 'paused' | 'game-over'
 export type SnakeDirection = 'up' | 'down' | 'left' | 'right'
 
 export interface SnakeCell {
@@ -63,11 +63,23 @@ export function createSnakeStartState(): SnakeGameState {
 
 export function startSnakeGame(currentGame: SnakeGameState): SnakeGameState {
   if (currentGame.status === 'running') return currentGame
-  if (currentGame.status === 'game-over') {
+  if (currentGame.status === 'paused' || currentGame.status === 'game-over') {
     return { ...createSnakeStartState(), status: 'running' }
   }
 
   return { ...currentGame, status: 'running', score: 0 }
+}
+
+export function pauseSnakeGame(currentGame: SnakeGameState): SnakeGameState {
+  if (currentGame.status !== 'running') return currentGame
+
+  return { ...currentGame, status: 'paused' }
+}
+
+export function resumeSnakeGame(currentGame: SnakeGameState): SnakeGameState {
+  if (currentGame.status !== 'paused') return currentGame
+
+  return { ...currentGame, status: 'running' }
 }
 
 export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {

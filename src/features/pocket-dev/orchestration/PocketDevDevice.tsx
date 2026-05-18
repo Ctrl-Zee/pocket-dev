@@ -19,6 +19,8 @@ import {
   changeSnakeDirection,
   createSnakeStartState,
   getSnakeTickMs,
+  pauseSnakeGame,
+  resumeSnakeGame,
   startSnakeGame,
   type SnakeDirection,
 } from '../snake/snakeGame'
@@ -131,6 +133,15 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
     setSnakeGame(startSnakeGame)
   }, [])
 
+  const pressSnakeStart = useCallback(() => {
+    setSnakeGame((currentGame) => {
+      if (currentGame.status === 'running') return pauseSnakeGame(currentGame)
+      if (currentGame.status === 'paused') return resumeSnakeGame(currentGame)
+
+      return startSnakeGame(currentGame)
+    })
+  }, [])
+
   const activateSelection = useCallback(() => {
     if (isShowingSnake) {
       startSnake()
@@ -207,14 +218,15 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   }, [playDeviceSfx, toggleMute])
 
   const handleStart = useCallback(() => {
-    if (isShowingSnake) startSnake()
+    if (isShowingSnake) pressSnakeStart()
     playDeviceSfx('start')
-  }, [isShowingSnake, playDeviceSfx, startSnake])
+  }, [isShowingSnake, playDeviceSfx, pressSnakeStart])
 
   useDeviceKeyboardControls({
     activateSelection,
     moveSelection,
     returnHome,
+    startSystem: handleStart,
     useWasdMovement: isShowingSnake,
   })
 

@@ -742,6 +742,63 @@ describe('Home route', () => {
     expectSnakeHead(5, 9)
   })
 
+  it('pauses hidden SNAKE, resumes preserved play, and restarts cleanly while paused', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    const lcd = getLcd()
+    const postInitialFoodTickMs = getPostInitialFoodSnakeTickMs()
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+    collectInitialSnakeFood()
+
+    expectSnakeHead(5, 8)
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    fireEvent.keyDown(window, { key: 'p' })
+
+    expect(within(lcd).getByText(/^paused$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/p\/start resume/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/restart/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    advanceSnakeMovementBy(postInitialFoodTickMs * 3)
+
+    expectSnakeHead(5, 8)
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /start/i }))
+
+    expect(within(lcd).getByText(/^running$/i)).toBeInTheDocument()
+    expectSnakeHead(5, 8)
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    advanceSnakeMovementBy(postInitialFoodTickMs)
+
+    expectSnakeHead(6, 8)
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /start/i }))
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(within(lcd).getByText(/^running$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
+    expectSnakeHead(3, 5)
+    expect(
+      within(getSnakeBoard()).getByRole('gridcell', { name: /food row 5 column 8/i }),
+    ).toBeInTheDocument()
+
+    advanceSnakeMovementBy(postInitialFoodTickMs)
+    expectSnakeHead(3, 5)
+
+    advanceSnakeMovementBy(snakeTickMs - postInitialFoodTickMs)
+    expectSnakeHead(3, 6)
+  })
+
   it('shows hidden SNAKE Game Over with final score and restarts from a clean run', async () => {
     const user = userEvent.setup()
 
