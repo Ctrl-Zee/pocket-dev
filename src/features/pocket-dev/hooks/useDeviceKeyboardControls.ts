@@ -5,8 +5,8 @@ import type { DeviceMoveDirection } from '@/components/device/types'
 interface DeviceKeyboardControls {
   activateSelection: () => void
   moveSelection: (delta: SelectionDelta, direction: DeviceMoveDirection) => void
+  pressStart: () => void
   returnHome: () => void
-  startSystem?: () => void
   useWasdMovement?: boolean
 }
 
@@ -32,8 +32,8 @@ const wasdMovementControls: Readonly<Record<string, KeyboardMovementControl>> = 
 export function useDeviceKeyboardControls({
   activateSelection,
   moveSelection,
+  pressStart,
   returnHome,
-  startSystem,
   useWasdMovement = false,
 }: DeviceKeyboardControls) {
   useEffect(() => {
@@ -50,9 +50,9 @@ export function useDeviceKeyboardControls({
         return
       }
 
-      if (key === 'p' && useWasdMovement && startSystem) {
+      if (key === 'p' && useWasdMovement) {
         event.preventDefault()
-        startSystem()
+        pressStart()
         return
       }
 
@@ -76,7 +76,7 @@ export function useDeviceKeyboardControls({
     return () => {
       window.removeEventListener('keydown', handleKeyboardControls)
     }
-  }, [activateSelection, moveSelection, returnHome, startSystem, useWasdMovement])
+  }, [activateSelection, moveSelection, pressStart, returnHome, useWasdMovement])
 }
 
 function getKeyboardMovementControl(key: string, useWasdMovement: boolean) {

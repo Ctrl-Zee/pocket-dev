@@ -135,10 +135,15 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
 
   const pressSnakeStart = useCallback(() => {
     setSnakeGame((currentGame) => {
-      if (currentGame.status === 'running') return pauseSnakeGame(currentGame)
-      if (currentGame.status === 'paused') return resumeSnakeGame(currentGame)
-
-      return startSnakeGame(currentGame)
+      switch (currentGame.status) {
+        case 'running':
+          return pauseSnakeGame(currentGame)
+        case 'paused':
+          return resumeSnakeGame(currentGame)
+        case 'start':
+        case 'game-over':
+          return startSnakeGame(currentGame)
+      }
     })
   }, [])
 
@@ -225,8 +230,8 @@ export function PocketDevDevice({ children }: PocketDevDeviceProps) {
   useDeviceKeyboardControls({
     activateSelection,
     moveSelection,
+    pressStart: handleStart,
     returnHome,
-    startSystem: handleStart,
     useWasdMovement: isShowingSnake,
   })
 

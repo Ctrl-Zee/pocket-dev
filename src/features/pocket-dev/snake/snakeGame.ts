@@ -62,12 +62,15 @@ export function createSnakeStartState(): SnakeGameState {
 }
 
 export function startSnakeGame(currentGame: SnakeGameState): SnakeGameState {
-  if (currentGame.status === 'running') return currentGame
-  if (currentGame.status === 'paused' || currentGame.status === 'game-over') {
-    return { ...createSnakeStartState(), status: 'running' }
+  switch (currentGame.status) {
+    case 'running':
+      return currentGame
+    case 'paused':
+    case 'game-over':
+      return { ...createSnakeStartState(), status: 'running' }
+    case 'start':
+      return { ...currentGame, status: 'running', score: 0 }
   }
-
-  return { ...currentGame, status: 'running', score: 0 }
 }
 
 export function pauseSnakeGame(currentGame: SnakeGameState): SnakeGameState {

@@ -119,26 +119,28 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 }
 
 function getSnakeStatusLines(game: SnakeGameState) {
+  const statusLabel = snakeStatusLabels[game.status]
+
   switch (game.status) {
     case 'game-over':
-      return [snakeStatusLabels[game.status], `Final Score ${game.score}`, 'A / START RESTART']
+      return [statusLabel, `Final Score ${game.score}`, 'A / START RESTART']
     case 'paused':
       return [
-        snakeStatusLabels[game.status],
+        statusLabel,
         'P/START RESUME',
         'A RESTART',
         `Score ${game.score}`,
       ]
     case 'running':
       return [
-        snakeStatusLabels[game.status],
+        statusLabel,
         'D-PAD/SWIPE TURN',
         'P/START PAUSE',
         `Score ${game.score}`,
       ]
     case 'start':
       return [
-        snakeStatusLabels[game.status],
+        statusLabel,
         'D-PAD/SWIPE TURN',
         'A / START BEGIN',
         `Score ${game.score}`,
