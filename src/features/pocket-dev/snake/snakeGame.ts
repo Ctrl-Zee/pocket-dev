@@ -84,6 +84,10 @@ export function advanceSnake(currentGame: SnakeGameState): SnakeGameState {
     ? [nextHead, ...currentGame.snake]
     : [nextHead, ...currentGame.snake.slice(0, -1)]
 
+  if (isSnakeCellOccupied(nextSnake.slice(1), nextHead)) {
+    return { ...currentGame, status: 'game-over' }
+  }
+
   const nextGame = {
     ...currentGame,
     lastDirection: currentGame.direction,

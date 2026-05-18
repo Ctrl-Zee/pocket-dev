@@ -63,6 +63,7 @@ describe('Snake game Start state', () => {
   it('advances a running snake one cell to the right on each movement tick', () => {
     const nextGame = advanceSnake(startSnakeGame(createSnakeStartState()))
 
+    expect(nextGame.status).toBe('running')
     expect(nextGame.snake).toEqual([
       { row: 3, column: 6 },
       { row: 3, column: 5 },
@@ -102,6 +103,23 @@ describe('Snake game Start state', () => {
     }
 
     expect(advanceSnake(wallCollisionGame).status).toBe('game-over')
+  })
+
+  it('ends the game when the snake moves into its own body', () => {
+    const selfCollisionGame: SnakeGameState = {
+      ...startSnakeGame(createSnakeStartState()),
+      direction: 'up',
+      lastDirection: 'up',
+      snake: [
+        { row: 3, column: 5 },
+        { row: 3, column: 6 },
+        { row: 2, column: 6 },
+        { row: 2, column: 5 },
+        { row: 2, column: 4 },
+      ],
+    }
+
+    expect(advanceSnake(selfCollisionGame).status).toBe('game-over')
   })
 
   it('collects food by increasing score, growing, and placing one new food in an empty cell', () => {

@@ -261,6 +261,28 @@ function advanceSnakeMovementTick() {
   advanceSnakeMovementBy(snakeTickMs)
 }
 
+function getOneFoodSnakeTickMs() {
+  return getSnakeTickMs({
+    ...startSnakeGame(createSnakeStartState()),
+    score: 1,
+    snake: [
+      { row: 5, column: 8 },
+      { row: 4, column: 8 },
+      { row: 3, column: 8 },
+      { row: 3, column: 7 },
+    ],
+  })
+}
+
+function collectInitialSnakeFood() {
+  advanceSnakeMovementTick()
+  advanceSnakeMovementTick()
+  advanceSnakeMovementTick()
+  fireEvent.keyDown(window, { key: 'ArrowDown' })
+  advanceSnakeMovementTick()
+  advanceSnakeMovementTick()
+}
+
 function renderRoute(path: string, user: TestUser = userEvent.setup()) {
   const router = createRouter({
     routeTree,
@@ -643,25 +665,11 @@ describe('Home route', () => {
     vi.useFakeTimers()
 
     const lcd = getLcd()
-    const oneFoodTickMs = getSnakeTickMs({
-      ...startSnakeGame(createSnakeStartState()),
-      score: 1,
-      snake: [
-        { row: 5, column: 8 },
-        { row: 4, column: 8 },
-        { row: 3, column: 8 },
-        { row: 3, column: 7 },
-      ],
-    })
+    const oneFoodTickMs = getOneFoodSnakeTickMs()
 
     fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
 
-    advanceSnakeMovementTick()
-    advanceSnakeMovementTick()
-    advanceSnakeMovementTick()
-    fireEvent.keyDown(window, { key: 'ArrowDown' })
-    advanceSnakeMovementTick()
-    advanceSnakeMovementTick()
+    collectInitialSnakeFood()
 
     expectSnakeHead(5, 8)
     expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
@@ -676,6 +684,46 @@ describe('Home route', () => {
     advanceSnakeMovementBy(oneFoodTickMs)
 
     expectSnakeHead(5, 9)
+  })
+
+  it('shows hidden SNAKE Game Over with final score and restarts from a clean run', async () => {
+    const user = userEvent.setup()
+
+    renderRoute('/', user)
+    await openSnakeFromHome(user)
+
+    vi.useFakeTimers()
+
+    const lcd = getLcd()
+    const oneFoodTickMs = getOneFoodSnakeTickMs()
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    collectInitialSnakeFood()
+
+    expect(within(lcd).getByText(/^score 1$/i)).toBeInTheDocument()
+
+    advanceSnakeMovementBy(oneFoodTickMs)
+    advanceSnakeMovementBy(oneFoodTickMs)
+
+    expect(within(lcd).getByText(/^game over$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^final score 1$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/a \/ start restart/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /^a$/i }))
+
+    expect(within(lcd).getByText(/^running$/i)).toBeInTheDocument()
+    expect(within(lcd).getByText(/^score 0$/i)).toBeInTheDocument()
+    expectSnakeHead(3, 5)
+    expect(
+      within(getSnakeBoard()).getByRole('gridcell', { name: /food row 5 column 8/i }),
+    ).toBeInTheDocument()
+
+    advanceSnakeMovementBy(oneFoodTickMs)
+    expectSnakeHead(3, 5)
+
+    advanceSnakeMovementBy(snakeTickMs - oneFoodTickMs)
+    expectSnakeHead(3, 6)
   })
 
   it('shows the rotate-back Page inside the LCD on mobile landscape', async () => {

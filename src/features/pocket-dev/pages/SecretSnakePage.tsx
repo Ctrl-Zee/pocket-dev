@@ -19,6 +19,8 @@ const snakeStatusLabels: Record<SnakeGameState['status'], string> = {
 }
 
 export function SecretSnakePage({ game }: SecretSnakePageProps) {
+  const snakeStatusLines = getSnakeStatusLines(game)
+
   return (
     <LcdPage title="Snake">
       <div className="snake-game-page" aria-label="SNAKE game">
@@ -50,10 +52,9 @@ export function SecretSnakePage({ game }: SecretSnakePageProps) {
           })}
         </div>
         <div className="snake-game-status" aria-label="SNAKE shell status">
-          <p>{getSnakeStatusLabel(game.status)}</p>
-          <p>D-PAD TURN</p>
-          <p>A / START BEGIN</p>
-          <p>Score {game.score}</p>
+          {snakeStatusLines.map((line) => (
+            <p key={line}>{line}</p>
+          ))}
         </div>
       </div>
     </LcdPage>
@@ -79,4 +80,12 @@ function getSnakeCellLabel(cell: SnakeCell, snakeSegmentIndex: number, isFood: b
 
 function getSnakeStatusLabel(status: SnakeGameState['status']) {
   return snakeStatusLabels[status]
+}
+
+function getSnakeStatusLines(game: SnakeGameState) {
+  if (game.status === 'game-over') {
+    return [getSnakeStatusLabel(game.status), `Final Score ${game.score}`, 'A / START RESTART']
+  }
+
+  return [getSnakeStatusLabel(game.status), 'D-PAD TURN', 'A / START BEGIN', `Score ${game.score}`]
 }
